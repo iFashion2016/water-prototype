@@ -1,0 +1,12 @@
+.git/
+.gitignore
+.vercel/
+.vercel-cli/
+.trae-html-share-packages/
+node_modules/
+package.json
+package-lock.json
+*.docx
+*.log
+.DS_Store
+.vercelignore
