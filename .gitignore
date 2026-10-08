@@ -1,0 +1,10 @@
+node_modules/
+.vercel-cli/
+.trae-html-share-packages/
+package-lock.json
+package.json
+*.log
+.DS_Store
+.git/
+# 备份文件
+*-备份.html

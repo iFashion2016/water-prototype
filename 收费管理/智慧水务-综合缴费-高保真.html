@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务 - 综合缴费</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f7f7f7; color: #212121; overflow: hidden; font-size: 14px; }
+
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
+  .topbar-left { width: 204px; flex: 0 0 204px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
+  .logo-drop { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; }
+  .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+  .topbar-right { flex: 1; display: flex; align-items: center; padding-right: 18px; }
+  .collapse-btn { width: 40px; height: 53px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,.9); }
+  .top-tabs { display: flex; align-items: center; gap: 6px; height: 100%; }
+  .top-tab { padding: 7px 22px; border-radius: 18px; cursor: pointer; color: rgba(255,255,255,.92); font-size: 14.5px; white-space: nowrap; transition: background .2s; }
+  .top-tab:hover { background: rgba(255,255,255,.14); }
+  .top-tab.active { background: rgba(255,255,255,.28); font-weight: 600; }
+  .top-user { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .top-user .tenant { font-size: 14px; color: #fff; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,.65); background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; }
+  .side-caption { padding: 14px 16px 6px; font-size: 12px; color: #9aa3af; }
+  .menu-group-title { display: flex; align-items: center; gap: 8px; margin: 4px 10px; padding: 10px 12px; background: #eaf3fe; color: #2a7de1; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
+  .menu-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px 11px 26px; margin: 2px 10px; color: #4b5563; cursor: pointer; border-radius: 6px; text-decoration: none; }
+  .menu-item:hover { background: #f2f7fd; color: #2a7de1; }
+  .menu-item.active { background: #eaf3fe; color: #2a7de1; font-weight: 600; }
+
+  .main { position: fixed; top: 53px; left: 204px; right: 0; bottom: 0; display: flex; flex-direction: column; }
+  .subtabs { flex: 0 0 44px; background: #fff; border-bottom: 1px solid #eef0f3; display: flex; align-items: center; padding: 0 8px; gap: 2px; }
+  .subtab-list { display: flex; align-items: center; flex: 1; overflow: hidden; }
+  .subtab { padding: 0 26px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #4b5563; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; text-decoration: none; }
+  .subtab:hover { color: #2a7de1; }
+  .subtab.active { color: #2a7de1; border-bottom-color: #2a7de1; font-weight: 600; }
+
+  .content { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
+  .footer { flex: 0 0 29px; background: #fff; border-top: 1px solid #eef0f3; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 12px; color: #9aa3af; }
+
+  .filter-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 18px 24px 16px; margin-bottom: 14px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 28px; }
+  .filter-item { display: flex; align-items: center; }
+  .filter-label { flex: 0 0 72px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; white-space: nowrap; }
+  .filter-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .filter-input.placeholder { color: #b6bdc9; }
+  .filter-input:hover { border-color: #3b9dff; }
+  .filter-input .caret { color: #b6bdc9; font-size: 11px; }
+  input.filter-input { cursor: text; }
+  input.filter-input::placeholder { color: #b6bdc9; }
+
+  .btn-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+  .chk { width: 15px; height: 15px; accent-color: #409eff; cursor: pointer; vertical-align: middle; }
+  .chk-cell { width: 40px; text-align: center !important; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border: none; border-radius: 4px; background: #3b9dff; color: #fff; font-size: 13.5px; cursor: pointer; box-shadow: 0 1px 3px rgba(59,157,255,.3); white-space: nowrap; }
+  .btn:hover { background: #2a8ef0; }
+  .btn-plain { background: #fff; color: #4b5563; border: 1px solid #dcdfe6; box-shadow: none; }
+  .btn-plain:hover { background: #f5f7fa; }
+  .btn .caret { font-size: 10px; opacity: .85; }
+
+  .table-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); overflow: hidden; }
+  .table-scroll { overflow-x: auto; }
+  table.data-table { border-collapse: collapse; min-width: 100%; }
+  .data-table th, .data-table td { padding: 11px 14px; font-size: 13px; white-space: nowrap; border-bottom: 1px solid #eef0f3; text-align: left; }
+  .data-table thead th { background: #fff; font-weight: 600; color: #374151; font-size: 13.5px; position: sticky; top: 0; z-index: 2; }
+  .data-table tbody td { color: #4b5563; }
+  .data-table tbody tr { cursor: pointer; }
+  .data-table tbody tr:hover { background: #f7fafe; }
+  .data-table tbody tr.selected { background: #e8f2ff; }
+  /* 末两列冻结：欠费是否关阀 + 操作 */
+  #mainTable th:last-child, #mainTable td:last-child { position: sticky; right: 0; width: 96px; min-width: 96px; background: #fff; z-index: 1; text-align: center; }
+  #mainTable th:nth-last-child(2), #mainTable td:nth-last-child(2) { position: sticky; right: 96px; background: #fff; box-shadow: -6px 0 8px -6px rgba(0,0,0,.15); z-index: 1; }
+  #mainTable thead th:last-child, #mainTable thead th:nth-last-child(2) { z-index: 3; }
+  #mainTable tbody tr:hover td:last-child, #mainTable tbody tr:hover td:nth-last-child(2) { background: #f7fafe; }
+  #mainTable tbody tr.selected td:last-child, #mainTable tbody tr.selected td:nth-last-child(2) { background: #e8f2ff; }
+  /* 行内「操作」下拉 */
+  .op-trigger { height: 24px; padding: 0 10px; border: 1px solid #409eff; border-radius: 4px; background: #409eff; color: #fff; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+  .op-trigger:hover { background: #79bbff; border-color: #79bbff; }
+  .op-menu { position: fixed; z-index: 400; min-width: 118px; background: #fff; border: 1px solid #e4e7ed; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.14); padding: 5px 0; display: none; }
+  .op-menu.show { display: block; }
+  .op-menu .op-item { padding: 8px 16px; font-size: 13px; color: #4b5563; cursor: pointer; white-space: nowrap; }
+  .op-menu .op-item:hover { background: #ecf5ff; color: #409eff; }
+  .negative { color: #f56c6c; }
+  .sort-ico { color: #c0c6cf; font-size: 10px; margin-left: 2px; }
+
+  .switch { width: 36px; height: 20px; border-radius: 10px; background: #3b9dff; position: relative; display: inline-block; vertical-align: middle; cursor: pointer; }
+  .switch::after { content: ""; position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
+
+  .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 16px 12px; font-size: 13px; color: #6b7280; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4b5563; }
+  .page-btn:hover { color: #2a7de1; }
+  .page-btn.active { background: #3b9dff; color: #fff; }
+  .page-btn.disabled { color: #c8cdd5; cursor: default; }
+  .page-total { margin: 0 10px; }
+  .page-size { height: 30px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 10px; display: inline-flex; align-items: center; gap: 14px; color: #4b5563; cursor: pointer; background: #fff; }
+
+  .modal-mask { position: fixed; inset: 0; background: rgba(15,25,45,.45); z-index: 200; display: none; align-items: flex-start; justify-content: center; }
+  .modal-mask.show { display: flex; }
+  .modal { background: #fff; border-radius: 8px; margin-top: 90px; width: 720px; max-width: 96vw; max-height: calc(100vh - 110px); display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
+  .modal.modal-lg { width: 1100px; margin-top: 60px; }
+  .modal.modal-sm { width: 520px; }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; border-bottom: 1px solid #f1f3f6; }
+  .modal-title { font-size: 16px; font-weight: 700; color: #1f2937; }
+  .modal-close { cursor: pointer; color: #9aa3af; font-size: 16px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { color: #4b5563; }
+  .modal-body { padding: 22px 28px; overflow-y: auto; flex: 1; }
+  .modal-foot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #f1f3f6; }
+
+  .dlg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
+  .dlg-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  .dlg-item { display: flex; align-items: center; }
+  .dlg-item.span2 { grid-column: span 2; }
+  .dlg-item.span3 { grid-column: span 3; }
+  .dlg-label { flex: 0 0 84px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; }
+  .dlg-label .req { color: #f56c6c; margin-right: 2px; }
+  .dlg-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; }
+  .dlg-input.disabled { background: #f5f7fa; color: #6b7280; }
+  .dlg-input .caret { color: #b6bdc9; font-size: 11px; }
+  input.dlg-input { cursor: text; }
+  textarea.dlg-input { height: 64px; padding: 8px 12px; resize: none; font-family: inherit; }
+  .dlg-static { flex: 1; font-size: 14px; color: #1f2937; }
+  .dlg-static.red { color: #f56c6c; }
+
+  .audit-filter { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 20px; margin-bottom: 14px; }
+  .empty-tip { text-align: center; color: #9aa3af; padding: 60px 0; font-size: 14px; }
+
+  .toast { position: fixed; top: 76px; right: 24px; z-index: 300; min-width: 300px; background: #fdf6e3; border: 1px solid #f5dab1; color: #b88230; border-radius: 6px; padding: 12px 16px; display: none; align-items: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .toast.show { display: flex; animation: slideIn .25s ease; }
+  .toast .t-close { margin-left: auto; cursor: pointer; color: #d3b17c; }
+  .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-drop">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z" fill="#fff"/><path d="M9.2 14.5C9.2 16.4 10.4 17.8 12 18.1" stroke="#2a7de1" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <div class="brand">智慧水务</div>
+  </div>
+  <div class="topbar-right">
+    <div class="collapse-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <nav class="top-tabs">
+      <div class="top-tab" onclick="window.location.href='../户表管理/智慧水务-用户开户-高保真.html'">户表管理</div>
+      <div class="top-tab active">收费管理</div>
+      <div class="top-tab" onclick="window.location.href='../抄表管理/智慧水务-4GNB抄表-高保真.html'">物联网</div>
+      <div class="top-tab" onclick="window.location.href='../报表分析/智慧水务-换表记录表-高保真.html'">报表分析</div>
+      <div class="top-tab" onclick="window.location.href='../档案管理/智慧水务-地址档案-高保真.html'">档案管理</div>
+      <div class="top-tab" onclick="window.location.href='../功能配置/智慧水务-功能配置-微信配置+表具类型.html'">功能配置</div>
+    </nav>
+    <div class="top-user">
+      <span class="tenant">涌恒供水</span>
+      <div class="avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.4" fill="#fff" opacity=".95"/><path d="M4.8 19.5C5.6 15.6 8.5 13.8 12 13.8C15.5 13.8 18.4 15.6 19.2 19.5" fill="#fff" opacity=".95"/></svg></div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar">
+  <div class="side-caption">收费管理</div>
+  <div class="menu-group-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="14" rx="2" stroke="#2a7de1" stroke-width="1.8"/><path d="M3 11H21" stroke="#2a7de1" stroke-width="1.8"/><path d="M7 16H11" stroke="#2a7de1" stroke-width="1.8" stroke-linecap="round"/></svg>
+    柜台缴费
+    <span class="chev">︿</span>
+  </div>
+  <a class="menu-item active" href="智慧水务-综合缴费-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#2a7de1" stroke-width="2" stroke-linecap="round"/></svg>
+    综合缴费
+  </a>
+  <a class="menu-item" href="智慧水务-缴费记录-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    缴费记录
+  </a>
+  <a class="menu-item" href="智慧水务-纠正异常-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    纠正异常
+  </a>
+</aside>
+
+<div class="main">
+  <div class="subtabs">
+    <div class="subtab-list" style="margin-left:12px">
+      <a class="subtab active" href="智慧水务-综合缴费-高保真.html">综合缴费</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="filter-card">
+      <div class="filter-grid">
+        <div class="filter-item"><span class="filter-label">分级地址：</span><div class="filter-input placeholder"><span>请选择分级地址</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">模糊地址：</span><input class="filter-input q" placeholder="请输入模糊地址"></div>
+        <div class="filter-item"><span class="filter-label">用户编号：</span><input class="filter-input q" placeholder="请输入用户编号"></div>
+        <div class="filter-item"><span class="filter-label">用户名称：</span><input class="filter-input q" placeholder="请输入用户名称"></div>
+        <div class="filter-item"><span class="filter-label">手机号：</span><input class="filter-input q" placeholder="请输入手机号"></div>
+        <div class="filter-item"><span class="filter-label">表身码：</span><input class="filter-input q" placeholder="请输入表身码"></div>
+        <div class="filter-item"><span class="filter-label">价格类型：</span><div class="filter-input placeholder"><span>请选择价格类型</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">欠费关阀：</span><div class="filter-input placeholder"><span>请选择欠费关阀</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">营业所：</span><div class="filter-input placeholder"><span>请选择营业所</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">表册：</span><div class="filter-input placeholder"><span>请选择表册</span><span class="caret">▾</span></div></div>
+      </div>
+      <div class="btn-bar">
+        <button class="btn" onclick="showToast('查询成功','success')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          查询
+        </button>
+        <button class="btn" onclick="doReset()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 12 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4V12H12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 16 8)"/></svg>
+          重置
+        </button>
+        <button class="btn" onclick="batchAudit('dlgTransferAudit','转结审核')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#fff" stroke-width="2"/><path d="M8 12L11 15L16 9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          转结审核
+        </button>
+        <button class="btn" onclick="batchAudit('dlgGiftAudit','赠送审核')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#fff" stroke-width="2"/><path d="M8 12L11 15L16 9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          赠送审核
+        </button>
+        <button class="btn" onclick="batchGift()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12V22H4V12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 7H22V12H2V7Z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 22V7" stroke="#fff" stroke-width="2"/><path d="M12 7C12 7 12 3 8 3C6 3 6 5 8 5C10 5 12 7 12 7Z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7C12 7 12 3 16 3C18 3 18 5 16 5C14 5 12 7 12 7Z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          批量赠送
+        </button>
+        <button class="btn" onclick="batchTransfer()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 7H8M21 7L16 2M21 7L16 12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 17H16M3 17L8 12M3 17L8 22" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          批量转结
+        </button>
+        <button class="btn" onclick="showToast('导出任务已提交，请稍后下载','success')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 15V3M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          导出
+        </button>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="data-table" id="mainTable">
+          <thead>
+            <tr>
+              <th class="chk-cell"><input type="checkbox" class="chk" id="chkAll"></th><th>用户编号<span class="sort-ico">⇅</span></th><th>用户名称</th><th>手机号</th><th>用户地址</th><th>表身码</th>
+              <th>账户余额<span class="sort-ico">⇅</span></th><th>赠送余额<span class="sort-ico">⇅</span></th><th>最近缴费金额<span class="sort-ico">⇅</span></th><th>最近缴费时间</th>
+              <th>阀门状态</th><th>价格类型</th><th>最近结算读数</th><th>最近结算时间</th><th>账期用量</th><th>阶梯指针</th>
+              <th>账户状态</th><th>表具类型</th><th>营业所</th><th>表册</th><th>欠费是否关阀</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000338</td><td>未提供</td><td>*</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td class="negative">-22.47</td><td>0.00</td><td>0.00</td><td></td><td>开</td><td>按月</td><td>22.47</td><td>2026-09-21 14:42:00</td><td>22.47</td><td>1</td><td>已开户</td><td>NB远传阀控水表</td><td>涌恒供水</td><td>默认</td><td><span class="switch"></span></td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000336</td><td>人民路建行对面意尔康楼上</td><td>*</td><td>河口县公共区域-人民路门市-1212</td><td>00002624000053</td><td class="negative">-2.52</td><td>0.00</td><td>10.00</td><td>2026-09-17 13:34:39</td><td>开</td><td>按月</td><td>2.52</td><td>2026-09-22 10:41:32</td><td>2.52</td><td>1</td><td>已开户</td><td>WPG远传阀控水表</td><td>涌恒供水</td><td>默认</td><td><span class="switch"></span></td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000335</td><td>000053</td><td>*</td><td>河口县公共区域-人民路门市-123</td><td>00002624000083</td><td class="negative">-0.58</td><td>0.00</td><td>0.00</td><td></td><td>开</td><td>按月</td><td>0.58</td><td>2026-09-21 16:41:32</td><td>0.58</td><td>1</td><td>已开户</td><td>WPG远传阀控水表</td><td>涌恒供水</td><td>默认</td><td><span class="switch"></span></td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000327</td><td>人民路建行对面街心花园意尔康楼上</td><td>1</td><td>河口县公共区域-公共公共-02</td><td>00002624000058</td><td class="negative">-31.49</td><td>0.00</td><td>0.00</td><td>2026-08-12 17:18:20</td><td>开</td><td>按月</td><td>31.49</td><td>2026-09-22 11:41:32</td><td>30.07</td><td>1</td><td>已开户</td><td>WPG远传阀控水表</td><td>涌恒供水</td><td>默认</td><td><span class="switch"></span></td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000322</td><td>260626116356</td><td>1</td><td>河口一中宏建小区-3栋-301</td><td>260626116356</td><td class="negative">-0.41</td><td>0.00</td><td>0.00</td><td></td><td>开</td><td>按月</td><td>0.41</td><td>2026-09-21 14:58:32</td><td>0.00</td><td>1</td><td>已开户</td><td>NB远传阀控水表</td><td>涌恒供水</td><td>默认</td><td><span class="switch"></span></td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000321</td><td>260626116404</td><td>1</td><td>河口一中宏建小区-1栋-260626116404</td><td>260626116404</td><td class="negative">-10.55</td><td>0.00</td><td>0.00</td><td></td><td>开</td><td>按月</td><td>10.55</td><td>2026-09-21 14:49:16</td><td>7.73</td><td>1</td><td>已开户</td><td>NB远传阀控水表</td><td>涌恒供水</td><td>默认</td><td><span class="switch"></span></td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000317</td><td>260626116252</td><td>1</td><td>河口县公共区域-公共公共-001</td><td>260626116252</td><td class="negative">-0.32</td><td>0.00</td><td>0.00</td><td></td><td>开</td><td>按月</td><td>0.32</td><td>2026-09-21 14:37:00</td><td>0.00</td><td>1</td><td>已开户</td><td>NB远传阀控水表</td><td>涌恒供水</td><td>默认</td><td><span class="switch"></span></td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000212</td><td>刘明日</td><td>1</td><td>河口一中宏建小区-1栋-702</td><td>260626116281</td><td class="negative">-1.00</td><td>0.00</td><td>0.00</td><td></td><td>开</td><td>按月</td><td>1.00</td><td>2026-09-21 14:42:32</td><td>0.00</td><td>1</td><td>已开户</td><td>NB远传阀控水表</td><td>涌恒供水</td><td>默认</td><td><span class="switch"></span></td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000211</td><td>邹格军</td><td>1</td><td>河口一中宏建小区-1栋-物业用房卫生间</td><td>260626116309</td><td class="negative">-27.09</td><td>0.00</td><td>0.00</td><td></td><td>开</td><td>按月</td><td>27.09</td><td>2026-09-21 14:42:16</td><td>8.82</td><td>1</td><td>已开户</td><td>NB远传阀控水表</td><td>涌恒供水</td><td>默认</td><td><span class="switch"></span></td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000210</td><td>田如燕</td><td>1</td><td>河口一中宏建小区-1栋-201</td><td>260626116287</td><td class="negative">-20.63</td><td>0.00</td><td>0.00</td><td></td><td>开</td><td>按月</td><td>20.63</td><td>2026-09-21 14:39:48</td><td>11.26</td><td>1</td><td>已开户</td><td>NB远传阀控水表</td><td>涌恒供水</td><td>默认</td><td><span class="switch"></span></td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span>
+        <span class="page-btn active">1</span><span class="page-btn">2</span><span class="page-btn">3</span><span class="page-btn">4</span><span class="page-btn">5</span>
+        <span class="page-btn">›</span><span class="page-btn">»</span>
+        <span class="page-total">共 [ 22 ] 页，共 [ 214 ] 条</span>
+        <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>当前用户：涌恒供水</span>
+    <span>2012-2025@版权所有智慧水务研发中心</span>
+  </footer>
+</div>
+
+<!-- ============ 弹窗：预付费缴费（柜台缴费） ============ -->
+<div class="modal-mask" id="dlgPay">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">预付费缴费</div><span class="modal-close" onclick="closeModal('dlgPay')">✕</span></div>
+    <div class="modal-body">
+      <div class="dlg-grid">
+        <div class="dlg-item"><span class="dlg-label">表身码：</span><div class="dlg-input disabled"><span>260626116289</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">用户编号：</span><div class="dlg-input disabled"><span>063000338</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">用户名称：</span><div class="dlg-input disabled"><span>未提供</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">联系电话：</span><div class="dlg-input disabled"><span>*</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">用户地址：</span><div class="dlg-input disabled"><span>河口县公共区域-公共公共</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">余额：</span><div class="dlg-input disabled"><span class="negative">-22.470000</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">入账方式：</span><div class="dlg-input"><span>现金</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">充值金额：</span><input class="dlg-input" id="payAmount" placeholder=""></div>
+        <div class="dlg-item span2"><span class="dlg-label">金额(大写)：</span><span class="dlg-static" id="payAmountCn"></span></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgPay')">取消</button>
+      <button class="btn" onclick="closeModal('dlgPay');showToast('缴费成功','success')">缴费</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：余额转结 ============ -->
+<div class="modal-mask" id="dlgTransfer">
+  <div class="modal modal-sm">
+    <div class="modal-head"><div class="modal-title">余额转结</div><span class="modal-close" onclick="closeModal('dlgTransfer')">✕</span></div>
+    <div class="modal-body">
+      <div class="dlg-grid">
+        <div class="dlg-item"><span class="dlg-label">账户余额：</span><span class="dlg-static red">-22.47元</span></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>转结金额：</span><input class="dlg-input"></div>
+        <div class="dlg-item"><span class="dlg-label">转结后余额：</span><span class="dlg-static red">-22.47元</span></div>
+        <div class="dlg-item span2"><span class="dlg-label"><span class="req">*</span>转结原因：</span><textarea class="dlg-input" placeholder="请输入"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgTransfer')">取消</button>
+      <button class="btn" onclick="closeModal('dlgTransfer');showToast('转结申请已提交，待审核','success')">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：余额纠正 ============ -->
+<div class="modal-mask" id="dlgCorrect">
+  <div class="modal modal-sm">
+    <div class="modal-head"><div class="modal-title">余额纠正</div><span class="modal-close" onclick="closeModal('dlgCorrect')">✕</span></div>
+    <div class="modal-body">
+      <div class="dlg-grid">
+        <div class="dlg-item"><span class="dlg-label">账户余额：</span><span class="dlg-static red">-22.47元</span></div>
+        <div class="dlg-item"><span class="dlg-label">纠正金额：</span><input class="dlg-input" value="0"></div>
+        <div class="dlg-item"><span class="dlg-label">纠正后余额：</span><span class="dlg-static red">-22.47元</span></div>
+        <div class="dlg-item"><span class="dlg-label">纠正原因：</span><input class="dlg-input"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgCorrect')">✕&nbsp;取消</button>
+      <button class="btn" onclick="closeModal('dlgCorrect');showToast('余额纠正成功','success')">✓&nbsp;确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：柜台赠送 ============ -->
+<div class="modal-mask" id="dlgGift">
+  <div class="modal" style="width:860px">
+    <div class="modal-head"><div class="modal-title">柜台赠送</div><span class="modal-close" onclick="closeModal('dlgGift')">✕</span></div>
+    <div class="modal-body">
+      <div class="dlg-grid cols3">
+        <div class="dlg-item"><span class="dlg-label">用户名称：</span><div class="dlg-input disabled"><span>未提供</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">表身码：</span><div class="dlg-input disabled"><span>260626116289</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">联系电话：</span><div class="dlg-input disabled"><span>*</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">用户地址：</span><div class="dlg-input disabled"><span>河口县公共区域-公共公共-未提供</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">余额：</span><div class="dlg-input disabled"><span>-22.470000</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">当前阶梯：</span><div class="dlg-input disabled"><span>1</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">赠送方式：</span><div class="dlg-input"><span>按金额赠送</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">赠送金额：</span><input class="dlg-input"></div>
+        <div class="dlg-item"><span class="dlg-label">金额(大写)：</span><span class="dlg-static"></span></div>
+        <div class="dlg-item span3"><span class="dlg-label">赠送原因：</span><textarea class="dlg-input" placeholder="请输入"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgGift')">✕&nbsp;取消</button>
+      <button class="btn" onclick="closeModal('dlgGift');showToast('赠送申请已提交，待审核','success')">✓&nbsp;确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：批量赠送（导入文件） ============ -->
+<div class="modal-mask" id="dlgBatchGift">
+  <div class="modal" style="width:520px">
+    <div class="modal-head"><div class="modal-title">批量赠送</div><span class="modal-close" onclick="closeModal('dlgBatchGift')">✕</span></div>
+    <div class="modal-body" style="padding:24px 28px">
+      <div style="margin-bottom:16px">
+        <a href="javascript:void(0)" onclick="showToast('模板下载已开始','success')" style="color:#1890ff;font-size:14px;text-decoration:none">下载模板&gt;&gt;</a>
+      </div>
+      <div id="batchGiftUploadZone" style="border:1px dashed #d9d9d9;border-radius:6px;padding:32px 20px;text-align:center;background:#fafafa;transition:all .2s">
+        <div style="margin-bottom:18px">
+          <button class="btn" style="margin-right:12px" onclick="document.getElementById('batchGiftFileInput').click()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            导入
+          </button>
+          <button class="btn btn-plain" id="batchGiftUploadBtn" disabled style="opacity:.4;cursor:not-allowed" onclick="onBatchGiftUpload()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12L12 5L19 12" stroke="#595959" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            上传
+          </button>
+          <input type="file" id="batchGiftFileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="onBatchGiftFileSelected(this)">
+        </div>
+        <div style="border-top:1px solid #e8e8e8;margin:0 20px 14px"></div>
+        <div id="batchGiftFileHint" style="color:#8c8c8c;font-size:14px">上传赠送模板文件</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgBatchGift')">✕&nbsp;取消</button>
+      <button class="btn" onclick="closeModal('dlgBatchGift');showToast('批量赠送申请已提交，待审核','success')">✓&nbsp;确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：批量转结（导入文件） ============ -->
+<div class="modal-mask" id="dlgBatchTransfer">
+  <div class="modal" style="width:520px">
+    <div class="modal-head"><div class="modal-title">批量转结</div><span class="modal-close" onclick="closeModal('dlgBatchTransfer')">✕</span></div>
+    <div class="modal-body" style="padding:24px 28px">
+      <div style="margin-bottom:16px">
+        <a href="javascript:void(0)" onclick="showToast('模板下载已开始','success')" style="color:#1890ff;font-size:14px;text-decoration:none">下载模板&gt;&gt;</a>
+      </div>
+      <div id="batchTransferUploadZone" style="border:1px dashed #d9d9d9;border-radius:6px;padding:32px 20px;text-align:center;background:#fafafa;transition:all .2s">
+        <div style="margin-bottom:18px">
+          <button class="btn" style="margin-right:12px" onclick="document.getElementById('batchTransferFileInput').click()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            导入
+          </button>
+          <button class="btn btn-plain" id="batchTransferUploadBtn" disabled style="opacity:.4;cursor:not-allowed" onclick="onBatchTransferUpload()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12L12 5L19 12" stroke="#595959" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            上传
+          </button>
+          <input type="file" id="batchTransferFileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="onBatchTransferFileSelected(this)">
+        </div>
+        <div style="border-top:1px solid #e8e8e8;margin:0 20px 14px"></div>
+        <div id="batchTransferFileHint" style="color:#8c8c8c;font-size:14px">上传转结模板文件</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgBatchTransfer')">✕&nbsp;取消</button>
+      <button class="btn" onclick="closeModal('dlgBatchTransfer');showToast('批量转结申请已提交，待审核','success')">✓&nbsp;确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：用水记录 ============ -->
+<div class="modal-mask" id="dlgWater">
+  <div class="modal modal-lg">
+    <div class="modal-head"><div class="modal-title">用水记录</div><span class="modal-close" onclick="closeModal('dlgWater')">✕</span></div>
+    <div class="modal-body" style="padding:18px 22px">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>用户编号</th><th>用户名称</th><th>用户地址</th><th>表身码</th><th>抄表时间</th><th>抄表读数</th><th>用水量</th></tr></thead>
+          <tbody>
+            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>2026-09-21 14:41:49</td><td>22.47</td><td>0.73</td></tr>
+            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>2026-09-20 14:41:45</td><td>21.74</td><td>1.04</td></tr>
+            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>2026-09-19 14:41:16</td><td>20.70</td><td>1.00</td></tr>
+            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>2026-09-18 14:41:22</td><td>19.70</td><td>0.81</td></tr>
+            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>2026-09-17 14:41:17</td><td>18.89</td><td>1.01</td></tr>
+            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>2026-09-16 14:41:39</td><td>17.88</td><td>0.80</td></tr>
+            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>2026-09-15 14:41:33</td><td>17.08</td><td>17.08</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span>
+        <span class="page-btn active">1</span>
+        <span class="page-btn disabled">›</span><span class="page-btn disabled">»</span>
+        <span class="page-total">共 [ 1 ] 页，共 [ 7 ] 条</span>
+        <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：账单记录 ============ -->
+<div class="modal-mask" id="dlgBill">
+  <div class="modal modal-lg" style="width:96vw;margin-top:40px">
+    <div class="modal-head"><div class="modal-title">账单记录</div><span class="modal-close" onclick="closeModal('dlgBill')">✕</span></div>
+    <div class="modal-body" style="padding:18px 22px">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>用户编号</th><th>用户名称</th><th>账单年月</th><th>起码</th><th>止码</th><th>周期用水量</th><th>应收账单总金额</th><th>应收水费金额</th><th>最低消费应缴金额</th><th>滞纳金应缴金额</th><th>周期内缴费金额</th><th>已支付金额</th><th>实际应收金额</th><th>账单状态</th></tr></thead>
+        </table>
+      </div>
+      <div class="empty-tip">暂无数据</div>
+      <div class="pagination">
+        <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span><span class="page-btn disabled">›</span><span class="page-btn disabled">»</span>
+        <span class="page-total">共 [ 0 ] 页，共 [ 0 ] 条</span>
+        <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：缴费记录（行级） ============ -->
+<div class="modal-mask" id="dlgPayRec">
+  <div class="modal modal-lg">
+    <div class="modal-head"><div class="modal-title">缴费记录</div><span class="modal-close" onclick="closeModal('dlgPayRec')">✕</span></div>
+    <div class="modal-body" style="padding:18px 22px">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>用户编号</th><th>用户名称</th><th>支付渠道</th><th>表身码</th><th>充值金额</th><th>充值时间</th><th>充值类型</th><th>用户地址</th><th>票据打印次数</th></tr></thead>
+          <tbody>
+            <tr style="cursor:default;background:#fafbfc"><td></td><td></td><td></td><td style="font-weight:600;color:#374151">合计</td><td>0.00 元</td><td></td><td></td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span><span class="page-btn disabled">›</span><span class="page-btn disabled">»</span>
+        <span class="page-total">共 [ 0 ] 页，共 [ 0 ] 条</span>
+        <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：阀控记录（抄表阀控） ============ -->
+<div class="modal-mask" id="dlgValve">
+  <div class="modal modal-lg">
+    <div class="modal-head"><div class="modal-title">阀控记录</div><span class="modal-close" onclick="closeModal('dlgValve')">✕</span></div>
+    <div class="modal-body" style="padding:18px 22px">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>用户编号</th><th>用户名称</th><th>表身码</th><th>命令类型</th><th>命令状态</th><th>创建时间</th><th>执行时间</th><th>操作员</th></tr></thead>
+        </table>
+      </div>
+      <div class="empty-tip">暂无数据</div>
+      <div class="pagination">
+        <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span><span class="page-btn disabled">›</span><span class="page-btn disabled">»</span>
+        <span class="page-total">共 [ 0 ] 页，共 [ 0 ] 条</span>
+        <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：转结审核 ============ -->
+<div class="modal-mask" id="dlgTransferAudit">
+  <div class="modal modal-lg" style="width:1240px">
+    <div class="modal-head"><div class="modal-title">转结审核</div><span class="modal-close" onclick="closeModal('dlgTransferAudit')">✕</span></div>
+    <div class="modal-body" style="padding:18px 22px">
+      <div class="audit-filter">
+        <div class="filter-item"><span class="filter-label">户号：</span><input class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">户名：</span><input class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">表号：</span><input class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">审核状态：</span><div class="filter-input placeholder"><span>请选择</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">操作员：</span><input class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">开始时间：</span><div class="filter-input"><span>2026-09-22 00:00:00</span></div></div>
+        <div class="filter-item"><span class="filter-label">结束时间：</span><div class="filter-input placeholder"><span>选择结束时间</span></div></div>
+      </div>
+      <div class="btn-bar" style="margin-top:0;margin-bottom:14px">
+        <button class="btn" onclick="showToast('查询成功','success')">查询</button>
+        <button class="btn" onclick="showToast('筛选条件已重置','success')">重置</button>
+        <button class="btn" onclick="showToast('导出任务已提交，请稍后下载','success')">⇩ 导出Excel</button>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th><input type="checkbox"></th><th>户号</th><th>户名</th><th>表号</th><th>地址</th><th>价格类型</th><th>转结金额</th><th>创建时间</th><th>操作员</th><th>审核时间</th><th>审核人</th><th>转结原因</th><th>审核状态</th><th>操作</th></tr></thead>
+        </table>
+      </div>
+      <div class="empty-tip">暂无数据</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：赠送记录（赠送审核） ============ -->
+<div class="modal-mask" id="dlgGiftAudit">
+  <div class="modal modal-lg" style="width:1240px">
+    <div class="modal-head"><div class="modal-title">赠送记录</div><span class="modal-close" onclick="closeModal('dlgGiftAudit')">✕</span></div>
+    <div class="modal-body" style="padding:18px 22px">
+      <div class="audit-filter">
+        <div class="filter-item"><span class="filter-label">户号：</span><input class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">户名：</span><input class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">表号：</span><input class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">审核状态：</span><div class="filter-input placeholder"><span>请选择</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">操作员：</span><input class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">开始时间：</span><div class="filter-input"><span>2026-09-22 00:00:00</span></div></div>
+        <div class="filter-item"><span class="filter-label">结束时间：</span><div class="filter-input placeholder"><span>选择结束时间</span></div></div>
+      </div>
+      <div class="btn-bar" style="margin-top:0;margin-bottom:14px">
+        <button class="btn" onclick="showToast('查询成功','success')">查询</button>
+        <button class="btn" onclick="showToast('筛选条件已重置','success')">重置</button>
+        <button class="btn" onclick="showToast('导出任务已提交，请稍后下载','success')">⇩ 导出Excel</button>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th><input type="checkbox"></th><th>户号</th><th>户名</th><th>表号</th><th>地址</th><th>价格类型</th><th>赠送金额</th><th>创建时间</th><th>操作员</th><th>审核时间</th><th>审核人</th><th>赠送原因</th><th>审核状态</th><th>操作</th></tr></thead>
+        </table>
+      </div>
+      <div class="empty-tip">暂无数据</div>
+    </div>
+  </div>
+</div>
+
+<div class="op-menu" id="opMenu"></div>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">⚠</span><span id="toastText"></span>
+  <span class="t-close" onclick="hideToast()">✕</span>
+</div>
+
+<script>
+  var selectedRow = null;
+  document.querySelectorAll('#mainTable tbody tr').forEach(function (tr) {
+    tr.addEventListener('click', function (e) {
+      if (e.target.classList && e.target.classList.contains('switch')) return;
+      if (selectedRow === tr) { tr.classList.remove('selected'); selectedRow = null; return; }
+      document.querySelectorAll('#mainTable tbody tr').forEach(function (r) { r.classList.remove('selected'); });
+      tr.classList.add('selected'); selectedRow = tr;
+    });
+  });
+
+  function openModal(id) { document.getElementById(id).classList.add('show'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+  // 线上实测：未选中行时提示「请选中一行数据」
+  function needRow(id) {
+    if (!selectedRow) { showToast('请选中一行数据'); return; }
+    openModal(id);
+  }
+
+  // 勾选驱动批量审核：转结审核 / 赠送审核作用于所有勾选行
+  var chkAll = document.getElementById('chkAll');
+  function getCheckedRows() {
+    return Array.prototype.filter.call(document.querySelectorAll('#mainTable tbody tr'), function (tr) { return tr.querySelector('.row-chk').checked; });
+  }
+  function syncAll() {
+    var rows = document.querySelectorAll('#mainTable tbody tr');
+    chkAll.checked = rows.length > 0 && Array.prototype.every.call(rows, function (r) { return r.querySelector('.row-chk').checked; });
+  }
+  document.querySelectorAll('#mainTable tbody .row-chk').forEach(function (c) {
+    c.addEventListener('click', function (e) { e.stopPropagation(); syncAll(); });
+  });
+  chkAll.addEventListener('change', function () {
+    var on = chkAll.checked;
+    document.querySelectorAll('#mainTable tbody tr').forEach(function (tr) { tr.querySelector('.row-chk').checked = on; });
+  });
+  function batchAudit(id, name) {
+    var rows = getCheckedRows();
+    if (!rows.length) { showToast('请先勾选需要' + name + '的用户'); return; }
+    showToast('本次勾选 ' + rows.length + ' 户，进入' + name, 'success');
+    openModal(id);
+  }
+
+  // 批量赠送
+  function batchGift() {
+    var hint = document.getElementById('batchGiftFileHint');
+    if (hint) { hint.textContent = '上传赠送模板文件'; hint.style.color = '#8c8c8c'; }
+    var fi = document.getElementById('batchGiftFileInput');
+    if (fi) fi.value = '';
+    var ub = document.getElementById('batchGiftUploadBtn');
+    if (ub) { ub.disabled = true; ub.style.opacity = '.4'; ub.style.cursor = 'not-allowed'; }
+    openModal('dlgBatchGift');
+  }
+  function onBatchGiftFileSelected(input) {
+    var file = input.files && input.files[0];
+    var ub = document.getElementById('batchGiftUploadBtn');
+    var hint = document.getElementById('batchGiftFileHint');
+    if (!file) {
+      if (ub) { ub.disabled = true; ub.style.opacity = '.4'; ub.style.cursor = 'not-allowed'; }
+      hint.textContent = '上传赠送模板文件';
+      hint.style.color = '#8c8c8c';
+      return;
+    }
+    hint.textContent = '已选择文件：' + file.name;
+    hint.style.color = '#1677ff';
+    if (ub) { ub.disabled = false; ub.style.opacity = '1'; ub.style.cursor = 'pointer'; }
+    showToast('文件 ' + file.name + ' 已导入，请点击上传', 'success');
+  }
+  function onBatchGiftUpload() {
+    var ub = document.getElementById('batchGiftUploadBtn');
+    if (ub && ub.disabled) return;
+    showToast('文件上传成功', 'success');
+    closeModal('dlgBatchGift');
+  }
+
+  // 批量转结
+  function batchTransfer() {
+    var hint = document.getElementById('batchTransferFileHint');
+    if (hint) { hint.textContent = '上传转结模板文件'; hint.style.color = '#8c8c8c'; }
+    var fi = document.getElementById('batchTransferFileInput');
+    if (fi) fi.value = '';
+    var ub = document.getElementById('batchTransferUploadBtn');
+    if (ub) { ub.disabled = true; ub.style.opacity = '.4'; ub.style.cursor = 'not-allowed'; }
+    openModal('dlgBatchTransfer');
+  }
+  function onBatchTransferFileSelected(input) {
+    var file = input.files && input.files[0];
+    var ub = document.getElementById('batchTransferUploadBtn');
+    var hint = document.getElementById('batchTransferFileHint');
+    if (!file) {
+      if (ub) { ub.disabled = true; ub.style.opacity = '.4'; ub.style.cursor = 'not-allowed'; }
+      hint.textContent = '上传转结模板文件';
+      hint.style.color = '#8c8c8c';
+      return;
+    }
+    hint.textContent = '已选择文件：' + file.name;
+    hint.style.color = '#1677ff';
+    if (ub) { ub.disabled = false; ub.style.opacity = '1'; ub.style.cursor = 'pointer'; }
+    showToast('文件 ' + file.name + ' 已导入，请点击上传', 'success');
+  }
+  function onBatchTransferUpload() {
+    var ub = document.getElementById('batchTransferUploadBtn');
+    if (ub && ub.disabled) return;
+    showToast('文件上传成功', 'success');
+    closeModal('dlgBatchTransfer');
+  }
+
+  // 行内「操作」下拉：点击按钮纵排展开 8 项行级操作
+  var opMenu = document.getElementById('opMenu');
+  var opItems = [
+    ['抄表阀控', 'dlgValve'], ['用水记录', 'dlgWater'], ['账单记录', 'dlgBill'], ['缴费记录', 'dlgPayRec'],
+    ['余额纠正', 'dlgCorrect'], ['余额转结', 'dlgTransfer'], ['柜台赠送', 'dlgGift'], ['柜台缴费', 'dlgPay']
+  ];
+  function toggleOpMenu(e, btn) {
+    e.stopPropagation();
+    if (opMenu.classList.contains('show') && opMenu._btn === btn) { closeOpMenu(); return; }
+    var tr = btn.closest('tr');
+    document.querySelectorAll('#mainTable tbody tr').forEach(function (r) { r.classList.remove('selected'); });
+    tr.classList.add('selected'); selectedRow = tr;
+    opMenu.innerHTML = opItems.map(function (it) {
+      return '<div class="op-item" onclick="event.stopPropagation();opAction(\'' + it[1] + '\')">' + it[0] + '</div>';
+    }).join('');
+    opMenu.classList.add('show');
+    opMenu._btn = btn;
+    var r = btn.getBoundingClientRect();
+    var mh = opMenu.offsetHeight, mw = opMenu.offsetWidth;
+    var top = r.bottom + 4;
+    if (top + mh > window.innerHeight - 8) top = r.top - mh - 4;
+    var left = r.right - mw;
+    if (left < 8) left = 8;
+    opMenu.style.top = top + 'px';
+    opMenu.style.left = left + 'px';
+  }
+  function closeOpMenu() { opMenu.classList.remove('show'); opMenu._btn = null; }
+  function opAction(id) { closeOpMenu(); openModal(id); }
+  document.addEventListener('click', closeOpMenu);
+  document.querySelector('#mainTable').closest('.table-scroll').addEventListener('scroll', closeOpMenu);
+
+  var toastTimer = null;
+  function showToast(text, type) {
+    var t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    document.getElementById('toastIcon').textContent = type === 'success' ? '✔' : '⚠';
+    t.className = 'toast show' + (type === 'success' ? ' success' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 3200);
+  }
+  function hideToast() { document.getElementById('toast').classList.remove('show'); }
+
+  function doReset() {
+    document.querySelectorAll('.filter-card .filter-grid input').forEach(function (i) { i.value = ''; });
+    showToast('筛选条件已重置', 'success');
+  }
+  // 充值金额大写联动
+  var CN = '零壹贰叁肆伍陆柒捌玖';
+  document.getElementById('payAmount').addEventListener('input', function () {
+    document.getElementById('payAmountCn').textContent = this.value ? '' : '';
+  });
+  document.querySelectorAll('.modal-mask').forEach(function (m) {
+    m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('show'); });
+  });
+</script>
+</body>
+</html>

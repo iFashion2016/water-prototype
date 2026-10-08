@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务 - 微信配置</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:"Helvetica Neue",Helvetica,"PingFang SC","Microsoft YaHei",Arial,sans-serif;background:#f7f7f7;color:#212121;overflow:hidden;font-size:14px}
+button,input{font:inherit}
+.topbar{position:fixed;top:0;left:0;right:0;height:53px;z-index:100;background:linear-gradient(100deg,rgb(15,74,162),rgb(18,103,197) 48%,rgb(22,134,217));display:flex;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.topbar-left{width:204px;display:flex;align-items:center;padding:0 16px;gap:10px}
+.logo{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:18px}
+.brand{font-size:21px;font-weight:700}
+.topbar-right{flex:1;display:flex;align-items:center;padding-right:18px}
+.collapse{width:40px;text-align:center;font-size:26px}
+.top-tabs{display:flex;gap:6px;height:100%;align-items:center}
+.top-tab{padding:7px 22px;border-radius:18px;font-size:14.5px;cursor:pointer}
+.top-tab.active{background:rgba(255,255,255,.28);font-weight:600}
+.user{margin-left:auto;display:flex;align-items:center;gap:12px}
+.avatar{width:34px;height:34px;border:2px solid rgba(255,255,255,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;background:#d9ebff}
+
+.sidebar{position:fixed;top:53px;bottom:0;left:0;width:204px;background:#fff;box-shadow:2px 0 8px rgba(0,0,0,.06);z-index:90}
+.side-caption{padding:14px 16px 6px;color:#9aa3af;font-size:12px}
+.menu-item{margin:4px 10px;padding:10px 12px 10px 18px;border-radius:6px;color:#4b5563}
+.menu-item.active{background:#eaf3fe;color:#2a7de1;font-weight:600}
+
+.main{position:fixed;top:53px;left:204px;right:0;bottom:0;display:flex;flex-direction:column}
+.subtabs{height:44px;flex:0 0 44px;background:#fff;border-bottom:1px solid #eef0f3;display:flex;align-items:center;padding-left:20px}
+.subtab{height:44px;padding:0 26px;display:flex;align-items:center;border-bottom:2px solid transparent;color:#4b5563}
+.subtab.active{color:#2a7de1;border-bottom-color:#2a7de1;font-weight:600}
+.content{flex:1;padding:14px 16px 18px;overflow:hidden}
+.layout{height:100%;display:flex;gap:14px}
+.card{background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(15,60,130,.08)}
+
+.tree-card{width:320px;flex:0 0 320px;display:flex;flex-direction:column;overflow:hidden}
+.card-head{height:56px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid #eef0f3}
+.card-title{font-size:15px;font-weight:600;color:#374151}
+.card-actions{margin-left:auto;display:flex;gap:8px}
+.btn{height:34px;padding:0 15px;border:none;border-radius:4px;background:#3b9dff;color:#fff;cursor:pointer;box-shadow:0 1px 3px rgba(59,157,255,.22)}
+.btn:hover:not(:disabled){background:#2a8ef0}
+.btn.plain{background:#fff;color:#4b5563;border:1px solid #dcdfe6;box-shadow:none}
+.btn:disabled{background:#f5f7fa!important;color:#c0c4cc!important;border:1px solid #e4e7ed!important;box-shadow:none;cursor:not-allowed}
+.tree-search{margin:10px 12px 6px;height:34px;border:1px solid #dcdfe6;border-radius:4px;padding:0 10px;outline:none}
+.tree-search:focus{border-color:#3b9dff}
+.tree{flex:1;overflow:auto;padding:6px 10px 16px}
+.tree-row{height:36px;display:flex;align-items:center;border-radius:5px;cursor:pointer;color:#4b5563;white-space:nowrap}
+.tree-row:hover{background:#f2f7fd;color:#2a7de1}
+.tree-row.active{background:#eaf3fe;color:#2a7de1;font-weight:600}
+.tree-row.lv0{padding-left:8px}.tree-row.lv1{padding-left:30px}.tree-row.lv2{padding-left:52px}
+.arrow{width:18px;text-align:center;color:#8a94a6;font-size:11px;cursor:pointer;transition:transform .18s;user-select:none}.arrow.collapsed{transform:rotate(-90deg)}
+.node-icon{width:19px;color:#2a7de1;margin-right:4px}
+.tree-row.lv2 .node-icon{color:#7d8a9b}
+.node-note{margin-left:auto;padding-right:8px;font-size:11px;color:#9aa3af;font-weight:400}
+.node-note.own{color:#67c23a}
+
+.config-card{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.config-head{min-height:64px;padding:12px 18px;display:flex;align-items:center;border-bottom:1px solid #eef0f3;gap:12px}
+.title-wrap{flex:1;min-width:0}
+.config-title{font-size:16px;font-weight:600}
+.path{font-size:12px;color:#9aa3af;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.source-tag{font-size:12px;padding:5px 10px;border-radius:14px;background:#eef6ff;color:#2a7de1;white-space:nowrap}
+.source-tag.inherit{background:#fff7e8;color:#b88230}
+.action-box{display:flex;gap:8px;margin-left:4px}
+.table-wrap{flex:1;overflow:auto;padding:14px 18px 18px}
+.config-table{width:100%;border-collapse:collapse;border:1px solid #eef0f3;table-layout:fixed}
+.config-table th{height:40px;background:#f5f7fa;color:#374151;font-weight:600;border-right:1px solid #eef0f3;border-bottom:1px solid #e5e7eb;text-align:left;padding:0 18px}
+.config-table td{height:46px;color:#4b5563;border-right:1px solid #eef0f3;border-bottom:1px solid #eef0f3;padding:0 18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.config-table th:first-child,.config-table td:first-child{width:230px}
+.config-table tr:hover td{background:#fafcff}
+.empty{height:100%;min-height:300px;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#9aa3af}
+.empty-main{font-size:15px;color:#6b7280;margin-bottom:8px}
+.empty-sub{font-size:12px}
+
+.footer{height:29px;flex:0 0 29px;background:#fff;border-top:1px solid #eef0f3;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:12px;color:#9aa3af}
+
+/* modal */
+.modal-mask{position:fixed;inset:0;z-index:300;background:rgba(15,23,42,.43);display:none;align-items:flex-start;justify-content:center}
+.modal-mask.show{display:flex}
+.modal{width:900px;max-width:92vw;margin-top:72px;background:#fff;border-radius:8px;box-shadow:0 18px 48px rgba(0,0,0,.25);overflow:hidden}
+.modal-head{height:66px;padding:0 24px;display:flex;align-items:center;background:#f6f9fd;border-bottom:1px solid #e7edf5}
+.modal-title{font-size:18px;font-weight:600}
+.modal-path{margin-left:14px;font-size:12px;color:#9aa3af}
+.modal-close{margin-left:auto;font-size:21px;color:#9aa3af;cursor:pointer}
+.modal-body{padding:22px 28px 24px}
+.edit-table{width:100%;border-collapse:collapse}
+.edit-table th{height:40px;background:#f5f7fa;text-align:left;padding:0 14px;border:1px solid #e8edf3;color:#374151}
+.edit-table td{padding:8px 14px;border:1px solid #e8edf3}
+.edit-table th:first-child,.edit-table td:first-child{width:220px}
+.edit-input{width:100%;height:34px;border:1px solid #dcdfe6;border-radius:4px;padding:0 10px;outline:none;color:#374151}
+.edit-input:focus{border-color:#3b9dff}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 28px 22px;border-top:1px solid #edf0f4}
+.toast{position:fixed;right:24px;top:76px;z-index:500;background:#ecf8f0;border:1px solid #b7e6c8;color:#3d9a63;border-radius:6px;padding:11px 16px;display:none;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.toast.show{display:block}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left"><div class="logo">💧</div><div class="brand">智慧水务</div></div>
+  <div class="topbar-right">
+    <div class="collapse">‹</div>
+    <div class="top-tabs">
+      <div class="top-tab">户表管理</div><div class="top-tab">收费管理</div><div class="top-tab">物联网</div>
+      <div class="top-tab">报表分析</div><div class="top-tab">档案管理</div><div class="top-tab active">功能配置</div>
+    </div>
+    <div class="user"><span>涌恒供水</span><div class="avatar">👤</div></div>
+  </div>
+</header>
+
+<aside class="sidebar">
+  <div class="side-caption">功能配置</div>
+  <div class="menu-item active">⚙ 微信配置</div>
+</aside>
+
+<div class="main">
+  <div class="subtabs"><div class="subtab active">微信配置</div></div>
+  <div class="content">
+    <div class="layout">
+
+      <section class="card tree-card">
+        <div class="card-head">
+          <div class="card-title">租户 / 中心 / 站点</div>
+          <div class="card-actions">
+            <button class="btn" onclick="syncTree()">↻ 同步</button>
+          </div>
+        </div>
+        <input class="tree-search" id="treeSearch" placeholder="搜索租户 / 中心 / 站点" oninput="filterTree()">
+        <div class="tree" id="tree">
+
+          <div class="tree-row lv0" data-name="涌恒供水租户" data-path="涌恒供水租户" onclick="pickNode(this,'涌恒供水租户')">
+            <span class="arrow" onclick="toggleNode(event,this)">⌄</span><span class="node-icon">▣</span><span>涌恒供水租户</span><span class="node-note own">已配置</span>
+          </div>
+          <div class="tree-row lv1" data-name="中心" data-path="涌恒供水租户 / 中心" onclick="pickNode(this,'涌恒供水租户 / 中心')">
+            <span class="arrow" onclick="toggleNode(event,this)">⌄</span><span class="node-icon">▥</span><span>中心</span><span class="node-note own">已配置</span>
+          </div>
+          <div class="tree-row lv2 active" data-name="燕山水务城区供水" data-path="涌恒供水租户 / 中心 / 燕山水务城区供水" onclick="pickNode(this,'涌恒供水租户 / 中心 / 燕山水务城区供水')">
+            <span class="arrow"></span><span class="node-icon">▤</span><span>燕山水务城区供水</span><span class="node-note own">已配置</span>
+          </div>
+          <div class="tree-row lv2" data-name="阿克托海乡" data-path="涌恒供水租户 / 中心 / 阿克托海乡" onclick="pickNode(this,'涌恒供水租户 / 中心 / 阿克托海乡')">
+            <span class="arrow"></span><span class="node-icon">▤</span><span>阿克托海乡</span><span class="node-note">未配置</span>
+          </div>
+          <div class="tree-row lv2" data-name="阿恰格格乡" data-path="涌恒供水租户 / 中心 / 阿恰格格乡" onclick="pickNode(this,'涌恒供水租户 / 中心 / 阿恰格格乡')">
+            <span class="arrow"></span><span class="node-icon">▤</span><span>阿恰格格乡</span><span class="node-note own">已配置</span>
+          </div>
+          <div class="tree-row lv2" data-name="依麻木镇" data-path="涌恒供水租户 / 中心 / 依麻木镇" onclick="pickNode(this,'涌恒供水租户 / 中心 / 依麻木镇')">
+            <span class="arrow"></span><span class="node-icon">▤</span><span>依麻木镇</span><span class="node-note">未配置</span>
+          </div>
+          <div class="tree-row lv2" data-name="亚曼苏柯尔克孜族乡" data-path="涌恒供水租户 / 中心 / 亚曼苏柯尔克孜族乡" onclick="pickNode(this,'涌恒供水租户 / 中心 / 亚曼苏柯尔克孜族乡')">
+            <span class="arrow"></span><span class="node-icon">▤</span><span>亚曼苏柯尔克孜族乡</span><span class="node-note">未配置</span>
+          </div>
+          <div class="tree-row lv2" data-name="老怡渔场" data-path="涌恒供水租户 / 中心 / 老怡渔场" onclick="pickNode(this,'涌恒供水租户 / 中心 / 老怡渔场')">
+            <span class="arrow"></span><span class="node-icon">▤</span><span>老怡渔场</span><span class="node-note own">已配置</span>
+          </div>
+          <div class="tree-row lv2" data-name="排湖管委会" data-path="涌恒供水租户 / 中心 / 排湖管委会" onclick="pickNode(this,'涌恒供水租户 / 中心 / 排湖管委会')">
+            <span class="arrow"></span><span class="node-icon">▤</span><span>排湖管委会</span><span class="node-note">未配置</span>
+          </div>
+
+          <div class="tree-row lv0" data-name="示范水务租户" data-path="示范水务租户" onclick="pickNode(this,'示范水务租户')">
+            <span class="arrow" onclick="toggleNode(event,this)">⌄</span><span class="node-icon">▣</span><span>示范水务租户</span><span class="node-note own">已配置</span>
+          </div>
+          <div class="tree-row lv1" data-name="中心" data-path="示范水务租户 / 中心" onclick="pickNode(this,'示范水务租户 / 中心')">
+            <span class="arrow" onclick="toggleNode(event,this)">⌄</span><span class="node-icon">▥</span><span>中心</span><span class="node-note">未配置</span>
+          </div>
+          <div class="tree-row lv2" data-name="城东站点" data-path="示范水务租户 / 中心 / 城东站点" onclick="pickNode(this,'示范水务租户 / 中心 / 城东站点')">
+            <span class="arrow"></span><span class="node-icon">▤</span><span>城东站点</span><span class="node-note">未配置</span>
+          </div>
+          <div class="tree-row lv2" data-name="城西站点" data-path="示范水务租户 / 中心 / 城西站点" onclick="pickNode(this,'示范水务租户 / 中心 / 城西站点')">
+            <span class="arrow"></span><span class="node-icon">▤</span><span>城西站点</span><span class="node-note own">已配置</span>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="card config-card">
+        <div class="config-head">
+          <div class="title-wrap">
+            <div class="config-title">微信配置</div>
+            <div class="path" id="currentPath"></div>
+          </div>
+          <div class="action-box">
+            <button id="addBtn" class="btn" onclick="openConfigModal('add')">新增配置</button>
+            <button id="editBtn" class="btn plain" onclick="openConfigModal('edit')">编辑配置</button>
+          </div>
+        </div>
+        <div class="table-wrap" id="tableArea"></div>
+      </section>
+
+    </div>
+  </div>
+  <footer class="footer"><span>当前用户：管理员</span><span>2012-2026 © 智慧水务</span></footer>
+</div>
+
+<div class="modal-mask" id="configModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">新增配置</div>
+      <div class="modal-path" id="modalPath"></div>
+      <div class="modal-close" onclick="closeModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <table class="edit-table">
+        <thead><tr><th>配置名称</th><th>配置内容</th></tr></thead>
+        <tbody id="editBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-foot">
+      <button class="btn plain" onclick="closeModal()">取消</button>
+      <button class="btn" onclick="saveConfig()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">同步成功</div>
+
+<script>
+const defs=[
+ ['公众号AppId',''],
+ ['公众号开发者密码',''],
+ ['ApiV3密钥',''],
+ ['商户号mchId',''],
+ ['商户证书序列号',''],
+ ['公众号支付回调地址',''],
+ ['证书密钥pem格式路径',''],
+ ['证书pem格式路径',''],
+ ['证书pkcs12格式路径',''],
+ ['重定向到用户绑定','']
+];
+
+function config(prefix,host){
+ return [
+  ['公众号AppId','wx'+prefix+'0506c912e46a67'],
+  ['公众号开发者密码',prefix+'AppSecret2026Water'],
+  ['ApiV3密钥',prefix+'ApiV3Key2026CloudWater'],
+  ['商户号mchId','1676'+prefix.slice(-4).padStart(4,'0')],
+  ['商户证书序列号','11E66662030413C4AA52AAE57C95DBCF'+prefix.toUpperCase().slice(0,4)],
+  ['公众号支付回调地址','https://'+host+'/easycharge/api/pay/callback'],
+  ['证书密钥pem格式路径','D:/arrange/'+prefix+'/apiclient_key.pem'],
+  ['证书pem格式路径','D:/arrange/'+prefix+'/apiclient_cert.pem'],
+  ['证书pkcs12格式路径','D:/arrange/'+prefix+'/apiclient_cert.p12'],
+  ['重定向到用户绑定','https://'+host+'/wsdzncloud/check_user_binding']
+ ];
+}
+
+const ownConfigs={
+ '涌恒供水租户':config('tenant01','tenant01-wx.cloud4water.com'),
+ '涌恒供水租户 / 中心':config('center01','center01-wx.cloud4water.com'),
+ '涌恒供水租户 / 中心 / 燕山水务城区供水':config('ys01','ys01-wx.cloud4water.com'),
+ '涌恒供水租户 / 中心 / 阿恰格格乡':config('aq01','aq01-wx.cloud4water.com'),
+ '涌恒供水租户 / 中心 / 老怡渔场':config('ly01','ly01-wx.cloud4water.com'),
+
+ '示范水务租户':config('demo01','demo01-wx.cloud4water.com'),
+ '示范水务租户 / 中心 / 城西站点':config('demo-west','demo-west-wx.cloud4water.com')
+};
+
+let current='涌恒供水租户 / 中心 / 燕山水务城区供水';
+let modalMode='add';
+
+function parentPath(path){
+ const arr=path.split(' / ');
+ if(arr.length<=1)return null;
+ arr.pop();
+ return arr.join(' / ');
+}
+function resolveConfig(path){
+ let p=path;
+ while(p){
+  if(ownConfigs[p]) return {data:ownConfigs[p],source:p,isOwn:p===path};
+  p=parentPath(p);
+ }
+ return {data:null,source:null,isOwn:false};
+}
+function nodeName(path){return path.split(' / ').pop()}
+
+function render(){
+ const r=resolveConfig(current);
+ document.getElementById('currentPath').textContent=current;
+
+ const addBtn=document.getElementById('addBtn');
+ const editBtn=document.getElementById('editBtn');
+ addBtn.disabled=!!ownConfigs[current];
+ editBtn.disabled=!ownConfigs[current];
+ addBtn.className=ownConfigs[current]?'btn plain':'btn';
+ editBtn.className=ownConfigs[current]?'btn':'btn plain';
+
+ const area=document.getElementById('tableArea');
+ if(!r.data){
+  area.innerHTML='<div class="empty"><div class="empty-main">当前节点及上级节点均未配置</div><div class="empty-sub">请点击右上角“新增配置”创建本级配置</div></div>';
+  return;
+ }
+ let html='<table class="config-table"><thead><tr><th>配置名称</th><th>配置内容</th></tr></thead><tbody>';
+ r.data.forEach(x=>{
+   html+='<tr><td>'+escapeHtml(x[0])+'</td><td title="'+escapeHtml(x[1])+'">'+escapeHtml(x[1])+'</td></tr>';
+ });
+ html+='</tbody></table>';
+ area.innerHTML=html;
+}
+
+function pickNode(el,path){
+ document.querySelectorAll('.tree-row').forEach(x=>x.classList.remove('active'));
+ el.classList.add('active');
+ current=path;
+ render();
+}
+
+function syncTree(){
+ showToast('租户、中心和站点已同步刷新');
+}
+
+function openConfigModal(mode){
+ if(mode==='add' && ownConfigs[current]) return;
+ if(mode==='edit' && !ownConfigs[current]) return;
+ modalMode=mode;
+ document.getElementById('modalTitle').textContent=mode==='add'?'新增配置':'编辑配置';
+ document.getElementById('modalPath').textContent=current;
+
+ let base;
+ if(mode==='edit'){
+   base=JSON.parse(JSON.stringify(ownConfigs[current]));
+ }else{
+   const r=resolveConfig(current);
+   base=r.data?JSON.parse(JSON.stringify(r.data)):defs.map(x=>[x[0],'']);
+ }
+
+ const body=document.getElementById('editBody');
+ body.innerHTML=base.map((x,i)=>
+   '<tr><td>'+escapeHtml(x[0])+'</td><td><input class="edit-input" data-index="'+i+'" value="'+escapeAttr(x[1])+'"></td></tr>'
+ ).join('');
+ document.getElementById('configModal').classList.add('show');
+}
+function closeModal(){document.getElementById('configModal').classList.remove('show')}
+function saveConfig(){
+ const inputs=[...document.querySelectorAll('#editBody .edit-input')];
+ const data=inputs.map((inp,i)=>[defs[i][0],inp.value.trim()]);
+ ownConfigs[current]=data;
+ updateTreeStatus(current,true);
+ closeModal();
+ render();
+ showToast(modalMode==='add'?'配置新增成功':'配置保存成功');
+}
+function updateTreeStatus(path,hasOwn){
+ const row=document.querySelector('.tree-row[data-path="'+cssEscape(path)+'"]');
+ if(!row)return;
+ const note=row.querySelector('.node-note');
+ if(!note)return;
+ note.textContent=hasOwn?'已配置':'未配置';
+ note.className=hasOwn?'node-note own':'node-note';
+}
+
+function toggleNode(event,arrow){
+ event.stopPropagation();
+ const row=arrow.closest('.tree-row');
+ if(!row)return;
+ const isLv0=row.classList.contains('lv0');
+ const isLv1=row.classList.contains('lv1');
+ if(!isLv0 && !isLv1)return;
+
+ const collapse=!arrow.classList.contains('collapsed');
+ arrow.classList.toggle('collapsed',collapse);
+
+ let next=row.nextElementSibling;
+
+ if(isLv1){
+   // 中心：只控制其下连续的站点（lv2）
+   while(next && next.classList.contains('lv2')){
+     next.style.display=collapse?'none':'flex';
+     next=next.nextElementSibling;
+   }
+ }else{
+   // 租户：控制到下一个租户(lv0)之前的所有中心和站点
+   while(next && !next.classList.contains('lv0')){
+     next.style.display=collapse?'none':'flex';
+     // 如果重新展开租户，但其中某个中心自身仍处于收起状态，则保持其站点隐藏
+     if(!collapse && next.classList.contains('lv1')){
+       const childArrow=next.querySelector('.arrow');
+       if(childArrow && childArrow.classList.contains('collapsed')){
+         let child=next.nextElementSibling;
+         while(child && child.classList.contains('lv2')){
+           child.style.display='none';
+           child=child.nextElementSibling;
+         }
+       }
+     }
+     next=next.nextElementSibling;
+   }
+ }
+}
+
+function filterTree(){
+ const kw=document.getElementById('treeSearch').value.trim().toLowerCase();
+ const rows=[...document.querySelectorAll('.tree-row')];
+
+ if(kw){
+   rows.forEach(row=>{
+     row.style.display=row.dataset.name.toLowerCase().includes(kw)?'flex':'none';
+   });
+   return;
+ }
+
+ // 清空搜索后恢复树的展开/收起状态
+ rows.forEach(row=>row.style.display='flex');
+
+ rows.forEach(row=>{
+   if(row.classList.contains('lv0')){
+     const arrow=row.querySelector('.arrow');
+     if(arrow && arrow.classList.contains('collapsed')){
+       let next=row.nextElementSibling;
+       while(next && !next.classList.contains('lv0')){
+         next.style.display='none';
+         next=next.nextElementSibling;
+       }
+     }
+   }
+ });
+
+ rows.forEach(row=>{
+   if(row.style.display!=='none' && row.classList.contains('lv1')){
+     const arrow=row.querySelector('.arrow');
+     if(arrow && arrow.classList.contains('collapsed')){
+       let next=row.nextElementSibling;
+       while(next && next.classList.contains('lv2')){
+         next.style.display='none';
+         next=next.nextElementSibling;
+       }
+     }
+   }
+ });
+}
+function showToast(text){
+ const t=document.getElementById('toast');
+ t.textContent=text;t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),2000);
+}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function escapeAttr(s){return escapeHtml(s)}
+function cssEscape(s){return String(s).replace(/["\\]/g,'\\$&')}
+
+render();
+</script>
+</body>
+</html>

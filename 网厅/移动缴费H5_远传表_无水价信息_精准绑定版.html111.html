@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0f67d8" />
+<title>掌上水务 · 远传表移动缴费 H5 无水价信息 · 精准绑定版</title>
+<style>
+  :root{
+    --brand:#1769e0;
+    --brand2:#2b8cff;
+    --brand3:#54b8ff;
+    --navy:#0f2b55;
+    --bg:#f4f7fb;
+    --card:#ffffff;
+    --text:#172033;
+    --text2:#556176;
+    --muted:#8b96a8;
+    --line:#e8edf4;
+    --success:#13a46c;
+    --danger:#e34d59;
+    --warning:#f59e0b;
+    --wechat:#07c160;
+    --shadow:0 14px 38px rgba(25,67,122,.10);
+    --radius:22px;
+    --safe-bottom:env(safe-area-inset-bottom, 0px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--text);background:#dfe7f1}
+  button,input{font:inherit}
+  button{cursor:pointer}
+  .workspace{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px}
+  .phone{width:390px;height:min(860px,calc(100vh - 48px));min-height:760px;background:var(--bg);border:8px solid #fff;border-radius:34px;overflow:hidden;box-shadow:0 30px 80px rgba(27,49,79,.24);position:relative}
+  .statusbar{height:26px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 15px;font-size:11px;font-weight:700;color:#111;position:relative;z-index:30}
+  .app{height:calc(100% - 26px);overflow:auto;scrollbar-width:none;background:var(--bg);position:relative}
+  .app::-webkit-scrollbar{display:none}
+
+  .screen{min-height:100%;padding-bottom:calc(82px + var(--safe-bottom));animation:fade .18s ease}
+  .screen.noTab{padding-bottom:24px}
+  @keyframes fade{from{opacity:.5;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+  .hero{position:relative;padding:14px 16px 50px;color:#fff;background:linear-gradient(145deg,#135fd0 0%,#1978ee 52%,#3aa5ff 100%);overflow:hidden}
+  .hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.10)}
+  .hero:before{width:210px;height:210px;right:-86px;top:-90px}
+  .hero:after{width:140px;height:140px;left:-72px;bottom:-80px}
+  .heroRow{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2}
+  .brandTitle{font-size:20px;font-weight:800;letter-spacing:.2px}
+  .welcome{font-size:11px;opacity:.9;margin-top:3px}
+  .heroActions{display:flex;gap:8px}
+  .iconBtn{width:32px;height:32px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);color:#fff;border-radius:11px;display:flex;align-items:center;justify-content:center;padding:0;backdrop-filter:blur(8px)}
+
+  .pageTop{height:54px;background:#fff;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:18;border-bottom:1px solid rgba(232,237,244,.9)}
+  .pageTop h1{font-size:17px;margin:0;font-weight:750}
+  .pageTop .backBtn,.pageTop .rightBtn{position:absolute;top:8px;height:38px;border:0;background:transparent;color:var(--text);display:flex;align-items:center;justify-content:center}
+  .pageTop .backBtn{left:8px;width:38px}
+  .pageTop .rightBtn{right:12px;color:var(--brand);font-size:13px;font-weight:650}
+
+  .homeBody{padding:0 12px 14px;margin-top:-40px;position:relative;z-index:3}
+  .content{padding:14px}
+  .accountShell{position:relative}
+  .accountCarousel{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:0 1px 4px}
+  .accountCarousel::-webkit-scrollbar{display:none}
+  .accountCard{flex:0 0 100%;scroll-snap-align:center;border-radius:22px;overflow:hidden;background:#fff;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.9)}
+  .accountTop{padding:14px 16px 12px;background:linear-gradient(135deg,#ffffff 0%,#f5f9ff 100%)}
+  .accountTitleRow{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .accountName{font-size:16px;font-weight:780}
+  .accountNo{font-size:11px;color:var(--muted);margin-top:2px}
+  .switchTag{display:flex;align-items:center;gap:4px;background:#eaf3ff;color:var(--brand);border:0;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:650}
+  .address{margin-top:8px;display:flex;gap:6px;align-items:flex-start;color:var(--text2);font-size:12px;line-height:1.4}
+  .balanceArea{display:grid;grid-template-columns:1fr 96px;gap:10px;padding:12px 16px 12px;border-top:1px solid var(--line)}
+  .balanceLabel{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
+  .refreshMini{border:0;background:transparent;color:var(--brand);padding:2px;display:inline-flex}
+  .balanceValue{font-size:24px;font-weight:850;letter-spacing:-.5px;margin-top:3px}
+  .balanceValue.negative{color:var(--danger)}
+  .balanceHint{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4}
+  .debtBadge{display:inline-block;background:#fff0f1;color:var(--danger);font-size:10px;padding:3px 6px;border-radius:6px;margin-left:5px;vertical-align:middle;font-weight:700}
+  .usageRing{width:82px;height:82px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(var(--brand2) var(--pct),#eaf1f9 0);position:relative;margin:auto}
+  .usageRing:after{content:"";position:absolute;inset:7px;background:#fff;border-radius:50%}
+  .usageRingInner{position:relative;z-index:2;text-align:center}
+  .usageRingInner b{font-size:18px;color:var(--navy)}
+  .usageRingInner span{display:block;font-size:9px;color:var(--muted);margin-top:1px;line-height:1.25}
+  .meterStrip{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);background:#fbfcfe}
+  .meterItem{padding:10px 14px}
+  .meterItem+ .meterItem{border-left:1px solid var(--line)}
+  .meterItem span{display:block;font-size:10px;color:var(--muted)}
+  .meterItem b{display:block;font-size:12px;margin-top:3px}
+  .accountAction{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 14px 10px}
+  .primaryBtn,.secondaryBtn,.dangerBtn,.softBtn{height:40px;border-radius:12px;font-weight:700;border:0}
+  .primaryBtn{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 8px 18px rgba(23,105,224,.22)}
+  .secondaryBtn{background:#edf4ff;color:var(--brand)}
+  .softBtn{background:#fff;border:1px solid #dfe7f2;color:var(--text2)}
+  .dangerBtn{background:#fff0f1;color:var(--danger)}
+  .primaryBtn:disabled,.softBtn:disabled{
+background:#d9e1ec;
+color:#8b96a8;
+box-shadow:none;
+cursor:not-allowed;
+}
+  .pager{display:flex;justify-content:center;align-items:center;gap:6px;margin:6px 0 4px}
+  .dot{width:6px;height:6px;background:#c8d3e2;border-radius:99px;transition:.2s}.dot.active{width:18px;background:var(--brand)}
+
+  .sectionCard{background:#fff;border-radius:18px;padding:14px;margin-top:10px;box-shadow:0 7px 22px rgba(35,73,121,.055);border:1px solid #eef2f7}
+  .sectionHeader{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+  .sectionTitle{font-size:15px;font-weight:780}
+  .sectionSub{font-size:10px;color:var(--muted);margin-top:2px}
+  .textLink{border:0;background:transparent;color:var(--brand);font-size:12px;padding:4px 0;font-weight:650}
+  .quickGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .quickItem{border:0;background:transparent;padding:2px 0;text-align:center;color:var(--text)}
+  .quickIcon{width:40px;height:40px;border-radius:13px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;color:var(--brand);background:linear-gradient(145deg,#eff6ff,#e5f2ff)}
+  .quickItem:nth-child(2) .quickIcon{color:#0d9e77;background:linear-gradient(145deg,#edfff8,#e1f8f0)}
+  .quickItem:nth-child(3) .quickIcon{color:#f08c2d;background:linear-gradient(145deg,#fff8eb,#fff0d9)}
+  .quickItem:nth-child(4) .quickIcon{color:#8a5bd8;background:linear-gradient(145deg,#f7f1ff,#efe6ff)}
+  .quickItem span{font-size:11px;font-weight:650}
+  .noticeBar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f5f9ff;border-radius:14px;margin-top:10px;color:var(--text2);font-size:11px}
+  .noticeIcon{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#e6f1ff;color:var(--brand)}
+  .noticeBar b{color:var(--text);font-size:12px}
+
+  .bottomNav{position:absolute;left:0;right:0;bottom:0;height:68px;padding-bottom:var(--safe-bottom);background:rgba(255,255,255,.97);border-top:1px solid #edf1f5;display:grid;grid-template-columns:1fr 1fr;z-index:16;backdrop-filter:blur(14px)}
+  .navItem{border:0;background:transparent;color:#8b96a8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px}
+  .navItem.active{color:var(--brand);font-weight:700}
+  .navIcon{height:22px;display:flex;align-items:center}
+
+  .profileHero{padding:22px 18px 26px;background:linear-gradient(145deg,#165fc9,#1978ee 58%,#42a6ff);color:#fff;position:relative;overflow:hidden}
+  .profileHero:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-70px;top:-80px;background:rgba(255,255,255,.08)}
+  .profileRow{display:flex;align-items:center;gap:13px;position:relative;z-index:2}
+  .avatar{width:54px;height:54px;border-radius:18px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;border:1px solid rgba(255,255,255,.3)}
+  .profileName{font-size:20px;font-weight:800}.profileDesc{font-size:12px;opacity:.86;margin-top:5px}
+  .profileBody{padding:14px}
+  .menuCard{background:#fff;border-radius:20px;overflow:hidden;border:1px solid #edf1f6;box-shadow:0 7px 24px rgba(35,73,121,.05);margin-bottom:12px}
+  .menuItem{width:100%;border:0;background:#fff;display:flex;align-items:center;gap:12px;padding:15px 16px;text-align:left;position:relative}
+  .menuItem+ .menuItem:before{content:"";position:absolute;left:58px;right:0;top:0;height:1px;background:#eff2f6}
+  .menuIcon{width:32px;height:32px;border-radius:10px;background:#eef5ff;color:var(--brand);display:flex;align-items:center;justify-content:center;flex:none}
+  .menuText{flex:1}.menuText b{font-size:14px}.menuText small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.chev{color:#b0bac8}
+
+  .infoBanner{padding:15px 16px;border-radius:18px;background:linear-gradient(135deg,#eaf4ff,#f5faff);border:1px solid #dbeaff;margin-bottom:12px}
+  .infoBanner .top{display:flex;justify-content:space-between;align-items:center}.infoBanner b{font-size:16px}.infoBanner p{margin:7px 0 0;font-size:12px;color:var(--text2);line-height:1.6}
+  .badge{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:700;background:#eaf3ff;color:var(--brand)}
+  .badge.ok{background:#e8f8f1;color:var(--success)}
+  .badge.warn{background:#fff6e7;color:#c67d08}
+  .badge.red{background:#fff0f1;color:var(--danger)}
+
+  .formCard{background:#fff;border-radius:20px;padding:16px;border:1px solid #edf1f6;box-shadow:0 7px 24px rgba(35,73,121,.05)}
+  .tabs{display:grid;grid-template-columns:1fr 1fr;background:#eef3f9;padding:4px;border-radius:13px;margin-bottom:16px;gap:4px}
+  .tab{height:40px;border:0;border-radius:10px;background:transparent;color:var(--text2);font-size:13px}
+  .tab.active{background:#fff;color:var(--brand);font-weight:750;box-shadow:0 4px 12px rgba(35,73,121,.08)}
+  .field{margin-bottom:14px}.field label{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;margin-bottom:8px}.field label small{font-weight:400;color:var(--muted)}
+  .inputWrap{height:47px;border:1px solid #dfe6ef;border-radius:13px;background:#fff;display:flex;align-items:center;gap:8px;padding:0 12px;transition:.15s}
+  .inputWrap:focus-within{border-color:#78aef4;box-shadow:0 0 0 3px rgba(23,105,224,.08)}
+  .inputWrap input{width:100%;border:0;outline:0;height:100%;background:transparent;color:var(--text);font-size:14px}
+  .inputWrap svg{color:#9aa6b6}
+  .formTip{font-size:12px;color:var(--muted);line-height:1.65;padding:10px 11px;border-radius:12px;background:#f7f9fc}
+  .formTip strong{color:var(--brand)}
+  .fullBtn{width:100%;height:47px;margin-top:16px}
+  .bindCounter{font-size:11px;margin-top:-5px;margin-bottom:12px;color:var(--danger)}.bindCounter.ok{color:var(--success)}
+
+  .resultCard{background:#fff;border:1px solid #e7edf5;border-radius:18px;padding:15px;margin-bottom:10px;transition:.15s}
+  .resultCard.selected{border-color:#6ca5f3;box-shadow:0 0 0 3px rgba(23,105,224,.07)}
+  .resultHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.resultName{font-size:15px;font-weight:780}.resultNo{font-size:11px;color:var(--muted);margin-top:3px}
+  .radio{width:20px;height:20px;border:2px solid #c5ceda;border-radius:50%;flex:none;margin-top:2px}.selected .radio{border:6px solid var(--brand)}
+  .detailList{margin-top:12px;padding-top:10px;border-top:1px dashed #e4e9f0;display:grid;gap:7px}.detailLine{display:flex;justify-content:space-between;gap:12px;font-size:12px}.detailLine span{color:var(--muted);flex:none}.detailLine b{font-weight:560;text-align:right;color:var(--text2)}
+
+  .summaryCard{background:#fff;border-radius:20px;border:1px solid #edf1f6;overflow:hidden;box-shadow:0 7px 24px rgba(35,73,121,.05)}
+  .summaryHead{padding:15px 16px;background:#f9fbfe;border-bottom:1px solid #eef2f6;display:flex;justify-content:space-between;align-items:center}.summaryHead b{font-size:15px}
+  .sumRow{display:flex;justify-content:space-between;gap:18px;padding:12px 16px;border-bottom:1px solid #f0f3f7;font-size:13px;align-items:flex-start}.sumRow:last-child{border-bottom:0}.sumRow span{color:var(--muted);flex:none}.sumRow b{text-align:right;font-weight:650;line-height:1.45}
+
+  .listCard{background:#fff;border-radius:18px;padding:15px 16px;border:1px solid #edf1f6;margin-bottom:10px;box-shadow:0 5px 18px rgba(35,73,121,.04)}
+  .listTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.listTitle{font-size:15px;font-weight:780}.listSub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5}
+  .listActions{display:flex;gap:8px;margin-top:13px}.miniBtn{height:34px;border-radius:10px;padding:0 12px;border:1px solid #dfe7f1;background:#fff;color:var(--text2);font-size:12px;font-weight:650}.miniBtn.primary{border-color:#d8e9ff;background:#edf5ff;color:var(--brand)}.miniBtn.danger{border-color:#ffd9dd;background:#fff7f8;color:var(--danger)}
+
+  .moneyHero{padding:18px;border-radius:20px;background:linear-gradient(145deg,#155fcf,#1a7ff0 55%,#3da9ff);color:#fff;position:relative;overflow:hidden;margin-bottom:12px}
+  .moneyHero:after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;right:-60px;top:-65px;background:rgba(255,255,255,.10)}
+  .moneyHero small{opacity:.85}.moneyHero strong{display:block;font-size:30px;margin-top:5px}.moneyHero p{font-size:11px;margin:8px 0 0;opacity:.9}
+  .moneyGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}.moneyOption{height:43px;border:1px solid #dfe7f1;background:#fff;border-radius:12px;color:var(--text2)}.moneyOption.active{border-color:#72a9f4;background:#edf5ff;color:var(--brand);font-weight:750;box-shadow:0 0 0 2px rgba(23,105,224,.06)}
+  .debtQuick{width:100%;height:44px;border:1px solid #ffcfd4;background:#fff6f7;color:var(--danger);border-radius:12px;font-weight:750;margin-top:12px}
+  .payPredict{margin-top:11px;padding:10px 12px;border-radius:12px;background:#f7f9fc;display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.payPredict b{color:var(--brand)}
+  .payMethod{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;border:1px solid #edf1f6;padding:15px 16px;margin-top:12px}.wxLogo{width:38px;height:38px;border-radius:12px;background:var(--wechat);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}.payMethodText{flex:1}.payMethodText b{font-size:14px}.payMethodText small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.selectedDot{width:19px;height:19px;border:5px solid var(--brand);border-radius:50%}
+  .agreement{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--muted);line-height:1.5;margin:12px 2px}.agreement input{margin-top:2px;accent-color:var(--brand)}
+
+  .usageTop{padding:17px;background:linear-gradient(145deg,#eff6ff,#f9fcff);border:1px solid #dfeaff;border-radius:20px;margin-bottom:12px}.usageTop .big{font-size:30px;font-weight:850;color:var(--navy)}.usageTop .big small{font-size:13px;color:var(--muted);font-weight:500}.usageTop p{font-size:11px;color:var(--muted);margin:4px 0 0}
+  .bars{height:118px;display:flex;align-items:flex-end;gap:9px;padding:14px 4px 4px}.barCol{flex:1;text-align:center}.bar{width:100%;max-width:26px;margin:auto;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#61baff,#1c78eb);min-height:8px}.barCol span{display:block;font-size:9px;color:var(--muted);margin-top:6px}
+  .readingRow{display:grid;grid-template-columns:1.35fr .8fr .8fr;gap:8px;padding:12px 2px;border-bottom:1px solid #f0f3f6;font-size:12px;align-items:center}.readingRow.header{font-size:11px;color:var(--muted);padding-top:0}.readingRow:last-child{border-bottom:0}.readingRow b{font-size:12px}
+
+  .recordMonth{font-size:12px;font-weight:750;color:var(--text2);margin:14px 2px 8px}.recordItem{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #edf1f6;border-radius:17px;padding:14px;margin-bottom:9px}.recordIcon{width:40px;height:40px;border-radius:13px;background:#e8faf1;color:var(--wechat);display:flex;align-items:center;justify-content:center;flex:none}.recordMain{flex:1}.recordMain b{font-size:14px}.recordMain small{display:block;font-size:11px;color:var(--muted);margin-top:4px}.recordAmount{text-align:right}.recordAmount b{font-size:15px}.recordAmount small{display:block;color:var(--success);font-size:10px;margin-top:3px}
+
+  .yearTabs{display:flex;gap:8px;overflow:auto;scrollbar-width:none;margin-bottom:12px}.yearTabs::-webkit-scrollbar{display:none}.yearBtn{height:35px;border:1px solid #dfe6ef;background:#fff;border-radius:999px;padding:0 14px;white-space:nowrap;color:var(--text2);font-size:12px}.yearBtn.active{border-color:transparent;background:var(--brand);color:#fff;font-weight:700}
+  .billItem{background:#fff;border:1px solid #edf1f6;border-radius:18px;padding:15px;margin-bottom:10px}.billTop{display:flex;justify-content:space-between;align-items:center}.billTop b{font-size:14px}.billMetrics{display:grid;grid-template-columns:1fr 1fr;margin-top:13px;padding-top:12px;border-top:1px dashed #e4e9ef}.billMetric span{font-size:10px;color:var(--muted);display:block}.billMetric b{font-size:18px;margin-top:4px;display:block}.billMetric+ .billMetric{padding-left:16px;border-left:1px solid #eef1f5}
+
+  .priceHero{background:linear-gradient(145deg,#f7fbff,#ecf5ff);border:1px solid #d9eaff;border-radius:20px;padding:18px;margin-bottom:12px}.priceHero small{color:var(--muted)}.priceHero strong{display:block;font-size:30px;color:var(--navy);margin-top:4px}.priceHero strong span{font-size:12px;color:var(--muted);font-weight:500}.priceHero .type{margin-top:10px;font-size:12px;color:var(--text2)}
+
+  .empty{padding:88px 26px 40px;text-align:center}.emptyIcon{width:78px;height:78px;border-radius:26px;background:linear-gradient(145deg,#edf5ff,#e2efff);color:var(--brand);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}.empty h2{font-size:19px;margin:0 0 8px}.empty p{font-size:13px;color:var(--muted);line-height:1.7;margin:0 0 22px}
+
+  .resultPage{text-align:center;padding:46px 18px 26px}.resultIcon{width:76px;height:76px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;color:#fff}.resultIcon.ok{background:linear-gradient(145deg,#12a76f,#35c991)}.resultIcon.wait{background:linear-gradient(145deg,#f59e0b,#ffbd42)}.resultIcon.fail{background:linear-gradient(145deg,#df4a57,#f06b76)}.resultIcon.cancel{background:linear-gradient(145deg,#7f8a9a,#a5afbd)}.resultPage h2{font-size:21px;margin:0}.resultPage>p{font-size:13px;color:var(--muted);line-height:1.6;margin:8px 0 22px}
+
+  .modalMask{position:absolute;inset:0;background:rgba(15,27,45,.44);z-index:50;display:none;align-items:flex-end;backdrop-filter:blur(2px)}.modalMask.show{display:flex}.modal{width:100%;background:#fff;border-radius:24px 24px 0 0;padding:18px 18px calc(18px + var(--safe-bottom));max-height:82%;overflow:auto;animation:sheet .2s ease}@keyframes sheet{from{transform:translateY(12px);opacity:.4}to{transform:none;opacity:1}}
+  .sheetBar{width:40px;height:4px;border-radius:99px;background:#d9e0e9;margin:0 auto 14px}.modal h3{font-size:18px;margin:0 0 12px}.modal p{font-size:13px;color:var(--text2);line-height:1.7}.modalActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.modalActions button{height:44px;border-radius:12px}
+  .simGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.simGrid button{height:42px;border-radius:12px;border:1px solid #dfe7f1;background:#fff;color:var(--text2)}.simGrid button:first-child{background:#edfff6;border-color:#c2ecd7;color:#0b9360}
+  .langOption{width:100%;height:48px;border:0;background:#fff;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0f2f5;color:var(--text)}
+
+  .toast{position:absolute;left:50%;bottom:86px;transform:translateX(-50%) translateY(12px);max-width:82%;background:rgba(19,27,39,.94);color:#fff;border-radius:12px;padding:10px 13px;font-size:12px;z-index:80;opacity:0;pointer-events:none;transition:.18s;text-align:center}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .floatingAdd{position:sticky;bottom:12px;margin-top:14px;background:rgba(244,247,251,.92);backdrop-filter:blur(8px);padding-top:4px}
+  .secureHint{display:flex;gap:8px;align-items:flex-start;color:var(--muted);font-size:11px;line-height:1.55;margin-top:12px;padding:0 3px}
+  .spacer8{height:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.center{text-align:center}.dangerText{color:var(--danger)!important}.successText{color:var(--success)!important}.brandText{color:var(--brand)!important}
+
+  @media(max-width:620px){
+    body{background:var(--bg)}.workspace{padding:0}.phone{width:100%;height:100vh;min-height:100vh;border:0;border-radius:0;box-shadow:none}.statusbar{display:none}.app{height:100vh}.bottomNav{position:fixed}.modalMask{position:fixed}.toast{position:fixed}
+  }
+
+.videoBox{
+ background:#f7faff;
+ border:1px solid #dcecff;
+ border-radius:16px;
+ padding:14px;
+ margin-top:12px;
+}
+.videoTitle{
+ font-size:15px;
+ font-weight:750;
+ color:var(--text);
+ margin-bottom:8px;
+}
+.videoDesc{
+ font-size:12px;
+ color:var(--muted);
+ margin-bottom:10px;
+}
+.videoLink{
+ display:block;
+ color:var(--brand);
+ font-size:12px;
+ word-break:break-all;
+ text-decoration:none;
+ background:#fff;
+ border-radius:10px;
+ padding:10px;
+ border:1px solid #e5edf8;
+}
+
+
+.videoHelpCard{
+  background:#fff;
+  border-radius:20px;
+  padding:16px;
+  margin-top:12px;
+  border:1px solid #e8eef7;
+  box-shadow:0 7px 22px rgba(35,73,121,.05);
+}
+.videoHelpTitle{
+  font-size:16px;
+  font-weight:780;
+  margin-bottom:8px;
+}
+.videoHelpDesc{
+  color:#667085;
+  font-size:12px;
+  line-height:1.6;
+  margin-bottom:12px;
+}
+.videoUrlBox{
+  background:#f7f9fc;
+  border-radius:12px;
+  padding:10px;
+  font-size:12px;
+  color:#1769e0;
+  word-break:break-all;
+  margin-bottom:12px;
+}
+.videoBtn{
+  width:100%;
+  height:44px;
+  border:0;
+  border-radius:13px;
+  background:#1769e0;
+  color:#fff;
+  font-weight:700;
+}
+
+
+.videoTipBar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:13px 14px;
+  background:linear-gradient(135deg,#eef7ff,#f8fbff);
+  border:1px solid #dbeaff;
+  border-radius:15px;
+  margin-top:12px;
+  cursor:pointer;
+}
+.videoTipBar b{
+  font-size:13px;
+}
+.videoTipBar span{
+  font-size:11px;
+  color:#667085;
+}
+
+
+/* ===== 交互布局优化版 ===== */
+.balanceArea{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  padding:0;
+  border-top:1px solid var(--line);
+  background:#fff;
+}
+.metricBlock{
+  min-width:0;
+  padding:13px 16px 12px;
+}
+.metricBlock + .metricBlock{
+  border-left:1px solid var(--line);
+}
+.metricLabel{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  font-size:11px;
+  color:var(--muted);
+}
+.metricValue{
+  margin-top:4px;
+  font-size:23px;
+  line-height:1.15;
+  font-weight:850;
+  letter-spacing:-.4px;
+  color:var(--navy);
+}
+.metricValue.negative{color:var(--danger)}
+.metricValue .unit{
+  font-size:11px;
+  font-weight:600;
+  color:var(--muted);
+  margin-left:3px;
+}
+.metricHint{
+  margin-top:4px;
+  font-size:10px;
+  color:var(--muted);
+  line-height:1.35;
+}
+.meterStrip{
+  grid-template-columns:0.8fr 1.2fr;
+}
+.accountActionGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  padding:10px 14px 14px;
+  border-top:1px solid var(--line);
+}
+.actionBtn{
+  height:39px;
+  border-radius:11px;
+  border:0;
+  font-size:12px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+}
+.actionBtn.info{
+  background:#edf4ff;
+  color:var(--brand);
+}
+.actionBtn.bind{
+  background:#f4f7fb;
+  color:#536177;
+  border:1px solid #e3e9f1;
+}
+.actionBtn.pay,
+.actionBtn.valve-enabled{
+  background:linear-gradient(135deg,var(--brand),var(--brand2));
+  color:#fff;
+  box-shadow:0 6px 14px rgba(23,105,224,.18);
+}
+.actionBtn.valve-disabled{
+  background:#d9e1ec;
+  color:#8b96a8;
+  cursor:not-allowed;
+}
+.accountCard .switchTag{
+  white-space:nowrap;
+}
+.manageHint{
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.55;
+  margin:2px 0 12px;
+}
+.remoteInfoCard{
+  margin-top:12px;
+}
+.remoteInfoCard .summaryHead{
+  background:linear-gradient(135deg,#f3f8ff,#fbfdff);
+}
+
+
+/* ===== 2026-09 布局精修版 ===== */
+
+/* 当前原型已无底部导航，避免人为预留 82px 导致底部空白过大 */
+.screen{
+  min-height:100%;
+  padding-bottom:18px;
+}
+.screen.noTab{
+  padding-bottom:18px;
+}
+
+/* 首页整体间距 */
+.homeBody{
+  padding:0 12px 18px;
+  margin-top:-40px;
+}
+
+/* 账户卡片略增呼吸感，同时控制整体高度 */
+.accountCard{
+  border-radius:21px;
+  box-shadow:0 10px 28px rgba(25,67,122,.10);
+}
+.accountTop{
+  padding:15px 16px 13px;
+}
+.accountName{
+  font-size:17px;
+}
+.accountNo{
+  font-size:11px;
+  margin-top:3px;
+}
+.address{
+  margin-top:9px;
+}
+
+/* 余额 / 本月累计用水：取消圆环后使用规则的两栏指标 */
+.balanceArea{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  padding:0;
+  border-top:1px solid var(--line);
+  background:#fff;
+}
+.metricBlock{
+  min-width:0;
+  padding:15px 16px 14px;
+}
+.metricBlock + .metricBlock{
+  border-left:1px solid var(--line);
+}
+.metricLabel{
+  min-height:18px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  font-size:11px;
+  color:var(--muted);
+}
+.metricValue{
+  min-height:29px;
+  display:flex;
+  align-items:baseline;
+  margin-top:5px;
+  font-size:23px;
+  line-height:1.15;
+  font-weight:850;
+  letter-spacing:-.35px;
+  color:var(--navy);
+  white-space:nowrap;
+}
+.metricValue.negative{
+  color:var(--danger);
+}
+.metricValue .unit{
+  font-size:11px;
+  line-height:1;
+  font-weight:600;
+  color:var(--muted);
+  margin-left:4px;
+}
+.metricHint{
+  min-height:28px;
+  margin-top:5px;
+  font-size:10px;
+  line-height:1.4;
+  color:var(--muted);
+}
+
+/* 当前读数 / 最近上数时间：完全等宽、同起点、同基线 */
+.meterStrip{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  border-top:1px solid var(--line);
+  background:#f9fbfd;
+}
+.meterItem{
+  min-width:0;
+  min-height:67px;
+  padding:12px 16px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.meterItem + .meterItem{
+  border-left:1px solid var(--line);
+}
+.meterItem span{
+  display:block;
+  min-height:16px;
+  font-size:10px;
+  line-height:16px;
+  color:var(--muted);
+}
+.meterItem b{
+  display:block;
+  height:20px;
+  margin-top:4px;
+  font-size:12px;
+  line-height:20px;
+  font-weight:700;
+  white-space:nowrap;
+  color:var(--text);
+}
+
+/* 首页四个核心操作：上排浅蓝、下排主色 */
+.accountActionGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  padding:11px 14px 15px;
+  border-top:1px solid var(--line);
+}
+.actionBtn{
+  height:42px;
+  border-radius:11px;
+  border:0;
+  font-size:12px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+}
+.actionBtn.info,
+.actionBtn.bind{
+  background:#edf4ff;
+  color:var(--brand);
+  border:1px solid #dceaff;
+}
+.actionBtn.info:hover,
+.actionBtn.bind:hover{
+  background:#e5f0ff;
+}
+.actionBtn.pay,
+.actionBtn.valve-enabled{
+  background:linear-gradient(135deg,var(--brand),var(--brand2));
+  color:#fff;
+  box-shadow:0 6px 14px rgba(23,105,224,.18);
+}
+.actionBtn.valve-disabled{
+  background:#d9e1ec;
+  color:#8b96a8;
+  cursor:not-allowed;
+}
+
+/* 多户号页签 */
+.pager{
+  margin:7px 0 5px;
+}
+
+/* 常用服务改为 2×2 横向服务块，更适合触控，也减少页面底部无意义留白 */
+.sectionCard{
+  padding:14px;
+  margin-top:10px;
+  border-radius:18px;
+}
+.sectionHeader{
+  margin-bottom:11px;
+}
+.quickGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+.quickItem{
+  min-height:58px;
+  padding:9px 10px;
+  border:1px solid #edf1f6;
+  border-radius:13px;
+  background:#fbfcfe;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  text-align:left;
+}
+.quickIcon{
+  width:36px;
+  height:36px;
+  border-radius:11px;
+  margin:0;
+  flex:none;
+}
+.quickItem span{
+  font-size:12px;
+  font-weight:700;
+}
+
+/* 视频入口仍保持一句话提示，不扩大模块 */
+.videoTipBar{
+  min-height:60px;
+  margin-top:10px;
+  padding:11px 13px;
+}
+.videoTipBar b{
+  font-size:12px;
+}
+.videoTipBar span{
+  font-size:10px;
+  line-height:1.45;
+}
+
+/* 户表管理页面右上角新增绑定更明确 */
+.pageTop .rightBtn{
+  right:10px;
+  padding:0 7px;
+  font-size:12px;
+  font-weight:700;
+}
+
+/* 列表页稍微压缩，和首页尺寸语言保持一致 */
+.listCard{
+  border-radius:16px;
+  padding:14px 15px;
+}
+
+
+/* ===== 余额聚焦版：首页只保留最重要的账户余额 ===== */
+.accountCard{
+  overflow:hidden;
+  border-radius:22px;
+  background:#fff;
+  border:1px solid rgba(255,255,255,.92);
+  box-shadow:0 10px 28px rgba(25,67,122,.10);
+}
+
+.accountTop{
+  padding:15px 16px 13px;
+  background:linear-gradient(135deg,#ffffff 0%,#f7faff 100%);
+}
+
+.balanceFocus{
+  padding:16px 16px 15px;
+  border-top:1px solid var(--line);
+  background:linear-gradient(135deg,#ffffff 0%,#f8fbff 100%);
+}
+
+.balanceFocusTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.balanceFocusLabel{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.balanceFocusStatus{
+  font-size:10px;
+  color:var(--success);
+  background:#eaf8f2;
+  padding:4px 7px;
+  border-radius:999px;
+  font-weight:700;
+}
+
+.balanceFocusStatus.debt{
+  color:var(--danger);
+  background:#fff0f1;
+}
+
+.balanceFocusValue{
+  margin-top:6px;
+  font-size:30px;
+  line-height:1.08;
+  font-weight:850;
+  letter-spacing:-.7px;
+  color:var(--navy);
+}
+
+.balanceFocusValue.negative{
+  color:var(--danger);
+}
+
+.balanceFocusHint{
+  margin-top:6px;
+  font-size:10px;
+  line-height:1.5;
+  color:var(--muted);
+}
+
+.accountActionGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  padding:12px 14px 15px;
+  border-top:1px solid var(--line);
+  background:#fff;
+}
+
+.actionBtn{
+  height:42px;
+  border-radius:11px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.actionBtn.info{
+  background:#edf4ff;
+  color:var(--brand);
+  border:1px solid #dceaff;
+}
+
+.actionBtn.pay,
+.actionBtn.valve-enabled{
+  background:linear-gradient(135deg,var(--brand),var(--brand2));
+  color:#fff;
+  box-shadow:0 6px 14px rgba(23,105,224,.18);
+}
+
+.actionBtn.valve-disabled{
+  background:#d9e1ec;
+  color:#8b96a8;
+}
+
+/* 首页下方模块略向上收，避免删除三项后产生空洞 */
+.pager{
+  margin:7px 0 4px;
+}
+
+.sectionCard{
+  margin-top:8px;
+}
+
+.videoTipBar{
+  margin-top:9px;
+}
+
+.screen{
+  padding-bottom:14px;
+}
+
+
+/* ===== 首页信息版：余额 + 本月累计用水 + 上次抄表时间 ===== */
+.balanceFocus{
+  padding:0;
+  border-top:1px solid var(--line);
+  background:#fff;
+}
+
+.homeMetrics{
+  display:grid;
+  grid-template-columns:1.12fr .88fr;
+  background:#fff;
+}
+
+.homeMetricMain{
+  padding:16px 16px 14px;
+  min-width:0;
+}
+
+.homeMetricSide{
+  padding:16px 16px 14px;
+  min-width:0;
+  border-left:1px solid var(--line);
+}
+
+.homeMetricLabel{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  min-height:18px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.homeMetricValue{
+  display:flex;
+  align-items:baseline;
+  min-height:34px;
+  margin-top:5px;
+  font-size:29px;
+  line-height:1.1;
+  font-weight:850;
+  letter-spacing:-.6px;
+  color:var(--navy);
+  white-space:nowrap;
+}
+
+.homeMetricValue.negative{
+  color:var(--danger);
+}
+
+.homeMetricSide .homeMetricValue{
+  font-size:23px;
+}
+
+.homeMetricValue .unit{
+  margin-left:4px;
+  font-size:11px;
+  font-weight:600;
+  color:var(--muted);
+}
+
+.homeMetricHint{
+  min-height:28px;
+  margin-top:5px;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.4;
+}
+
+.lastReadRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:11px 16px;
+  border-top:1px solid var(--line);
+  background:#f9fbfd;
+  font-size:11px;
+}
+
+.lastReadRow span{
+  color:var(--muted);
+}
+
+.lastReadRow b{
+  color:var(--text);
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.switchTag{
+  background:#eaf3ff;
+  color:var(--brand);
+  border:0;
+}
+
+
+/* ===== 信息重排美化版：首页账户卡片 ===== */
+
+.accountTop{
+  padding:15px 16px 13px;
+  background:linear-gradient(135deg,#ffffff 0%,#f7faff 100%);
+}
+
+.accountTitleRow{
+  align-items:center;
+}
+
+.accountName{
+  font-size:17px;
+  font-weight:800;
+}
+
+.accountNo{
+  margin-top:3px;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.address{
+  margin-top:9px;
+  font-size:12px;
+  color:var(--text2);
+}
+
+.switchTag{
+  background:#edf4ff;
+  color:var(--brand);
+  border:1px solid #dceaff;
+  border-radius:999px;
+  padding:6px 10px;
+  white-space:nowrap;
+}
+
+/* 三项数据重新排布：
+   左侧大块突出余额，右侧上下放本月累计用水和上次抄表时间 */
+.accountOverview{
+  display:grid;
+  grid-template-columns:minmax(0,1.52fr) minmax(116px,.92fr);
+  gap:10px;
+  padding:12px 14px;
+  border-top:1px solid var(--line);
+  background:#fff;
+}
+
+.balanceMainCard{
+  position:relative;
+  overflow:hidden;
+  min-width:0;
+  min-height:134px;
+  padding:16px 15px;
+  border-radius:17px;
+  border:1px solid #dce9fb;
+  background:
+    radial-gradient(circle at 92% 10%, rgba(43,140,255,.12), rgba(43,140,255,0) 34%),
+    linear-gradient(135deg,#eef6ff 0%,#f9fcff 76%);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.balanceMainCard:after{
+  content:"";
+  position:absolute;
+  width:92px;
+  height:92px;
+  right:-38px;
+  bottom:-42px;
+  border-radius:50%;
+  background:rgba(23,105,224,.045);
+  pointer-events:none;
+}
+
+.overviewLabel{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.2;
+}
+
+.balanceAmount{
+  position:relative;
+  z-index:1;
+  margin-top:7px;
+  font-size:32px;
+  line-height:1.05;
+  font-weight:880;
+  letter-spacing:-.8px;
+  color:var(--navy);
+  white-space:nowrap;
+}
+
+.balanceAmount.negative{
+  color:var(--danger);
+}
+
+.balanceHintText{
+  position:relative;
+  z-index:1;
+  margin-top:8px;
+  font-size:10px;
+  line-height:1.45;
+  color:var(--muted);
+}
+
+.overviewSide{
+  display:grid;
+  grid-template-rows:1fr 1fr;
+  gap:8px;
+  min-width:0;
+}
+
+.sideMetric{
+  min-width:0;
+  border-radius:15px;
+  padding:11px 12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.sideMetric.usage{
+  background:#f3fbf8;
+  border:1px solid #dff1e9;
+}
+
+.sideMetric.readtime{
+  background:#f8f9fc;
+  border:1px solid #e8ecf2;
+}
+
+.sideMetricLabel{
+  font-size:10px;
+  line-height:1.3;
+  color:var(--muted);
+}
+
+.sideMetricValue{
+  display:flex;
+  align-items:baseline;
+  min-width:0;
+  margin-top:5px;
+  font-size:20px;
+  line-height:1.05;
+  font-weight:820;
+  color:var(--navy);
+  white-space:nowrap;
+}
+
+.sideMetricValue .unit{
+  margin-left:3px;
+  font-size:9px;
+  font-weight:650;
+  color:var(--muted);
+}
+
+.sideMetricValue.date{
+  font-size:13px;
+  letter-spacing:-.15px;
+}
+
+.sideMetricHint{
+  margin-top:5px;
+  font-size:9px;
+  line-height:1.35;
+  color:var(--muted);
+}
+
+/* 操作区仅做衔接优化，按钮结构和功能保持不变 */
+.accountActionGrid{
+  padding:11px 14px 15px;
+  border-top:1px solid var(--line);
+  background:#fff;
+}
+
+
+/* ===== 无彩色边框版：首页数据区更克制、更干净 ===== */
+
+.accountOverview{
+  display:grid;
+  grid-template-columns:minmax(0,1.52fr) minmax(116px,.92fr);
+  gap:0;
+  padding:0;
+  border-top:1px solid var(--line);
+  background:#fff;
+}
+
+/* 左侧余额不再使用蓝色描边和蓝色块背景 */
+.balanceMainCard{
+  min-width:0;
+  min-height:134px;
+  padding:17px 16px 16px;
+  border:0;
+  border-radius:0;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.balanceMainCard:after{
+  display:none;
+}
+
+/* 右侧两项改为普通信息区，只用浅灰分隔 */
+.overviewSide{
+  display:grid;
+  grid-template-rows:1fr 1fr;
+  gap:0;
+  min-width:0;
+  border-left:1px solid var(--line);
+}
+
+.sideMetric{
+  min-width:0;
+  border:0;
+  border-radius:0;
+  padding:13px 14px;
+  background:#fff !important;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.sideMetric + .sideMetric{
+  border-top:1px solid var(--line);
+}
+
+/* 保留文字层级，不再依赖彩色边框区分 */
+.sideMetric.usage,
+.sideMetric.readtime{
+  background:#fff;
+}
+
+.overviewLabel,
+.sideMetricLabel{
+  color:var(--muted);
+}
+
+.balanceAmount,
+.sideMetricValue{
+  color:var(--navy);
+}
+
+
+/* ===== 首页账户卡片重新设计版 ===== */
+
+/* 顶部账户信息 */
+.accountTop{
+  padding:15px 16px 13px;
+  background:#fff;
+}
+.accountTitleRow{
+  align-items:center;
+}
+.accountName{
+  font-size:17px;
+  font-weight:800;
+  color:var(--text);
+}
+.accountNo{
+  margin-top:3px;
+  font-size:11px;
+  color:var(--muted);
+}
+.address{
+  margin-top:9px;
+  font-size:12px;
+  color:var(--text2);
+  line-height:1.4;
+}
+.switchTag{
+  background:#edf4ff;
+  color:var(--brand);
+  border:0;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+/* 数据主体：余额独占一整行，次要信息放在底部双栏 */
+.accountDataClean{
+  border-top:1px solid var(--line);
+  background:#fff;
+}
+
+.balanceHeroClean{
+  padding:17px 17px 15px;
+  position:relative;
+}
+
+.balanceHeroTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.balanceHeroLabel{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.balanceHeroStatus{
+  display:inline-flex;
+  align-items:center;
+  height:22px;
+  padding:0 8px;
+  border-radius:999px;
+  font-size:9px;
+  font-weight:700;
+  color:var(--success);
+  background:#eef8f4;
+}
+.balanceHeroStatus.debt{
+  color:var(--danger);
+  background:#fff1f2;
+}
+
+.balanceHeroAmount{
+  margin-top:7px;
+  font-size:34px;
+  line-height:1.05;
+  font-weight:880;
+  letter-spacing:-.9px;
+  color:var(--navy);
+  white-space:nowrap;
+}
+.balanceHeroAmount.negative{
+  color:var(--danger);
+}
+
+.balanceHeroHint{
+  margin-top:7px;
+  font-size:10px;
+  line-height:1.45;
+  color:var(--muted);
+}
+
+/* 次要数据做成一条简洁信息带 */
+.accountSubStats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  border-top:1px solid var(--line);
+  background:#fbfcfe;
+}
+
+.subStat{
+  min-width:0;
+  padding:11px 16px 12px;
+}
+
+.subStat + .subStat{
+  border-left:1px solid var(--line);
+}
+
+.subStatLabel{
+  font-size:10px;
+  color:var(--muted);
+  line-height:1.3;
+}
+
+.subStatValue{
+  margin-top:4px;
+  font-size:16px;
+  line-height:1.25;
+  font-weight:780;
+  color:var(--text);
+  white-space:nowrap;
+}
+
+.subStatValue.usage{
+  font-size:18px;
+  color:var(--navy);
+}
+
+.subStatValue .unit{
+  margin-left:3px;
+  font-size:10px;
+  font-weight:600;
+  color:var(--muted);
+}
+
+.subStatHint{
+  margin-top:3px;
+  font-size:9px;
+  line-height:1.35;
+  color:var(--muted);
+}
+
+/* 操作区保持现有 2x2，只改善与数据区的衔接 */
+.accountActionGrid{
+  padding:11px 14px 15px;
+  border-top:1px solid var(--line);
+  background:#fff;
+}
+
+
+/* ===== 最终定稿修正版：缴费金额交互 ===== */
+.moneyGrid.payFive{
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+}
+.moneyGrid.payFive .moneyOption{
+  font-size:12px;
+}
+.customPayField{
+  margin-top:12px;
+}
+.customPayField.hidden{
+  display:none;
+}
+
+
+/* ===== 内容优化版：常用服务删减为3项 ===== */
+.quickGrid{
+  grid-template-columns:repeat(3,1fr);
+}
+
+</style>
+</head>
+<body>
+<div class="workspace">
+  <div class="phone" id="phone">
+    <div class="statusbar"><span>10:53</span><span>5G&nbsp;&nbsp;▮▮▮&nbsp;&nbsp;100%</span></div>
+    <main class="app" id="app"></main>
+    <div class="modalMask" id="modalMask"><div class="modal" id="modal"></div></div>
+    <div class="toast" id="toast"></div>
+  </div>
+</div>
+<script>
+const icon=(name,size=20)=>{
+  const common=`width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"`;
+  const paths={
+    bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
+    user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    chevron:'<path d="m9 18 6-6-6-6"/>',
+    back:'<path d="m15 18-6-6 6-6"/>',
+    refresh:'<path d="M20 11a8 8 0 1 0-2.34 5.66"/><path d="M20 4v7h-7"/>',
+    home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v11h14V10"/><path d="M9 21v-7h6v7"/>',
+    mine:'<circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/>',
+    droplet:'<path d="M12 2s6 6.3 6 12a6 6 0 1 1-12 0c0-5.7 6-12 6-12Z"/>',
+    wallet:'<path d="M3 6h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6Z"/><path d="M16 11h5v4h-5a2 2 0 1 1 0-4Z"/><path d="M5 6 16 3v3"/>',
+    list:'<path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r=".5" fill="currentColor"/><circle cx="3.5" cy="12" r=".5" fill="currentColor"/><circle cx="3.5" cy="18" r=".5" fill="currentColor"/>',
+    chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+    tag:'<path d="M20 13 11 22l-9-9V2h11l7 7a3 3 0 0 1 0 4Z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+    bill:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/>',
+    meter:'<circle cx="12" cy="12" r="9"/><path d="M8 15a5 5 0 0 1 8 0M12 12l3-3"/>',
+    phone:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/>',
+    location:'<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    shield:'<path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/>',
+    check:'<path d="m5 12 4 4L19 6"/>',
+    x:'<path d="m6 6 12 12M18 6 6 18"/>',
+    clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    card:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/>',
+    info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+    settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.25.34.46.7.6 1 .14.36.22.73.22 1.1V11h.09v4h-.09c-.37 0-.74.08-1.1.22-.35.14-.7.35-1.02.6Z"/>',
+    globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>',
+    service:'<path d="M14.7 6.3a4 4 0 0 0-5 5L3 18v3h3l6.7-6.7a4 4 0 0 0 5-5l-2.2 2.2-3-3 2.2-2.2Z"/>',
+    logout:'<path d="M10 17l5-5-5-5M15 12H3"/><path d="M14 3h7v18h-7"/>',
+    calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>'
+  };
+  return `<svg ${common}>${paths[name]||paths.info}</svg>`
+}
+
+const demoAccounts=[
+  {
+    id:'A1',name:'张恒',userNo:'002009264',mobile:'17699258883',mobileFull:'17699258883',meterNo:'260324220104',address:'公园里-净水器',org:'002',station:'江汉营业所',
+    balance:38.13,read:37.41,readTime:'2026-08-02 17:12:46',lastMeterReadTime:'2026-08-01',monthlyUsage:15.75,waterType:'特种用水',price:7.00,
+    usage:[
+      {time:'2026-08-02 17:12',read:37.41,use:0.04},{time:'2026-08-01 18:03',read:37.37,use:0.03},{time:'2026-07-31 17:40',read:37.34,use:0.56},{time:'2026-07-30 17:52',read:36.78,use:1.23},{time:'2026-07-29 18:11',read:35.55,use:1.68},{time:'2026-07-28 17:58',read:33.87,use:2.10}
+    ],
+    records:[
+      {time:'2026-08-18 09:22:15',amount:80,status:'成功',channel:'微信支付',txn:'WX20260818092215001'},
+      {time:'2026-03-17 18:50:54',amount:100,status:'成功',channel:'微信支付',txn:'WX20260317185054008'},
+      {time:'2025-12-06 13:11:08',amount:50,status:'成功',channel:'微信支付',txn:'WX20251206131108006'}
+    ],
+    bills:[
+      {year:2026,month:'08月',usage:15.75,amount:110.25,status:'已结清'},
+      {year:2026,month:'07月',usage:11.20,amount:78.40,status:'已结清'},
+      {year:2026,month:'06月',usage:9.84,amount:68.88,status:'已结清'},
+      {year:2025,month:'12月',usage:8.36,amount:58.52,status:'已结清'}
+    ]
+  },
+  {
+    id:'A2',name:'微派格测试户',userNo:'10222008',mobile:'13866222208',mobileFull:'13866222208',meterNo:'260322420208',address:'泛悦城 T2-2008',org:'002',station:'洪山营业所',
+    balance:-14.69,read:186.52,readTime:'2026-08-03 09:18:20',lastMeterReadTime:'2026-08-01',monthlyUsage:22.40,waterType:'居民生活用水',price:3.45,
+    usage:[
+      {time:'2026-08-03 09:18',read:186.52,use:1.20},{time:'2026-08-02 09:10',read:185.32,use:1.05},{time:'2026-08-01 09:06',read:184.27,use:0.96},{time:'2026-07-31 09:16',read:183.31,use:1.18}
+    ],
+    records:[{time:'2026-07-12 16:20:09',amount:50,status:'成功',channel:'微信支付',txn:'WX20260712162009003'}],
+    bills:[{year:2026,month:'08月',usage:22.40,amount:77.28,status:'待缴'},{year:2026,month:'07月',usage:17.90,amount:61.76,status:'已结清'}]
+  }
+];
+const candidatePool=[
+  {id:'A3',name:'陈敏',userNo:'10990031',mobile:'13987000031',mobileFull:'13987000031',meterNo:'260399988888',address:'云水花园3幢1202',org:'002',station:'武昌营业所',balance:0,read:29.33,readTime:'2026-08-01 10:09:30',lastMeterReadTime:'2026-08-01',monthlyUsage:8.9,waterType:'居民生活用水',price:3.45,usage:[],records:[],bills:[]},
+  {id:'A4',name:'张林',userNo:'10668120',mobile:'13766888120',mobileFull:'13766888120',meterNo:'260355551120',address:'滨江苑2幢806',org:'002',station:'汉阳营业所',balance:-28.60,read:88.12,readTime:'2026-08-02 08:12:11',lastMeterReadTime:'2026-08-01',monthlyUsage:18.2,waterType:'居民生活用水',price:3.45,usage:[],records:[],bills:[]},
+  {id:'A5',name:'张岚',userNo:'10668121',mobile:'13766888121',mobileFull:'13766888121',meterNo:'260355551121',address:'滨江苑5幢1601',org:'002',station:'光谷营业所',balance:51.30,read:62.70,readTime:'2026-08-02 08:16:25',lastMeterReadTime:'2026-08-01',monthlyUsage:12.6,waterType:'居民生活用水',price:3.45,usage:[],records:[],bills:[]}
+];
+
+const initialState=()=>({
+  accounts:JSON.parse(JSON.stringify(demoAccounts)),currentIndex:0,screen:'home',history:[],bindingTab:'meter',queryResults:[],selectedCandidate:null,
+  payAccountId:null,payAmount:null,paymentResult:null,billYear:2026,agreement:true,language:'简体中文',lastRefresh:null
+});
+let state=JSON.parse(localStorage.getItem('waterH5PolishedLayoutV21A')||'null')||initialState();
+function persist(){localStorage.setItem('waterH5PolishedLayoutV21A',JSON.stringify(state))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function money(n){return Number(n||0).toFixed(2)}
+function currentAccount(){return state.accounts[state.currentIndex]||null}
+function payAccount(){return state.accounts.find(x=>x.id===state.payAccountId)||currentAccount()}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1900)}
+function nav(screen,push=true){if(push&&state.screen!==screen)state.history.push(state.screen);state.screen=screen;persist();render()}
+function back(){state.screen=state.history.pop()||'home';persist();render()}
+function resetDemo(){state=initialState();persist();render();toast('原型数据已重置')}
+
+function pageTop(title,right=''){return `<div class="pageTop"><button class="backBtn" onclick="back()">${icon('back',21)}</button><h1>${title}</h1>${right?`<button class="rightBtn" onclick="${right.action}">${right.label}</button>`:''}</div>`}
+function bottomNav(active){return ``}
+function goRoot(screen){state.history=[];state.screen=screen;persist();render()}
+
+function render(){
+  const a=document.getElementById('app');
+  const map={home:renderHome,bind:renderBind,bindConfirm:renderBindConfirm,manage:renderManage,account:renderAccountDetail,pay:renderPay,paymentResult:renderPaymentResult,usage:renderUsage,records:renderRecords,bills:renderBills};
+  a.innerHTML=(map[state.screen]||renderHome)();
+  requestAnimationFrame(attachDynamic);
+}
+
+function renderHome(){
+  if(!state.accounts.length){
+    return `<section class="screen"><div class="hero"><div class="heroRow"><div><div class="brandTitle">掌上水务</div><div class="welcome">便捷查余额 · 微信缴水费</div></div></div></div><div class="empty" style="margin-top:-40px;position:relative;z-index:3;background:#fff;border-radius:24px 24px 0 0;min-height:500px"><div class="emptyIcon">${icon('droplet',34)}</div><h2>暂未绑定用水户</h2><p>绑定后即可查看用户信息、账户余额、抄表数据，并通过微信完成缴费。</p><button class="primaryBtn fullBtn" onclick="nav('bind')">立即绑定用水户</button><div class="secureHint">${icon('shield',16)}<span>为保障账户安全，绑定时需要核验表具编号或用户身份信息。</span></div></div>${bottomNav('home')}</section>`
+  }
+  const a=currentAccount();
+  const cards=state.accounts.map((x,i)=>accountCard(x,i)).join('');
+  const dots=state.accounts.map((_,i)=>`<span class="dot ${i===state.currentIndex?'active':''}"></span>`).join('');
+  return `<section class="screen">
+    <div class="hero"><div class="heroRow"><div><div class="brandTitle">掌上水务</div><div class="welcome">欢迎你，${esc(a.name)} · 用水服务触手可及</div></div></div></div>
+    <div class="homeBody">
+      <div class="accountShell"><div class="accountCarousel" id="accountCarousel">${cards}</div><div class="pager" id="pager">${dots}</div></div>
+      <div class="sectionCard">
+        <div class="sectionHeader"><div><div class="sectionTitle">常用服务</div><div class="sectionSub">当前用水户常用查询</div></div></div>
+        <div class="quickGrid">
+          <button class="quickItem" onclick="nav('usage')"><div class="quickIcon">${icon('chart',22)}</div><span>用量查询</span></button>
+          <button class="quickItem" onclick="nav('records')"><div class="quickIcon">${icon('list',22)}</div><span>缴费记录</span></button>
+          <button class="quickItem" onclick="nav('bills')"><div class="quickIcon">${icon('bill',22)}</div><span>周期账单</span></button>
+        </div>
+      </div>
+      <div class="videoTipBar" onclick="openGuideVideo()">
+        <div class="noticeIcon">${icon('info',17)}</div>
+        <div>
+          <b>首次使用？点击查看远传表操作视频</b><br>
+          <span>了解用户绑定、实时水量查询、微信缴费操作</span>
+        </div>
+      </div>
+    </div>${bottomNav('home')}
+  </section>`
+}
+function accountCard(x,i){
+  return `<article class="accountCard" data-index="${i}">
+    <div class="accountTop">
+      <div class="accountTitleRow">
+        <div>
+          <div class="accountName">${esc(x.name)}</div>
+          <div class="accountNo">用户编号 ${esc(x.userNo)}</div>
+        </div>
+        <button class="switchTag" onclick="nav('manage')">切换户表 ${icon('chevron',13)}</button>
+      </div>
+      <div class="address">${icon('location',15)}<span>${esc(x.address)}</span></div>
+    </div>
+
+    <div class="accountDataClean">
+      <div class="balanceHeroClean">
+        <div class="balanceHeroTop">
+          <div class="balanceHeroLabel">
+            账户余额
+            <button class="refreshMini" onclick="refreshBalance(event)">${icon('refresh',14)}</button>
+          </div>
+        </div>
+
+        <div class="balanceHeroAmount ${x.balance<0?'negative':''}">
+          ¥ ${money(x.balance)}
+        </div>
+
+        <div class="balanceHeroHint">
+          ${x.valveCommandStatus==='opening'
+            ?'开阀指令已提交，正在开阀'
+            :x.valveCommandStatus==='opened'
+              ?'阀门已开启'
+              :x.balance<0
+                ?'当前账户存在欠费，请及时缴费'
+                :x.balance===0
+                  ?'余额为0，暂不可开阀'
+                  :'余额大于0时可申请开阀'}
+        </div>
+      </div>
+
+      <div class="accountSubStats">
+        <div class="subStat">
+          <div class="subStatLabel">本月累计用水</div>
+          <div class="subStatValue usage">
+            ${money(x.monthlyUsage)}<span class="unit">m³</span>
+          </div>
+          <div class="subStatHint"></div>
+        </div>
+
+        <div class="subStat">
+          <div class="subStatLabel">上次抄表时间</div>
+          <div class="subStatValue">
+            ${esc(x.lastMeterReadTime || x.readTime.slice(0,10))}
+          </div>
+          <div class="subStatHint"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accountActionGrid">
+      <button class="actionBtn info" onclick="nav('account')">${icon('user',15)} 用户信息</button>
+      <button class="actionBtn info" onclick="nav('bind')">${icon('plus',15)} 新增绑定</button>
+      <button class="actionBtn pay" onclick="startPay('${x.id}')">${icon('wallet',15)} 立即缴费</button>
+      <button
+        class="actionBtn ${x.valveCommandStatus==='opening'||x.valveCommandStatus==='opened'?'valve-disabled':(x.balance>0?'valve-enabled':'valve-disabled')}"
+        onclick="${x.valveCommandStatus==='opening'||x.valveCommandStatus==='opened'?'return false':(x.balance>0?`openValve('${x.id}')`:'return false')}"
+        ${x.valveCommandStatus==='opening'||x.valveCommandStatus==='opened'||x.balance<=0?'disabled':''}
+        title="${x.valveCommandStatus==='opening'?'正在开阀，请稍候':(x.valveCommandStatus==='opened'?'阀门已开启':(x.balance>0?'余额大于0，可申请开阀':'余额不足，暂不可开阀'))}">
+        ${icon('service',15)} ${x.valveCommandStatus==='opening'?'正在开阀':(x.valveCommandStatus==='opened'?'已开阀':(x.balance>0?'开阀':'暂不可开阀'))}
+      </button>
+    </div>
+  </article>`
+}
+function attachDynamic(){
+  const c=document.getElementById('accountCarousel');
+  if(c){c.scrollLeft=state.currentIndex*c.clientWidth;let timer;c.addEventListener('scroll',()=>{clearTimeout(timer);timer=setTimeout(()=>{const idx=Math.round(c.scrollLeft/c.clientWidth);if(idx!==state.currentIndex&&idx>=0&&idx<state.accounts.length){state.currentIndex=idx;persist();const p=document.getElementById('pager');if(p)p.innerHTML=state.accounts.map((_,i)=>`<span class="dot ${i===idx?'active':''}"></span>`).join('')}},70)})}
+  document.querySelectorAll('[data-bind-field]').forEach(el=>el.addEventListener('input',updateBindButton));
+}
+
+function openGuideVideo(){
+ window.open('https://www.example.com/mobile-water-payment-guide-video','_blank');
+}
+
+function openValve(id){
+  const a=state.accounts.find(x=>x.id===id);
+  if(!a)return;
+
+  if(a.balance<=0){
+    toast('当前余额不足，无法开阀');
+    return;
+  }
+
+  if(a.valveCommandStatus==='opening'){
+    toast('正在开阀，请勿重复提交');
+    return;
+  }
+
+  if(a.valveCommandStatus==='opened'){
+    toast('当前阀门已开启');
+    return;
+  }
+
+  showModal(`<div class="sheetBar"></div>
+  <h3>开阀确认</h3>
+  <p>当前账户余额：¥ ${money(a.balance)}</p>
+  <p>确认开启该远传水表阀门吗？</p>
+  <div class="modalActions">
+    <button class="softBtn" onclick="hideModal()">取消</button>
+    <button class="primaryBtn" onclick="submitOpenValve('${id}')">确认开阀</button>
+  </div>`);
+}
+
+function submitOpenValve(id){
+  const a=state.accounts.find(x=>x.id===id);
+  if(!a)return;
+
+  if(a.balance<=0){
+    hideModal();
+    toast('当前余额不足，无法开阀');
+    return;
+  }
+
+  if(a.valveCommandStatus==='opening'){
+    hideModal();
+    toast('正在开阀，请勿重复提交');
+    return;
+  }
+
+  if(a.valveCommandStatus==='opened'){
+    hideModal();
+    toast('当前阀门已开启');
+    return;
+  }
+
+  a.valveCommandStatus='opening';
+  a.valveCommandAt=new Date().toLocaleString('zh-CN',{hour12:false});
+  persist();
+  hideModal();
+  render();
+  toast('开阀指令已提交，正在开阀');
+
+  // 原型模拟：正式项目应以后端/设备返回的开阀结果更新状态
+  setTimeout(()=>completeOpenValve(id),2200);
+}
+
+function completeOpenValve(id){
+  const a=state.accounts.find(x=>x.id===id);
+  if(!a || a.valveCommandStatus!=='opening')return;
+
+  a.valveCommandStatus='opened';
+  a.valveOpenedAt=new Date().toLocaleString('zh-CN',{hour12:false});
+  persist();
+  render();
+  toast('开阀成功');
+}
+
+function refreshBalance(e){e.stopPropagation();state.lastRefresh=new Date().toLocaleTimeString('zh-CN',{hour12:false});persist();toast(`余额已更新 · ${state.lastRefresh}`)}
+
+function renderMine(){
+  const a=currentAccount();
+  return `<section class="screen"><div class="profileHero"><div class="profileRow"><div class="avatar">${a?esc(a.name.slice(0,1)):'水'}</div><div><div class="profileName">${a?esc(a.name):'未绑定用户'}</div><div class="profileDesc">${a?`当前户号 ${esc(a.userNo)}`:'绑定户表后享受完整移动服务'}</div></div></div></div>
+    <div class="profileBody">
+      <div class="menuCard">
+        <button class="menuItem" onclick="nav('manage')"><div class="menuIcon">${icon('meter',18)}</div><div class="menuText"><b>户表管理</b><small>新增、切换或解除已绑定用水户</small></div><span class="chev">${icon('chevron',16)}</span></button>
+        <button class="menuItem" onclick="aOrToast('records')"><div class="menuIcon">${icon('list',18)}</div><div class="menuText"><b>缴费记录</b><small>查询微信缴费订单与交易流水</small></div><span class="chev">${icon('chevron',16)}</span></button>
+        <button class="menuItem" onclick="aOrToast('bills')"><div class="menuIcon">${icon('bill',18)}</div><div class="menuText"><b>周期账单</b><small>按年度查看历史用量和费用</small></div><span class="chev">${icon('chevron',16)}</span></button>
+      </div>
+      <div class="menuCard">
+        <button class="menuItem" onclick="showLanguage()"><div class="menuIcon">${icon('globe',18)}</div><div class="menuText"><b>语言设置</b><small>当前：${esc(state.language)}</small></div><span class="chev">${icon('chevron',16)}</span></button>
+        <button class="menuItem" onclick="toast('原型演示：暂无新的通知公告')"><div class="menuIcon">${icon('bell',18)}</div><div class="menuText"><b>通知公告</b><small>查看停水、缴费和服务通知</small></div><span class="chev">${icon('chevron',16)}</span></button>
+        <button class="menuItem" onclick="toast('原型演示：维修服务入口预留')"><div class="menuIcon">${icon('service',18)}</div><div class="menuText"><b>维修服务</b><small>报修与服务进度查询入口</small></div><span class="chev">${icon('chevron',16)}</span></button>
+      </div>
+      <button class="softBtn fullBtn" onclick="resetDemo()">重置演示数据</button>
+    </div>${bottomNav('mine')}</section>`
+}
+function aOrToast(screen){if(!currentAccount())toast('请先绑定用水户');else nav(screen)}
+function showLanguage(){showModal(`<div class="sheetBar"></div><h3>语言设置</h3><button class="langOption" onclick="setLanguage('简体中文')"><span>简体中文</span>${state.language==='简体中文'?icon('check',18):''}</button><button class="langOption" onclick="setLanguage('English')"><span>English</span>${state.language==='English'?icon('check',18):''}</button><p>原型保留语言切换入口；正式上线可接入完整国际化资源。</p>`)}
+function setLanguage(l){state.language=l;persist();hideModal();render();toast(`已切换为 ${l}`)}
+
+function renderAccountDetail(){
+  const x=currentAccount(); if(!x)return renderEmptyRedirect('用户信息');
+  return `<section class="screen noTab">${pageTop('用户信息',{label:'户表管理',action:"nav('manage')"})}<div class="content">
+    <div class="infoBanner">
+      <div class="top"><b>${esc(x.name)}</b><span class="badge ok">远传表用户</span></div>
+      <p>展示当前绑定用户的基础资料及远传水表最新用水数据。</p>
+    </div>
+
+    <div class="summaryCard">
+      <div class="summaryHead"><b>基础信息</b><span class="badge">已绑定</span></div>
+      <div class="sumRow"><span>用户名称</span><b>${esc(x.name)}</b></div>
+      <div class="sumRow"><span>用户编号</span><b>${esc(x.userNo)}</b></div>
+      <div class="sumRow"><span>手机号码</span><b>${esc(x.mobileFull || x.mobile)}</b></div>
+      <div class="sumRow"><span>用水地址</span><b>${esc(x.address)}</b></div>
+      <div class="sumRow"><span>所属站点</span><b>${esc(x.station || x.org)}</b></div>
+      <div class="sumRow"><span>用水性质</span><b>${esc(x.waterType)}</b></div>
+    </div>
+
+    <div class="summaryCard remoteInfoCard">
+      <div class="summaryHead"><b>远传水表信息</b><span class="badge">实时数据</span></div>
+      <div class="sumRow"><span>当前读数</span><b>${money(x.read)} m³</b></div>
+      <div class="sumRow"><span>最近上数时间</span><b>${esc(x.readTime)}</b></div>
+      <div class="sumRow"><span>本月累计用水</span><b>${money(x.monthlyUsage)} m³</b></div>
+    </div>
+  </div></section>`
+}
+function renderEmptyRedirect(title){return `<section class="screen noTab">${pageTop(title)}<div class="empty"><div class="emptyIcon">${icon('droplet',34)}</div><h2>暂无可查看的用水户</h2><p>请先完成用户绑定。</p><button class="primaryBtn fullBtn" onclick="nav('bind')">立即绑定</button></div></section>`}
+
+function renderBind(){
+  const meter=state.bindingTab==='meter';
+  return `<section class="screen noTab">${pageTop('用户绑定')}<div class="content">
+    <div class="infoBanner"><div class="top"><b>绑定用水户</b><span class="badge">精准绑定</span></div><p>请输入准确的表具编号，或填写用户名称 / 用户编号 / 手机号中的任意两项。</p></div>
+    <div class="formCard"><div class="tabs"><button class="tab ${meter?'active':''}" onclick="switchBindTab('meter')">表具编号绑定</button><button class="tab ${!meter?'active':''}" onclick="switchBindTab('info')">用户信息绑定</button></div>
+      ${meter?`<div class="field"><label>表具编号 <small>必填</small></label><div class="inputWrap">${icon('meter',18)}<input id="meterNo" data-bind-field placeholder="请输入表具编号" autocomplete="off"></div></div>`:
+      `<div class="field"><label>用户名称</label><div class="inputWrap">${icon('user',18)}<input id="userName" data-bind-field placeholder="请输入用户名称"></div></div><div class="field"><label>用户编号</label><div class="inputWrap">${icon('card',18)}<input id="userNo" data-bind-field placeholder="请输入用户编号"></div></div><div class="field"><label>用户手机号</label><div class="inputWrap">${icon('phone',18)}<input id="mobile" data-bind-field inputmode="numeric" placeholder="请输入预留手机号"></div></div><div class="bindCounter" id="bindCounter">已填写 0/2 项</div>`}
+      <button class="primaryBtn fullBtn" id="bindQueryBtn" onclick="queryBinding()" disabled>查询用户</button>
+    </div>
+  </div></section>`
+}
+function switchBindTab(t){state.bindingTab=t;persist();render()}
+function updateBindButton(){
+  const btn=document.getElementById('bindQueryBtn');
+  if(!btn)return;
+
+  if(state.bindingTab==='meter'){
+    btn.disabled=!document.getElementById('meterNo').value.trim();
+  }else{
+    const vals=['userName','userNo','mobile']
+      .map(id=>document.getElementById(id).value.trim())
+      .filter(Boolean);
+
+    btn.disabled=vals.length<2;
+
+    const c=document.getElementById('bindCounter');
+    if(c){
+      c.textContent=`已填写 ${Math.min(vals.length,2)}/2 项${vals.length>=2?'，可以查询':''}`;
+      c.className='bindCounter '+(vals.length>=2?'ok':'');
+    }
+  }
+}
+function queryBinding(){
+  const all=[...demoAccounts,...candidatePool];
+  let result=null;
+
+  if(state.bindingTab==='meter'){
+    const meterNo=document.getElementById('meterNo').value.trim();
+    if(!meterNo)return;
+
+    result=all.find(x=>String(x.meterNo||'').trim()===meterNo) || null;
+  }else{
+    const userName=document.getElementById('userName').value.trim();
+    const userNo=document.getElementById('userNo').value.trim();
+    const mobile=document.getElementById('mobile').value.trim();
+
+    const conditions=[
+      userName ? (x=>String(x.name||'').trim()===userName) : null,
+      userNo ? (x=>String(x.userNo||'').trim()===userNo) : null,
+      mobile ? (x=>String(x.mobileFull||x.mobile||'').trim()===mobile) : null
+    ].filter(Boolean);
+
+    if(conditions.length<2){
+      toast('请至少填写两项用户信息');
+      return;
+    }
+
+    // 精准 AND 匹配：填写的所有条件必须同时命中同一户
+    result=all.find(x=>conditions.every(fn=>fn(x))) || null;
+  }
+
+  if(!result){
+    state.queryResults=[];
+    state.selectedCandidate=null;
+    persist();
+    toast('未查询到匹配的用水户');
+    return;
+  }
+
+  state.queryResults=[JSON.parse(JSON.stringify(result))];
+  state.selectedCandidate=result.id;
+  persist();
+  nav('bindConfirm');
+}
+function selectedCandidate(){
+  return (state.queryResults||[]).find(x=>x.id===state.selectedCandidate) || null;
+}
+
+function renderBindConfirm(){
+  const x=selectedCandidate();if(!x)return renderBind();
+  return `<section class="screen noTab">${pageTop('确认绑定')}<div class="content"><div class="infoBanner"><div class="top"><b>请确认用户信息</b><span class="badge ok">信息匹配</span></div><p>确认后该用水户将加入你的“户表管理”，可直接查询余额并发起微信缴费。</p></div><div class="summaryCard"><div class="sumRow"><span>用户名称</span><b>${esc(x.name)}</b></div><div class="sumRow"><span>用户编号</span><b>${esc(x.userNo)}</b></div><div class="sumRow"><span>手机号码</span><b>${esc(x.mobileFull || x.mobile)}</b></div><div class="sumRow"><span>表具编号</span><b>${esc(x.meterNo)}</b></div><div class="sumRow"><span>用水地址</span><b>${esc(x.address)}</b></div><div class="sumRow"><span>用水性质</span><b>${esc(x.waterType||'居民生活用水')}</b></div></div><button class="primaryBtn fullBtn" onclick="confirmBinding()">确认绑定</button><button class="softBtn fullBtn" onclick="back()">返回修改</button></div></section>`
+}
+function confirmBinding(){
+  const x=selectedCandidate();if(!x)return;if(state.accounts.some(a=>a.userNo===x.userNo||a.meterNo===x.meterNo)){toast('该用水户已绑定，无需重复操作');return}
+  state.accounts.push({...x,usage:x.usage||[],records:x.records||[],bills:x.bills||[]});state.currentIndex=state.accounts.length-1;state.queryResults=[];state.selectedCandidate=null;state.history=[];state.screen='home';persist();render();toast('绑定成功，已切换到新户表')
+}
+
+function renderManage(){
+  return `<section class="screen noTab">${pageTop('户表管理',{label:'新增绑定',action:"nav('bind')"})}<div class="content">
+    <div class="infoBanner">
+      <div class="top"><b>已绑定 ${state.accounts.length} 个用水户</b><span class="badge">多户号</span></div>
+      <p>在这里切换当前户表、查看用户信息或解除绑定；也可通过右上角“新增绑定”继续添加用水户。</p>
+    </div>
+    ${state.accounts.map((x,i)=>`
+      <div class="listCard">
+        <div class="listTop">
+          <div>
+            <div class="listTitle">${esc(x.name)} ${i===state.currentIndex?'<span class="badge ok">当前户表</span>':''}</div>
+            <div class="listSub">用户编号 ${esc(x.userNo)}<br>${esc(x.address)}<br>表具编号 ${esc(x.meterNo)}</div>
+          </div>
+          <div class="balanceValue ${x.balance<0?'negative':''}" style="font-size:18px">¥${money(x.balance)}</div>
+        </div>
+        <div class="listActions">
+          ${i!==state.currentIndex?`<button class="miniBtn primary" onclick="setCurrent('${x.id}')">设为当前户表</button>`:''}
+          <button class="miniBtn" onclick="openAccountFromManage('${x.id}')">查看信息</button>
+          <button class="miniBtn danger" onclick="askUnbind('${x.id}')">解绑</button>
+        </div>
+      </div>`).join('') ||
+      `<div class="empty"><div class="emptyIcon">${icon('meter',34)}</div><h2>暂无已绑定户表</h2><p>请返回首页进行用户绑定。</p></div>`}
+  </div></section>`
+}
+function setCurrent(id){const idx=state.accounts.findIndex(x=>x.id===id);if(idx<0)return;state.currentIndex=idx;persist();render();toast('已切换当前户表')}
+function openAccountFromManage(id){const idx=state.accounts.findIndex(x=>x.id===id);if(idx>=0){state.currentIndex=idx;persist();nav('account')}}
+function askUnbind(id){const x=state.accounts.find(a=>a.id===id);if(!x)return;showModal(`<div class="sheetBar"></div><h3>解除绑定</h3><p>确定解绑 <b>${esc(x.name)} · ${esc(x.userNo)}</b> 吗？<br>${esc(x.address)}</p><p>解绑后，该户号将无法在本微信用户下查询余额或发起缴费，但不会影响水务系统中的真实账户数据。</p><div class="modalActions"><button class="softBtn" onclick="hideModal()">取消</button><button class="dangerBtn" onclick="confirmUnbind('${id}')">确认解绑</button></div>`)}
+function confirmUnbind(id){state.accounts=state.accounts.filter(x=>x.id!==id);state.currentIndex=Math.max(0,Math.min(state.currentIndex,state.accounts.length-1));persist();hideModal();render();toast('解绑成功')}
+
+function startPay(id){state.payAccountId=id;state.payAmount=null;state.paymentResult=null;persist();nav('pay')}
+function renderPay(){
+  const x=payAccount();
+  if(!x)return renderEmptyRedirect('水费缴费');
+
+  const debt=x.balance<0?Math.abs(x.balance):0;
+  const amt=Number(state.payAmount||0);
+  const after=x.balance+amt;
+  const custom=!!state.payCustom;
+
+  return `<section class="screen noTab">${pageTop('水费缴费')}
+    <div class="content">
+      <div class="moneyHero">
+        <small>当前账户余额</small>
+        <strong>¥ ${money(x.balance)}</strong>
+        <p>${esc(x.name)} · ${esc(x.userNo)}<br>${esc(x.address)}</p>
+      </div>
+
+      <div class="sectionCard">
+        <div class="sectionTitle">缴费金额</div>
+        <div class="sectionSub">选择快捷金额或自定义金额</div>
+
+        ${debt?`<button class="debtQuick" onclick="chooseAmount(${debt})">一键缴清欠费 ¥ ${money(debt)}</button>`:''}
+
+        <div class="moneyGrid payFive">
+          ${[20,50,80,100].map(n=>`
+            <button class="moneyOption ${!custom&&Number(state.payAmount)===n?'active':''}"
+              onclick="chooseAmount(${n})">¥${n}</button>
+          `).join('')}
+          <button class="moneyOption ${custom?'active':''}" onclick="enableCustomAmount()">自定义</button>
+        </div>
+
+        <div class="field customPayField ${custom?'':'hidden'}" style="margin-bottom:0">
+          <div class="inputWrap">
+            <span style="color:var(--muted);font-weight:700">¥</span>
+            <input
+              id="customAmount"
+              inputmode="decimal"
+              placeholder="请输入其他缴费金额"
+              value="${custom?(state.customPayText||''):''}"
+              oninput="customAmountChanged(this.value)">
+          </div>
+        </div>
+
+        <div class="payPredict" id="payPredict" style="${amt>0?'':'display:none'}">
+          <span>预计缴费后余额</span>
+          <b id="payPredictValue">¥ ${money(after)}</b>
+        </div>
+      </div>
+
+      <div class="payMethod">
+        <div class="wxLogo">微</div>
+        <div class="payMethodText">
+          <b>微信支付</b>
+          <small>当前移动缴费仅支持微信支付</small>
+        </div>
+        <div class="selectedDot"></div>
+      </div>
+
+      <label class="agreement">
+        <input type="checkbox" ${state.agreement?'checked':''} onchange="toggleAgreement(this.checked)">
+        <span>我已核对当前缴费户号、地址和金额，确认使用微信支付完成缴费。</span>
+      </label>
+
+      <button class="primaryBtn fullBtn" ${amt>0&&state.agreement?'':'disabled'} onclick="confirmPay()">
+        确认缴费 ¥ ${amt>0?money(amt):'0.00'}
+      </button>
+
+      <div class="secureHint">
+        ${icon('shield',16)}
+        <span>支付完成后系统会主动查询订单结果；若微信已扣款但页面未更新，请勿重复支付。</span>
+      </div>
+    </div>
+  </section>`
+}
+function chooseAmount(n){
+  state.payCustom=false;
+  state.customPayText='';
+  state.payAmount=Math.round(Number(n)*100)/100;
+  persist();
+  render();
+}
+
+function enableCustomAmount(){
+  state.payCustom=true;
+  state.customPayText='';
+  state.payAmount=null;
+  persist();
+  render();
+  setTimeout(()=>document.getElementById('customAmount')?.focus(),0);
+}
+
+function customAmountChanged(v){
+  v=(v||'').replace(/[^0-9.]/g,'').replace(/(\..*)\./g,'$1');
+  if(v.includes('.')){
+    const parts=v.split('.');
+    v=parts[0]+'.'+parts[1].slice(0,2);
+  }
+  state.customPayText=v;
+
+  const n=Number(v);
+  state.payAmount=(n>0&&n<=99999)?Math.round(n*100)/100:null;
+  persist();
+
+  renderPayDynamic();
+}
+
+function renderPayDynamic(){
+  const n=Number(state.payAmount||0);
+  const x=payAccount();
+
+  const btn=[...document.querySelectorAll('.primaryBtn')].find(
+    b=>b.textContent.trim().startsWith('确认缴费')
+  );
+  if(btn){
+    btn.disabled=!(n>0&&state.agreement);
+    btn.textContent=`确认缴费 ¥ ${n>0?money(n):'0.00'}`;
+  }
+
+  const predict=document.getElementById('payPredict');
+  const value=document.getElementById('payPredictValue');
+  if(predict&&value&&x){
+    if(n>0){
+      predict.style.display='';
+      value.textContent=`¥ ${money(x.balance+n)}`;
+    }else{
+      predict.style.display='none';
+    }
+  }
+}
+
+function toggleAgreement(v){state.agreement=v;persist();renderPayDynamic()}
+function confirmPay(){
+  const x=payAccount(),amt=Number(state.payAmount||0);if(!x||amt<=0){toast('请输入有效缴费金额');return}if(amt>99999){toast('单笔缴费金额不能超过 99999 元');return}
+  const after=x.balance+amt;showModal(`<div class="sheetBar"></div><h3>确认微信缴费</h3><div class="summaryCard"><div class="sumRow"><span>缴费户号</span><b>${esc(x.userNo)}</b></div><div class="sumRow"><span>用水地址</span><b>${esc(x.address)}</b></div><div class="sumRow"><span>当前余额</span><b>¥ ${money(x.balance)}</b></div><div class="sumRow"><span>缴费金额</span><b class="brandText">¥ ${money(amt)}</b></div><div class="sumRow"><span>预计缴费后余额</span><b>¥ ${money(after)}</b></div></div><p>确认后将创建缴费订单并拉起微信支付。</p><div class="modalActions"><button class="softBtn" onclick="hideModal()">取消</button><button class="primaryBtn" onclick="showWxSimulator()">确认支付</button></div>`)
+}
+function showWxSimulator(){showModal(`<div class="sheetBar"></div><h3>微信支付 · 原型模拟</h3><p>正式开发时此处对接微信支付能力，并以后端查单结果更新订单状态。为了完整验证页面，原型保留四种结果分支：</p><div class="simGrid"><button onclick="finishPayment('success')">支付成功</button><button onclick="finishPayment('processing')">结果确认中</button><button onclick="finishPayment('failed')">支付失败</button><button onclick="finishPayment('cancelled')">用户取消</button></div>`)}
+function finishPayment(type){
+  const x=payAccount();if(!x)return;const before=x.balance;const amt=Number(state.payAmount||0);if(type==='success'){x.balance=Math.round((x.balance+amt)*100)/100;x.records=x.records||[];x.records.unshift({time:new Date().toLocaleString('zh-CN',{hour12:false}).replaceAll('/','-'),amount:amt,status:'成功',channel:'微信支付',txn:'WX'+Date.now()})}
+  state.paymentResult={type,before,amount:amt,after:type==='success'?x.balance:before,time:new Date().toLocaleString('zh-CN',{hour12:false}),txn:'WX'+Date.now()};persist();hideModal();nav('paymentResult')
+}
+function renderPaymentResult(){
+  const r=state.paymentResult,x=payAccount();if(!r||!x)return renderHome();const m={success:['ok',icon('check',36),'缴费成功','款项已确认，账户余额已更新。'],processing:['wait',icon('clock',34),'支付结果确认中','订单正在确认，请勿重复缴费。'],failed:['fail',icon('x',34),'支付失败','本次支付未完成，可返回重新支付。'],cancelled:['cancel',icon('x',34),'支付已取消','你已取消本次微信支付。']}[r.type];
+  return `<section class="screen noTab">${pageTop('缴费结果')}<div class="resultPage"><div class="resultIcon ${m[0]}">${m[1]}</div><h2>${m[2]}</h2><p>${m[3]}</p><div class="summaryCard"><div class="sumRow"><span>用户编号</span><b>${esc(x.userNo)}</b></div><div class="sumRow"><span>缴费金额</span><b>¥ ${money(r.amount)}</b></div><div class="sumRow"><span>缴费前余额</span><b>¥ ${money(r.before)}</b></div>${r.type==='success'?`<div class="sumRow"><span>缴费后余额</span><b class="brandText">¥ ${money(r.after)}</b></div>`:''}<div class="sumRow"><span>支付时间</span><b>${esc(r.time)}</b></div>${r.type==='success'?`<div class="sumRow"><span>交易流水号</span><b style="font-size:11px">${esc(r.txn)}</b></div>`:''}</div>${r.type==='processing'?`<button class="primaryBtn fullBtn" onclick="recheckPayment()">刷新支付结果</button>`:(r.type==='failed'||r.type==='cancelled')?`<button class="primaryBtn fullBtn" onclick="nav('pay')">重新支付</button>`:''}<button class="softBtn fullBtn" onclick="finishToHome()">返回首页</button></div></section>`
+}
+function recheckPayment(){toast('正在查询微信订单状态…');setTimeout(()=>finishPayment('success'),650)}
+function finishToHome(){state.history=[];state.screen='home';state.payAmount=null;state.paymentResult=null;persist();render()}
+
+
+function buildSixMonthUsage(x){
+  const now=new Date();
+  const billMap=new Map();
+
+  (x.bills||[]).forEach(b=>{
+    const monthNum=parseInt(String(b.month||'').replace(/[^0-9]/g,''),10);
+    if(!Number.isFinite(monthNum))return;
+    const key=`${Number(b.year)}-${String(monthNum).padStart(2,'0')}`;
+    billMap.set(key,Number(b.usage||0));
+  });
+
+  const result=[];
+  for(let offset=5;offset>=0;offset--){
+    const d=new Date(now.getFullYear(),now.getMonth()-offset,1);
+    const year=d.getFullYear();
+    const month=d.getMonth()+1;
+    const key=`${year}-${String(month).padStart(2,'0')}`;
+
+    let usage=billMap.has(key)?Number(billMap.get(key)||0):0;
+    if(offset===0){
+      usage=Number(x.monthlyUsage||0);
+    }
+
+    result.push({
+      year,
+      month,
+      label:`${month}月`,
+      usage
+    });
+  }
+  return result;
+}
+
+function renderUsage(){
+  const x=currentAccount();
+  if(!x)return renderEmptyRedirect('用量查询');
+
+  const monthly=buildSixMonthUsage(x);
+  const max=Math.max(...monthly.map(i=>i.usage),1);
+
+  return `<section class="screen noTab">${pageTop('用量查询',{label:'切换户表',action:"nav('manage')"})}
+    <div class="content">
+      <div class="infoBanner">
+        <div class="top"><b>${esc(x.name)} · ${esc(x.meterNo)}</b><span class="badge">当前户表</span></div>
+        <p>${esc(x.address)}</p>
+      </div>
+
+      <div class="usageTop">
+        <small>本月累计用水</small>
+        <div class="big">${money(x.monthlyUsage)} <small>m³</small></div>
+        <p>当前上数时间：${esc(x.readTime)}</p>
+
+        <div class="bars">
+          ${monthly.map(r=>`
+            <div class="barCol" title="${r.year}年${r.month}月：${money(r.usage)} m³">
+              <div class="bar" style="height:${r.usage>0?Math.max(10,Math.round(r.usage/max*78)):8}px"></div>
+              <span>${r.label}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="sectionCard">
+        <div class="sectionHeader">
+          <div>
+            <div class="sectionTitle">抄表明细</div>
+            <div class="sectionSub">展示每月抄表时间及抄表用量</div>
+          </div>
+        </div>
+        <div class="readingRow header"><span>抄表时间</span><span>本次读数</span><span>本次用量</span></div>
+        ${(x.usage&&x.usage.length?x.usage:[{time:'暂无记录',read:x.read,use:0}]).map(r=>`
+          <div class="readingRow">
+            <b>${esc(r.time)}</b>
+            <span>${money(r.read)}</span>
+            <span>${money(r.use)} m³</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </section>`
+}
+function groupRecords(records){const g={};records.forEach(r=>{const m=r.time.slice(0,7);(g[m]||(g[m]=[])).push(r)});return g}
+function renderRecords(){
+  const x=currentAccount();if(!x)return renderEmptyRedirect('缴费记录');const records=x.records||[];const groups=groupRecords(records);
+  return `<section class="screen noTab">${pageTop('缴费记录',{label:'切换户表',action:"nav('manage')"})}<div class="content"><div class="infoBanner"><div class="top"><b>${esc(x.name)} · ${esc(x.userNo)}</b><span class="badge ok">微信支付</span></div><p>展示该户号在移动端完成的微信缴费记录。</p></div>${records.length?Object.keys(groups).sort().reverse().map(month=>`<div class="recordMonth">${month}</div>${groups[month].map(r=>`<div class="recordItem"><div class="recordIcon">${icon('wallet',20)}</div><div class="recordMain"><b>${esc(r.channel)}</b><small>${esc(r.time)}<br>${esc(r.txn)}</small></div><div class="recordAmount"><b>+¥${money(r.amount)}</b><small>${esc(r.status)}</small></div></div>`).join('')}`).join(''):`<div class="empty"><div class="emptyIcon">${icon('list',32)}</div><h2>暂无缴费记录</h2><p>完成微信缴费后，交易记录会展示在这里。</p></div>`}</div></section>`
+}
+function renderBills(){
+  const x=currentAccount();if(!x)return renderEmptyRedirect('周期账单');const currentYear=new Date().getFullYear();const years=[currentYear,currentYear-1,currentYear-2];const bills=(x.bills||[]).filter(b=>b.year===state.billYear);
+  return `<section class="screen noTab">${pageTop('周期账单',{label:'切换户表',action:"nav('manage')"})}<div class="content"><div class="infoBanner"><div class="top"><b>${esc(x.name)} · ${esc(x.userNo)}</b><span class="badge">历史账单</span></div><p>${esc(x.address)}</p></div><div class="yearTabs">${years.map(y=>`<button class="yearBtn ${state.billYear===y?'active':''}" onclick="setBillYear(${y})">${y}年度</button>`).join('')}</div>${bills.length?bills.map(b=>`<div class="billItem"><div class="billTop"><b>${b.month}</b><span class="badge ${b.status==='待缴'?'red':'ok'}">${b.status}</span></div><div class="billMetrics"><div class="billMetric"><span>本期水量</span><b>${money(b.usage)} <small style="font-size:10px;color:var(--muted)">m³</small></b></div><div class="billMetric"><span>本期消费</span><b>¥ ${money(b.amount)}</b></div></div></div>`).join(''):`<div class="empty"><div class="emptyIcon">${icon('calendar',32)}</div><h2>${state.billYear} 年暂无账单</h2><p>当前年度暂未查询到周期账单数据。</p></div>`}</div></section>`
+}
+function setBillYear(y){state.billYear=y;persist();render()}
+
+function showModal(html){document.getElementById('modal').innerHTML=html;document.getElementById('modalMask').classList.add('show')}
+function hideModal(){document.getElementById('modalMask').classList.remove('show')}
+document.getElementById('modalMask').addEventListener('click',e=>{if(e.target.id==='modalMask')hideModal()});
+render();
+</script>
+</body>
+</html>
