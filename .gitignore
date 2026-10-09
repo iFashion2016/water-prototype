@@ -8,3 +8,5 @@ package.json
 .git/
 # 备份文件
 *-备份.html
+# PRD 文档不进入仓库（仅本地保留）
+*.docx
