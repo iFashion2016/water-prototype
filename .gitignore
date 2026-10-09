@@ -10,3 +10,12 @@ package.json
 *-备份.html
 # PRD 文档不进入仓库（仅本地保留）
 *.docx
+# 不发布的页面（本地保留）
+户表管理/智慧水务-报停复开-高保真.html
+抄表管理/智慧水务-4G远传抄表-高保真.html
+抄表管理/智慧水务-异常抄表数据-高保真.html
+抄表管理/智慧水务-异常命令数据-高保真.html
+meter/stop-reopen.html
+reading/4g-remote.html
+reading/abnormal-reading.html
+reading/abnormal-cmd.html
