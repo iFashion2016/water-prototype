@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    background: #f7f7f7;
+    color: #212121;
+    overflow: hidden;
+    font-size: 14px;
+  }
+
+  /* ============ 顶栏 ============ */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100;
+    background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217));
+    display: flex; align-items: stretch;
+    box-shadow: 0 2px 8px rgba(0,0,0,.18);
+    color: #fff;
+  }
+  .topbar-left {
+    width: 204px; flex: 0 0 204px;
+    display: flex; align-items: center; padding: 0 16px; gap: 10px;
+  }
+  .logo-drop {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+  .topbar-right {
+    flex: 1; display: flex; align-items: center; padding-right: 18px;
+  }
+  .collapse-btn {
+    width: 40px; height: 53px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: rgba(255,255,255,.9); font-size: 16px;
+  }
+  .top-tabs { display: flex; align-items: center; gap: 6px; height: 100%; }
+  .top-tab {
+    padding: 7px 22px; border-radius: 18px; cursor: pointer;
+    color: rgba(255,255,255,.92); font-size: 14.5px; white-space: nowrap;
+    transition: background .2s;
+  }
+  .top-tab:hover { background: rgba(255,255,255,.14); }
+  .top-tab.active { background: rgba(255,255,255,.28); font-weight: 600; }
+  .top-user {
+    margin-left: auto; display: flex; align-items: center; gap: 12px;
+  }
+  .top-user .tenant { font-size: 14px; color: #fff; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.65);
+    background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+
+  /* ============ 侧边菜单 ============ */
+  .sidebar {
+    position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90;
+    background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06);
+    overflow-y: auto;
+  }
+  .side-caption {
+    padding: 14px 16px 6px; font-size: 12px; color: #9aa3af;
+  }
+  .menu-group-title {
+    display: flex; align-items: center; gap: 8px;
+    margin: 4px 10px; padding: 10px 12px;
+    background: #eaf3fe; color: #2a7de1; border-radius: 6px;
+    font-weight: 600; cursor: pointer; font-size: 14px;
+  }
+  .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
+  .menu-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 12px 11px 26px; margin: 2px 10px;
+    color: #4b5563; cursor: pointer; border-radius: 6px; font-size: 14px;
+  }
+  .menu-item:hover { background: #f2f7fd; color: #2a7de1; }
+  .menu-item svg { flex: 0 0 auto; }
+
+  /* ============ 主内容 ============ */
+  .main {
+    position: fixed; top: 53px; left: 204px; right: 0; bottom: 0;
+    display: flex; flex-direction: column;
+  }
+  .tags-bar {
+    height: 31px; flex: 0 0 31px; background: #fff;
+    border-bottom: 1px solid #eef0f3;
+    display: flex; align-items: center; padding: 0 16px;
+    font-size: 12.5px; color: #6b7280; gap: 6px;
+  }
+  .content {
+    flex: 1; overflow-y: auto; padding: 14px 16px 20px;
+  }
+  .footer {
+    flex: 0 0 29px; background: #fff; border-top: 1px solid #eef0f3;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px; font-size: 12px; color: #9aa3af;
+  }
+
+  /* ============ 指标卡 ============ */
+  .stat-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 14px; margin-bottom: 14px;
+  }
+  .stat-card {
+    background: #fff; border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(15, 60, 130, .08);
+    padding: 16px 16px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    min-height: 86px;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .stat-card:hover { box-shadow: 0 4px 14px rgba(15,60,130,.14); transform: translateY(-1px); }
+  .stat-label { font-size: 13px; color: #8a94a6; margin-bottom: 8px; }
+  .stat-value { font-size: 26px; font-weight: 700; color: #2b3445; line-height: 1; }
+  .stat-unit { font-size: 12px; font-weight: 400; color: #8a94a6; margin-left: 4px; }
+  .stat-icon { width: 40px; height: 40px; color: #3b9dff; flex: 0 0 40px; }
+
+  /* ============ 卡片通用 ============ */
+  .panel {
+    background: #fff; border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(15, 60, 130, .08);
+    margin-bottom: 14px; overflow: hidden;
+  }
+  .panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 16px; border-bottom: 1px solid #f1f3f6;
+  }
+  .panel-title { font-size: 15px; font-weight: 600; color: #374151; }
+  .panel-tools { display: flex; align-items: center; gap: 14px; }
+  .link-more { color: #3b9dff; font-size: 13px; cursor: pointer; }
+  .link-more:hover { text-decoration: underline; }
+  .close-x {
+    color: #c0c6cf; cursor: pointer; font-size: 15px; line-height: 1;
+    width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+  }
+  .close-x:hover { color: #8a94a6; }
+  .panel-body { padding: 8px 10px 12px; }
+
+  /* ============ 表格 ============ */
+  table.data-table { width: 100%; border-collapse: collapse; }
+  .data-table thead th {
+    text-align: left; font-size: 13.5px; font-weight: 600; color: #374151;
+    padding: 12px 16px; border-bottom: 1px solid #eef0f3; background: #fff;
+  }
+  .data-table tbody td {
+    padding: 14px 16px; font-size: 13.5px; color: #4b5563;
+    border-bottom: 1px solid #f4f6f8;
+  }
+  .data-table tbody tr:hover { background: #f7fafe; }
+
+  /* ============ 添加按钮 ============ */
+  .btn-add {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #3b9dff; color: #fff; border: none; border-radius: 6px;
+    padding: 8px 18px; font-size: 13.5px; cursor: pointer;
+    box-shadow: 0 2px 6px rgba(59,157,255,.35);
+  }
+  .btn-add:hover { background: #2a8ef0; }
+
+  /* 图表 legend */
+  .chart-legend {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-size: 12.5px; color: #6b7280; padding: 4px 0 2px;
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; background: #9ec9ff; }
+</style>
+</head>
+<body>
+
+<!-- ================= 顶栏 ================= -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-drop">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z" fill="#fff"/>
+        <path d="M9.2 14.5C9.2 16.4 10.4 17.8 12 18.1" stroke="#2a7de1" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="brand">智慧水务</div>
+  </div>
+  <div class="topbar-right">
+    <div class="collapse-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <nav class="top-tabs">
+      <div class="top-tab active">户表管理</div>
+      <div class="top-tab" onclick="window.location.href='收费管理/智慧水务-综合缴费-高保真.html'">收费管理</div>
+      <div class="top-tab" onclick="window.location.href='抄表管理/智慧水务-4GNB抄表-高保真.html'">物联网</div>
+      <div class="top-tab" onclick="window.location.href='报表分析/智慧水务-换表记录表-高保真.html'">报表分析</div>
+      <div class="top-tab" onclick="window.location.href='档案管理/智慧水务-地址档案-高保真.html'">档案管理</div>
+      <div class="top-tab" onclick="window.location.href='功能配置/智慧水务-功能配置-微信配置+表具类型.html'">功能配置</div>
+    </nav>
+    <div class="top-user">
+      <span class="tenant">涌恒供水</span>
+      <div class="avatar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8.2" r="3.4" fill="#fff" opacity=".95"/>
+          <path d="M4.8 19.5C5.6 15.6 8.5 13.8 12 13.8C15.5 13.8 18.4 15.6 19.2 19.5" fill="#fff" opacity=".95"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 侧边菜单 ================= -->
+<aside class="sidebar">
+  <div class="side-caption">户表管理</div>
+  <div class="menu-group-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#2a7de1" stroke-width="1.8"/><path d="M3 9H21" stroke="#2a7de1" stroke-width="1.8"/><path d="M8 4V9" stroke="#2a7de1" stroke-width="1.8"/></svg>
+    户表管理
+    <span class="chev">︿</span>
+  </div>
+  <div class="menu-item">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    用户开户
+  </div>
+  <div class="menu-item">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    用户换表
+  </div>
+  <div class="menu-item">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    报停复开
+  </div>
+  <div class="menu-item">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    用户销户
+  </div>
+</aside>
+
+<!-- ================= 主区域 ================= -->
+<div class="main">
+  <div class="tags-bar">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 11L12 3L21 11" stroke="#9aa3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10V21H18V10" stroke="#9aa3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    户表管理
+  </div>
+
+  <div class="content">
+
+    <!-- 指标卡：第一行 -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">户表总数</div>
+          <div class="stat-value">214<span class="stat-unit">块</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <rect x="7" y="10" width="34" height="28" rx="3" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M7 18H41" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M24 23C24 23 19.5 28.2 19.5 31.2C19.5 33.9 21.7 36 24 36C26.3 36 28.5 33.9 28.5 31.2C28.5 28.2 24 23 24 23Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">欠费用户</div>
+          <div class="stat-value">213<span class="stat-unit">户</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <circle cx="19" cy="16" r="6" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M8 38C9.4 30.8 13.6 27.5 19 27.5C24.4 27.5 28.6 30.8 30 38" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+          <circle cx="35" cy="33" r="8" fill="#fff" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M35 29.5V36.5M31.8 31.8C31.8 31.8 33 30.5 35 30.5C37 30.5 38.2 31.8 38.2 31.8M31.8 34.6C31.8 34.6 33 33.4 35 33.4C37 33.4 38.2 34.6 38.2 34.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">余额不足</div>
+          <div class="stat-value">0<span class="stat-unit">户</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="14" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M17 17L24 24L31 17M17 24H31M17 29H31M24 24V34" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">昨日抄表</div>
+          <div class="stat-value">213<span class="stat-unit">条</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <rect x="10" y="7" width="24" height="34" rx="2.5" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M16 15H28M16 21H28M16 27H24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="34" cy="34" r="8" fill="#fff" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M34 30.5V34.5L37 36.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">昨日缴费</div>
+          <div class="stat-value">0.00<span class="stat-unit">元</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="14" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M17 16L24 23L31 16M17 23H31M17 28H31M24 23V33" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">昨日用水</div>
+          <div class="stat-value">74.89<span class="stat-unit">m³</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <path d="M21 7C21 7 12 17.5 12 24.5C12 30.2 16 34.5 21 34.5C26 34.5 30 30.2 30 24.5C30 17.5 21 7 21 7Z" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
+          <circle cx="35" cy="35" r="7" fill="#fff" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M35 31.5V35.5L37.5 37" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <!-- 第二行 -->
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">阀关数量</div>
+          <div class="stat-value">0<span class="stat-unit">块</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <path d="M8 26H40" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+          <path d="M12 21V31M36 21V31" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+          <rect x="19" y="18" width="10" height="16" rx="2" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M24 18V12M18 12H30" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">抄表异常</div>
+          <div class="stat-value">0<span class="stat-unit">条</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <rect x="11" y="7" width="26" height="34" rx="2.5" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M17 15H31M17 21H31M17 27H26" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M24 33L30 41H18L24 33Z" fill="#fff" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+          <path d="M24 36V38.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">稽查预警</div>
+          <div class="stat-value">28<span class="stat-unit">条</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <circle cx="21" cy="21" r="9" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M28 28L36 36" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M21 16V22.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="21" cy="25.8" r="1.4" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">今日抄表</div>
+          <div class="stat-value">198<span class="stat-unit">条</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <rect x="10" y="7" width="24" height="34" rx="2.5" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M16 15H28M16 21H28M16 27H24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="34" cy="34" r="8" fill="#fff" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M31 34L33.5 36.5L37.5 32" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">今日缴费</div>
+          <div class="stat-value">0.00<span class="stat-unit">元</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="14" stroke="currentColor" stroke-width="2.6"/>
+          <path d="M17 16L24 23L31 16M17 23H31M17 28H31M24 23V33" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">今日用水</div>
+          <div class="stat-value">50.30<span class="stat-unit">m³</span></div>
+        </div>
+        <svg class="stat-icon" viewBox="0 0 48 48" fill="none">
+          <path d="M21 7C21 7 12 17.5 12 24.5C12 30.2 16 34.5 21 34.5C26 34.5 30 30.2 30 24.5C30 17.5 21 7 21 7Z" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
+          <path d="M17.5 25C17.5 27.6 19 29.5 21 30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 用水走势 -->
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">用水走势</div>
+        <div class="panel-tools"><span class="close-x">✕</span></div>
+      </div>
+      <div class="panel-body">
+        <div class="chart-legend"><span class="legend-dot"></span>用水走势</div>
+        <svg id="trendChart" width="100%" height="360" viewBox="0 0 1560 360" preserveAspectRatio="none"></svg>
+      </div>
+    </div>
+
+    <!-- 水表上线率 -->
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">水表上线率</div>
+        <div class="panel-tools"><span class="close-x">✕</span></div>
+      </div>
+      <div class="panel-body">
+        <svg id="onlineChart" width="100%" height="420" viewBox="0 0 1560 420" preserveAspectRatio="none"></svg>
+      </div>
+    </div>
+
+    <!-- 超五天未上线 -->
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">超五天未上线</div>
+        <div class="panel-tools">
+          <span class="link-more">查看更多</span>
+          <span class="close-x">✕</span>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr><th>表号</th><th>户号</th><th>户名</th><th>最近一次上线时间</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>261124080002</td>
+            <td>063000001</td>
+            <td>侧事故</td>
+            <td>2026-07-06 09:20:12</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button class="btn-add">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>
+      添加
+    </button>
+  </div>
+
+  <footer class="footer">
+    <span>当前用户：涌恒供水</span>
+    <span>2012-2025@版权所有智慧水务研发中心</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  // ---------- 用水走势（面积图，数据还原自线上页面） ----------
+  var days = []; for (var i = 1; i <= 21; i++) days.push(i);
+  var usage = [46, 46, 47, 51, 48, 42, 46, 48, 47, 46, 47, 11, 78, 45, 65, 46, 49, 50, 47, 74, 50];
+
+  function drawArea(svgId, labels, data, opt) {
+    var svg = document.getElementById(svgId);
+    var W = 1560, H = +svg.getAttribute("height") || 360;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    var padL = 52, padR = 26, padT = 18, padB = 34;
+    var iw = W - padL - padR, ih = H - padT - padB;
+    var yMin = opt.yMin, yMax = opt.yMax, yStep = opt.yStep;
+
+    var ns = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      var e = document.createElementNS(ns, tag);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      (parent || svg).appendChild(e);
+      return e;
+    }
+    function x(i) { return padL + (labels.length === 1 ? iw / 2 : iw * i / (labels.length - 1)); }
+    function y(v) { return padT + ih * (1 - (v - yMin) / (yMax - yMin)); }
+
+    // 网格线 + Y 轴刻度
+    for (var gv = yMin; gv <= yMax + 1e-9; gv += yStep) {
+      var yy = y(gv);
+      el("line", { x1: padL, y1: yy, x2: W - padR, y2: yy, stroke: "#eef1f5", "stroke-width": 1 });
+      var t = el("text", { x: padL - 10, y: yy + 4, "text-anchor": "end", "font-size": 12, fill: "#9aa3af" });
+      t.textContent = opt.yFmt ? opt.yFmt(gv) : gv;
+    }
+    // 竖向网格
+    for (var xi = 0; xi < labels.length; xi++) {
+      el("line", { x1: x(xi), y1: padT, x2: x(xi), y2: H - padB, stroke: "#f4f6f9", "stroke-width": 1 });
+    }
+    // X 轴刻度
+    for (var di = 0; di < labels.length; di++) {
+      var tx = el("text", { x: x(di), y: H - padB + 20, "text-anchor": "middle", "font-size": 12, fill: "#9aa3af" });
+      tx.textContent = labels[di];
+    }
+
+    if (!data || !data.length) return;
+
+    // 平滑路径（Catmull-Rom -> Bezier）
+    function smoothPath(pts) {
+      var d = "M" + pts[0][0] + "," + pts[0][1];
+      for (var i = 0; i < pts.length - 1; i++) {
+        var p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+        var c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+        var c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+        d += "C" + c1x + "," + c1y + " " + c2x + "," + c2y + " " + p2[0] + "," + p2[1];
+      }
+      return d;
+    }
+    var pts = data.map(function (v, i) { return [x(i), y(v)]; });
+    var line = smoothPath(pts);
+    var base = H - padB;
+
+    // 渐变填充
+    var defs = el("defs", {});
+    var grad = el("linearGradient", { id: svgId + "-g", x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+    el("stop", { offset: "0%", "stop-color": "#8ec2ff", "stop-opacity": 0.95 }, grad);
+    el("stop", { offset: "100%", "stop-color": "#c3deff", "stop-opacity": 0.55 }, grad);
+
+    el("path", { d: line + "L" + pts[pts.length - 1][0] + "," + base + "L" + pts[0][0] + "," + base + "Z", fill: "url(#" + svgId + "-g)", stroke: "none" });
+    el("path", { d: line, fill: "none", stroke: "#7fb7ff", "stroke-width": 2 });
+  }
+
+  drawArea("trendChart", days, usage, { yMin: 0, yMax: 80, yStep: 10 });
+
+  // ---------- 水表上线率（暂无数据，仅坐标轴） ----------
+  var emptyDays = []; for (var j = 1; j <= 21; j++) emptyDays.push(j);
+  drawArea("onlineChart", emptyDays, [], {
+    yMin: 0, yMax: 1.0, yStep: 0.1,
+    yFmt: function (v) { return v.toFixed(1); }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务 - 4GNB抄表</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f7f7f7; color: #212121; overflow: hidden; font-size: 14px; }
+
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
+  .topbar-left { width: 204px; flex: 0 0 204px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
+  .logo-drop { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; }
+  .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+  .topbar-right { flex: 1; display: flex; align-items: center; padding-right: 18px; }
+  .collapse-btn { width: 40px; height: 53px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,.9); }
+  .top-tabs { display: flex; align-items: center; gap: 6px; height: 100%; }
+  .top-tab { padding: 7px 22px; border-radius: 18px; cursor: pointer; color: rgba(255,255,255,.92); font-size: 14.5px; white-space: nowrap; transition: background .2s; }
+  .top-tab:hover { background: rgba(255,255,255,.14); }
+  .top-tab.active { background: rgba(255,255,255,.28); font-weight: 600; }
+  .top-user { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .top-user .tenant { font-size: 14px; color: #fff; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,.65); background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; }
+  .side-caption { padding: 14px 16px 6px; font-size: 12px; color: #9aa3af; }
+  .menu-group-title { display: flex; align-items: center; gap: 8px; margin: 4px 10px; padding: 10px 12px; background: #eaf3fe; color: #2a7de1; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
+  .menu-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px 11px 26px; margin: 2px 10px; color: #4b5563; cursor: pointer; border-radius: 6px; text-decoration: none; }
+  .menu-item:hover { background: #f2f7fd; color: #2a7de1; }
+  .menu-item.active { background: #eaf3fe; color: #2a7de1; font-weight: 600; }
+
+  .main { position: fixed; top: 53px; left: 204px; right: 0; bottom: 0; display: flex; flex-direction: column; }
+  .subtabs { flex: 0 0 44px; background: #fff; border-bottom: 1px solid #eef0f3; display: flex; align-items: center; padding: 0 8px; gap: 2px; }
+  .subtab-list { display: flex; align-items: center; flex: 1; overflow: hidden; }
+  .subtab { padding: 0 26px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #4b5563; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; text-decoration: none; }
+  .subtab:hover { color: #2a7de1; }
+  .subtab.active { color: #2a7de1; border-bottom-color: #2a7de1; font-weight: 600; }
+
+  .content { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
+  .footer { flex: 0 0 29px; background: #fff; border-top: 1px solid #eef0f3; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 12px; color: #9aa3af; }
+
+  .filter-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 18px 24px 16px; margin-bottom: 14px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 28px; }
+  /* 查询区收缩：默认只显示第一行，展开按钮跟在可见行末尾 */
+  .filter-grid.collapsed .filter-item:nth-child(n+4) { display: none; }
+  .filter-toggle { grid-column: 1 / -1; display: flex; align-items: center; justify-content: flex-end; gap: 4px; height: 34px; margin-top: -6px; color: #3b9dff; font-size: 13.5px; cursor: pointer; user-select: none; white-space: nowrap; }
+  .filter-toggle:hover { color: #2a8ef0; }
+  .filter-toggle .caret { font-size: 11px; }
+  .filter-item { display: flex; align-items: center; }
+  .filter-label { flex: 0 0 72px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; white-space: nowrap; }
+  .filter-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .filter-input.placeholder { color: #b6bdc9; }
+  .filter-input:hover { border-color: #3b9dff; }
+  .filter-input .caret { color: #b6bdc9; font-size: 11px; }
+  input.filter-input { cursor: text; }
+  input.filter-input::placeholder { color: #b6bdc9; }
+
+  .btn-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border: none; border-radius: 4px; background: #3b9dff; color: #fff; font-size: 13.5px; cursor: pointer; box-shadow: 0 1px 3px rgba(59,157,255,.3); white-space: nowrap; }
+  .btn:hover { background: #2a8ef0; }
+  .btn-plain { background: #fff; color: #4b5563; border: 1px solid #dcdfe6; box-shadow: none; }
+  .btn-plain:hover { background: #f5f7fa; }
+  .btn-cyan { background: #26b8c7; }
+  .btn-cyan:hover { background: #1aa5b4; }
+
+  .table-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); overflow: hidden; }
+  .table-scroll { overflow-x: auto; }
+  table.data-table { border-collapse: collapse; min-width: 100%; }
+  .data-table th, .data-table td { padding: 11px 14px; font-size: 13px; white-space: nowrap; border-bottom: 1px solid #eef0f3; text-align: left; }
+  .data-table thead th { background: #fff; font-weight: 600; color: #374151; font-size: 13.5px; position: sticky; top: 0; z-index: 2; }
+  .data-table tbody td { color: #4b5563; }
+  .data-table tbody tr:hover { background: #f7fafe; }
+  .negative { color: #f56c6c; }
+  .sort-ico { color: #c0c6cf; font-size: 10px; margin-left: 2px; }
+  .row-btn { height: 26px; padding: 0 10px; border: none; border-radius: 4px; background: #3b9dff; color: #fff; font-size: 12.5px; cursor: pointer; margin-right: 6px; }
+  .row-btn:hover { background: #2a8ef0; }
+  .tag-ok { display: inline-block; background: #ecf8f0; color: #3d9a63; border: 1px solid #b7e6c8; border-radius: 4px; font-size: 12px; padding: 2px 8px; }
+
+  /* 操作列右侧冻结（仅主表） */
+  #mainTable th:last-child, #mainTable td:last-child { position: sticky; right: 0; background: #fff; box-shadow: -8px 0 10px -6px rgba(15,60,130,.18); }
+  #mainTable thead th:last-child { z-index: 3; }
+  #mainTable tbody tr:hover td:last-child { background: #f7fafe; }
+  #mainTable tbody tr.selected { background: #e8f2ff; }
+  #mainTable tbody tr.selected td:last-child { background: #e8f2ff; }
+
+  /* 行内「操作」下拉 */
+  .op-trigger { height: 24px; padding: 0 10px; border: 1px solid #3b9dff; border-radius: 4px; background: #3b9dff; color: #fff; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+  .op-trigger:hover { background: #2a8ef0; border-color: #2a8ef0; }
+  .op-menu { position: fixed; z-index: 400; min-width: 118px; background: #fff; border: 1px solid #e4e7ed; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.14); padding: 5px 0; display: none; }
+  .op-menu.show { display: block; }
+  .op-menu .op-item { padding: 8px 16px; font-size: 13px; color: #4b5563; cursor: pointer; white-space: nowrap; }
+  .op-menu .op-item:hover { background: #ecf5ff; color: #3b9dff; }
+
+  .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 16px 12px; font-size: 13px; color: #6b7280; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4b5563; }
+  .page-btn:hover { color: #2a7de1; }
+  .page-btn.active { background: #3b9dff; color: #fff; }
+  .page-btn.disabled { color: #c8cdd5; cursor: default; }
+  .page-total { margin: 0 10px; }
+  .page-size { height: 30px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 10px; display: inline-flex; align-items: center; gap: 14px; color: #4b5563; cursor: pointer; background: #fff; }
+
+  .modal-mask { position: fixed; inset: 0; background: rgba(15,25,45,.45); z-index: 200; display: none; align-items: flex-start; justify-content: center; }
+  .modal-mask.show { display: flex; }
+  .modal { background: #fff; border-radius: 8px; margin-top: 110px; width: 560px; max-width: 94vw; max-height: calc(100vh - 130px); display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
+  .modal.modal-lg { width: 1000px; margin-top: 70px; }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; border-bottom: 1px solid #f1f3f6; }
+  .modal-title { font-size: 16px; font-weight: 700; color: #1f2937; }
+  .modal-close { cursor: pointer; color: #9aa3af; font-size: 16px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { color: #4b5563; }
+  .modal-body { padding: 24px 34px; overflow-y: auto; flex: 1; }
+  .modal-foot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #f1f3f6; }
+  .dlg-item { display: flex; align-items: center; margin-bottom: 18px; }
+  .dlg-label { flex: 0 0 96px; text-align: right; font-size: 14.5px; font-weight: 600; color: #1f2937; margin-right: 12px; }
+  .dlg-input { flex: 0 0 220px; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; }
+  .dlg-input .caret { color: #b6bdc9; font-size: 11px; }
+  .dlg-text { flex: 0 0 140px; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; outline: none; transition: border-color .2s; }
+  .dlg-text:focus { border-color: #3b9dff; }
+  .dlg-select { flex: 0 0 72px; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 8px; font-size: 13.5px; color: #374151; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23b6bdc9' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E") no-repeat right 8px center; appearance: none; -webkit-appearance: none; cursor: pointer; outline: none; transition: border-color .2s; }
+  .dlg-select:focus { border-color: #3b9dff; }
+  .dlg-unit-sep { margin: 0 8px; color: #9aa3af; font-size: 13.5px; }
+  .radio-item { display: flex; align-items: center; gap: 6px; margin-right: 22px; font-size: 14px; color: #374151; cursor: pointer; }
+  .radio-dot { width: 15px; height: 15px; border-radius: 50%; border: 1px solid #dcdfe6; display: inline-flex; align-items: center; justify-content: center; }
+  .radio-item.on .radio-dot { border-color: #3b9dff; }
+  .radio-item.on .radio-dot::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #3b9dff; }
+  .dlg-hint { color: #9aa3af; font-size: 13px; margin: 6px 0 0 108px; }
+  .empty-tip { text-align: center; color: #9aa3af; padding: 50px 0; font-size: 14px; }
+
+  .toast { position: fixed; top: 76px; right: 24px; z-index: 300; min-width: 300px; background: #fdf6e3; border: 1px solid #f5dab1; color: #b88230; border-radius: 6px; padding: 12px 16px; display: none; align-items: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .toast.show { display: flex; animation: slideIn .25s ease; }
+  .toast .t-close { margin-left: auto; cursor: pointer; color: #d3b17c; }
+  .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  .chart-wrap { display: flex; align-items: flex-end; gap: 18px; height: 220px; padding: 10px 10px 0; border-bottom: 1px solid #e5e7eb; }
+  .chart-bar { flex: 1; background: linear-gradient(180deg, #5cb2ff, #2a7de1); border-radius: 4px 4px 0 0; position: relative; }
+  .chart-bar span { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #4b5563; }
+  .chart-x { display: flex; gap: 18px; padding: 8px 10px 0; font-size: 12px; color: #9aa3af; }
+  .chart-x div { flex: 1; text-align: center; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-drop">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z" fill="#fff"/><path d="M9.2 14.5C9.2 16.4 10.4 17.8 12 18.1" stroke="#2a7de1" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <div class="brand">智慧水务</div>
+  </div>
+  <div class="topbar-right">
+    <div class="collapse-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <nav class="top-tabs">
+      <div class="top-tab" onclick="window.location.href='../户表管理/智慧水务-用户开户-高保真.html'">户表管理</div>
+      <div class="top-tab" onclick="window.location.href='../收费管理/智慧水务-综合缴费-高保真.html'">收费管理</div>
+      <div class="top-tab active">物联网</div>
+      <div class="top-tab" onclick="window.location.href='../报表分析/智慧水务-换表记录表-高保真.html'">报表分析</div>
+      <div class="top-tab" onclick="window.location.href='../档案管理/智慧水务-地址档案-高保真.html'">档案管理</div>
+      <div class="top-tab" onclick="window.location.href='../功能配置/智慧水务-功能配置-微信配置+表具类型.html'">功能配置</div>
+    </nav>
+    <div class="top-user">
+      <span class="tenant">涌恒供水</span>
+      <div class="avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.4" fill="#fff" opacity=".95"/><path d="M4.8 19.5C5.6 15.6 8.5 13.8 12 13.8C15.5 13.8 18.4 15.6 19.2 19.5" fill="#fff" opacity=".95"/></svg></div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar">
+  <div class="side-caption">物联网</div>
+  <div class="menu-group-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg>
+    抄表管理
+    <span class="chev">︿</span>
+  </div>
+  <a class="menu-item active" href="智慧水务-4GNB抄表-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#2a7de1" stroke-width="2" stroke-linecap="round"/></svg>
+    4GNB抄表
+  </a>
+</aside>
+
+<div class="main">
+  <div class="subtabs">
+    <div class="subtab-list" style="margin-left:12px">
+      <a class="subtab active" href="智慧水务-4GNB抄表-高保真.html">4GNB抄表</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="filter-card">
+      <div class="filter-grid">
+        <div class="filter-item"><span class="filter-label">组织机构：</span><div class="filter-input"><span>063 涌恒供水</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">分级地址：</span><div class="filter-input placeholder"><span>请选择分级地址</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">模糊地址：</span><input class="filter-input q" placeholder="请输入模糊地址"></div>
+        <div class="filter-item"><span class="filter-label">用户编号：</span><input class="filter-input q" placeholder="请输入用户编号"></div>
+        <div class="filter-item"><span class="filter-label">用户名称：</span><input class="filter-input q" placeholder="请输入用户名称"></div>
+        <div class="filter-item"><span class="filter-label">手机号：</span><input class="filter-input q" placeholder="请输入手机号"></div>
+        <div class="filter-item"><span class="filter-label">表身码：</span><input class="filter-input q" placeholder="请输入表身码"></div>
+        <div class="filter-item"><span class="filter-label">价格类型：</span><div class="filter-input placeholder"><span>请选择价格类型</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">口径：</span><div class="filter-input placeholder"><span>请选择口径</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">运营商：</span><div class="filter-input placeholder"><span>请选择运营商</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">开户状态：</span><div class="filter-input placeholder"><span>请选择开户状态</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">阀门状态：</span><div class="filter-input placeholder"><span>请选择阀门状态</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">是否校验：</span><div class="filter-input placeholder"><span>请选择是否校验</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">是否定位：</span><div class="filter-input placeholder"><span>请选择是否定位</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">上报周期：</span><div class="filter-input placeholder"><span>请选择上报周期</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">余额下限：</span><input class="filter-input q" placeholder="请输入余额下限"></div>
+        <div class="filter-item"><span class="filter-label">余额上限：</span><input class="filter-input q" placeholder="请输入余额上限"></div>
+        <div class="filter-item"><span class="filter-label">营业所：</span><div class="filter-input"><span>涌恒供水</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">表册：</span><div class="filter-input placeholder"><span>请选择表册</span><span class="caret">▾</span></div></div>
+      </div>
+      <div class="btn-bar">
+        <button class="btn" onclick="showToast('查询成功','success')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          查询
+        </button>
+        <button class="btn" onclick="doReset()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 12 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4V12H12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 16 8)"/></svg>
+          重置
+        </button>
+        <button class="btn" onclick="sendCmd('批量校验')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#fff" stroke-width="2"/><path d="M8 12L11 15L16 9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          批量校验
+        </button>
+        <button class="btn" onclick="sendCmd('批量开阀')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#fff" stroke-width="2"/><path d="M9 12H15M12 9V15" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          批量开阀
+        </button>
+        <button class="btn" onclick="sendCmd('批量关阀')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#fff" stroke-width="2"/><path d="M9 12H15" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          批量关阀
+        </button>
+        <button class="btn btn-cyan" onclick="openModal('dlgValveCfg')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#fff" stroke-width="2"/><path d="M19 12A7 7 0 0 0 12 5M12 19A7 7 0 0 0 5 12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          关阀配置
+        </button>
+        <button class="btn" onclick="needChecked('dlgPeriod')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16 4L20 8L9 19L4 20L5 15L16 4Z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+          修改周期
+        </button>
+        <button class="btn" onclick="showToast('导出任务已提交，请稍后下载','success')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 15V3M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          导出
+        </button>
+        <button class="btn" onclick="openModal('dlgChart')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 20V10M10 20V4M16 20V13M22 20H2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          图表展示
+        </button>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="data-table" id="mainTable">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="chkAll"></th>
+              <th>用户编号<span class="sort-ico">⇅</span></th><th>用户名称</th><th>用户地址</th><th>手机号</th><th>表身码</th>
+              <th>阀门状态</th><th>校验状态</th><th>最近结算读数<span class="sort-ico">⇅</span></th><th>最近结算时间</th>
+              <th>最近上报读数</th><th>最近上报时间</th><th>最近命令</th><th>命令下达时间</th><th>命令执行状态</th>
+              <th>日用量</th><th>月用量</th><th>表内余额</th><th>赠送余额</th><th>信号强度</th><th>电池电压</th><th>电池状态</th>
+              <th>压力参数</th><th>上报周期</th><th>表具类型</th><th>口径</th><th>运营商</th><th>Imei号</th>
+              <th>短信提醒</th><th>短信警告</th><th>营业所</th><th>表册</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><input type="checkbox" class="rowchk"></td><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>*</td><td>260626116289</td><td>开</td><td><span class="tag-ok">已校验</span></td><td>23.35</td><td>2026-09-22 14:41:32</td><td>23.35</td><td>2026-09-22 14:41:32</td><td>修改周期</td><td>2026-09-07 18:25:08</td><td>待执行</td><td>0.88</td><td>23.35</td><td class="negative">-23.35</td><td>0.00</td><td>28</td><td>3.1</td><td>正常</td><td>0000</td><td>48</td><td>NB远传阀控水表</td><td>DN20</td><td>移动ONENET</td><td>869944071800105</td><td>否</td><td>否</td><td>涌恒供水</td><td>默认</td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td><input type="checkbox" class="rowchk"></td><td>063000336</td><td>人民路建行对面意尔康楼上</td><td>河口县公共区域-人民路门市-1212</td><td>*</td><td>00002624000053</td><td>开</td><td><span class="tag-ok">已校验</span></td><td>2.52</td><td>2026-09-22 10:41:32</td><td>2.52</td><td>2026-09-22 10:41:06</td><td>开阀</td><td>2026-09-17 13:34:40</td><td>待执行</td><td>0.05</td><td>2.52</td><td class="negative">-2.52</td><td>0.00</td><td>-82.0</td><td>3.67</td><td>正常</td><td></td><td>0</td><td>WPG远传阀控水表</td><td>DN20</td><td></td><td></td><td>否</td><td>否</td><td>涌恒供水</td><td>默认</td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td><input type="checkbox" class="rowchk"></td><td>063000335</td><td>000053</td><td>河口县公共区域-人民路门市-123</td><td>*</td><td>00002624000083</td><td>开</td><td><span class="tag-ok">已校验</span></td><td>0.58</td><td>2026-09-21 16:41:32</td><td>0.58</td><td>2026-09-21 16:41:06</td><td>修改周期</td><td>2026-09-07 18:25:08</td><td>待执行</td><td>0.00</td><td>0.58</td><td class="negative">-0.58</td><td>0.00</td><td>-88.0</td><td>3.66</td><td>正常</td><td></td><td>0</td><td>WPG远传阀控水表</td><td>DN20</td><td></td><td></td><td>否</td><td>否</td><td>涌恒供水</td><td>默认</td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td><input type="checkbox" class="rowchk"></td><td>063000322</td><td>260626116356</td><td>河口一中宏建小区-3栋-301</td><td>1</td><td>260626116356</td><td>开</td><td><span class="tag-ok">已校验</span></td><td>0.41</td><td>2026-09-22 14:58:00</td><td>0.41</td><td>2026-09-22 14:57:49</td><td>关阀</td><td>2026-08-18 10:10:40</td><td>待执行</td><td>0.00</td><td>0.00</td><td class="negative">-0.41</td><td>0.00</td><td>22</td><td>3.1</td><td>正常</td><td>0000</td><td>48</td><td>NB远传阀控水表</td><td>DN20</td><td>移动ONENET</td><td>869944071813959</td><td>否</td><td>否</td><td>涌恒供水</td><td>默认</td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td><input type="checkbox" class="rowchk"></td><td>063000321</td><td>260626116404</td><td>河口一中宏建小区-1栋-260626116404</td><td>1</td><td>260626116404</td><td>开</td><td><span class="tag-ok">已校验</span></td><td>10.63</td><td>2026-09-22 14:49:32</td><td>10.63</td><td>2026-09-22 14:49:16</td><td>关阀</td><td>2026-08-18 10:10:40</td><td>待执行</td><td>0.08</td><td>7.81</td><td class="negative">-10.63</td><td>0.00</td><td>31</td><td>3.1</td><td>正常</td><td>0000</td><td>48</td><td>NB远传阀控水表</td><td>DN20</td><td>移动ONENET</td><td>860726088485478</td><td>否</td><td>否</td><td>涌恒供水</td><td>默认</td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td><input type="checkbox" class="rowchk"></td><td>063000317</td><td>260626116252</td><td>河口县公共区域-公共公共-001</td><td>1</td><td>260626116252</td><td>开</td><td><span class="tag-ok">已校验</span></td><td>0.32</td><td>2026-09-22 14:36:48</td><td>0.32</td><td>2026-09-22 14:36:37</td><td>关阀</td><td>2026-08-18 10:10:40</td><td>待执行</td><td>0.00</td><td>0.00</td><td class="negative">-0.32</td><td>0.00</td><td>19</td><td>3.2</td><td>正常</td><td>0000</td><td>48</td><td>NB远传阀控水表</td><td>DN20</td><td>移动ONENET</td><td>860726088353411</td><td>否</td><td>否</td><td>涌恒供水</td><td>默认</td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td><input type="checkbox" class="rowchk"></td><td>063000327</td><td>人民路建行对面街心花园意尔康楼上</td><td>河口县公共区域-公共公共-02</td><td>1</td><td>00002624000058</td><td>开</td><td><span class="tag-ok">已校验</span></td><td>31.49</td><td>2026-09-22 11:41:32</td><td>31.49</td><td>2026-09-22 11:41:08</td><td></td><td></td><td></td><td>0.01</td><td>30.07</td><td class="negative">-31.49</td><td>0.00</td><td>-91.0</td><td>3.68</td><td></td><td></td><td></td><td>WPG远传阀控水表</td><td>DN20</td><td></td><td></td><td>否</td><td>否</td><td>涌恒供水</td><td>默认</td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td><input type="checkbox" class="rowchk"></td><td>063000212</td><td>刘明日</td><td>河口一中宏建小区-1栋-702</td><td>1</td><td>260626116281</td><td>开</td><td><span class="tag-ok">已校验</span></td><td>1.00</td><td>2026-09-22 14:42:32</td><td>1.00</td><td>2026-09-22 14:42:32</td><td></td><td></td><td></td><td>0.00</td><td>0.00</td><td class="negative">-1.00</td><td>0.00</td><td>24</td><td>3.1</td><td>正常</td><td>0000</td><td>48</td><td>NB远传阀控水表</td><td>DN20</td><td>移动ONENET</td><td>869944071707417</td><td>否</td><td>否</td><td>涌恒供水</td><td>默认</td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td><input type="checkbox" class="rowchk"></td><td>063000211</td><td>邹格军</td><td>河口一中宏建小区-1栋-物业用房卫生间</td><td>1</td><td>260626116309</td><td>开</td><td><span class="tag-ok">已校验</span></td><td>27.91</td><td>2026-09-22 14:42:16</td><td>27.91</td><td>2026-09-22 14:42:07</td><td>关阀</td><td>2026-08-05 10:03:32</td><td>待执行</td><td>0.82</td><td>9.64</td><td class="negative">-27.91</td><td>0.00</td><td>31</td><td>3.1</td><td>正常</td><td>0000</td><td>48</td><td>NB远传阀控水表</td><td>DN20</td><td>移动ONENET</td><td>868335075591835</td><td>否</td><td>否</td><td>涌恒供水</td><td>默认</td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+            <tr><td><input type="checkbox" class="rowchk"></td><td>063000210</td><td>田如燕</td><td>河口一中宏建小区-1栋-201</td><td>1</td><td>260626116287</td><td>开</td><td><span class="tag-ok">已校验</span></td><td>21.27</td><td>2026-09-22 14:39:48</td><td>21.27</td><td>2026-09-22 14:39:42</td><td>关阀</td><td>2026-08-05 10:03:32</td><td>待执行</td><td>0.64</td><td>11.90</td><td class="negative">-21.27</td><td>0.00</td><td>31</td><td>3.2</td><td>正常</td><td>0000</td><td>48</td><td>NB远传阀控水表</td><td>DN20</td><td>移动ONENET</td><td>860726088349112</td><td>否</td><td>否</td><td>涌恒供水</td><td>默认</td><td><button class="op-trigger" onclick="toggleOpMenu(event,this)">操作<span class="caret" style="font-size:9px">▾</span></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span>
+        <span class="page-btn active">1</span><span class="page-btn">2</span><span class="page-btn">3</span><span class="page-btn">4</span><span class="page-btn">5</span>
+        <span class="page-btn">›</span><span class="page-btn">»</span>
+        <span class="page-total">共 [ 12 ] 页，共 [ 113 ] 条</span>
+        <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>当前用户：涌恒供水</span>
+    <span>2012-2025@版权所有智慧水务研发中心</span>
+  </footer>
+</div>
+
+<!-- ============ 弹窗：欠费关阀配置 ============ -->
+<div class="modal-mask" id="dlgValveCfg">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">欠费关阀配置</div><span class="modal-close" onclick="closeModal('dlgValveCfg')">✕</span></div>
+    <div class="modal-body">
+      <div class="dlg-item">
+        <span class="dlg-label">关阀方式：</span>
+        <span class="radio-item on"><span class="radio-dot"></span>欠费不关阀</span>
+        <span class="radio-item"><span class="radio-dot"></span>欠费关阀</span>
+      </div>
+      <div class="dlg-hint">当前配置不会因用户欠费下达关阀指令。</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgValveCfg')">取消</button>
+      <button class="btn" onclick="closeModal('dlgValveCfg');showToast('保存成功','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：修改上传周期 ============ -->
+<div class="modal-mask" id="dlgPeriod">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">修改上传周期</div><span class="modal-close" onclick="closeModal('dlgPeriod')">✕</span></div>
+    <div class="modal-body">
+      <div class="dlg-item">
+        <span class="dlg-label">上传周期：</span>
+        <input type="number" class="dlg-text" value="1" min="1" placeholder="请输入周期">
+        <span class="dlg-unit-sep"></span>
+        <select class="dlg-select">
+          <option value="天">天</option>
+          <option value="小时">小时</option>
+        </select>
+      </div>
+      <div class="dlg-hint">备注：待表具唤醒执行命令后，执行当前上传周期</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgPeriod')">取消</button>
+      <button class="btn" onclick="closeModal('dlgPeriod');showToast('保存成功','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：命令记录 ============ -->
+<div class="modal-mask" id="dlgCmd">
+  <div class="modal modal-lg">
+    <div class="modal-head"><div class="modal-title">命令记录</div><span class="modal-close" onclick="closeModal('dlgCmd')">✕</span></div>
+    <div class="modal-body" style="padding:18px 22px">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>用户编号</th><th>用户名称</th><th>表身码</th><th>命令类型</th><th>命令状态</th><th>创建时间</th><th>执行时间</th><th>操作员</th></tr></thead>
+        </table>
+      </div>
+      <div class="empty-tip">暂无数据</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：用水记录 ============ -->
+<div class="modal-mask" id="dlgWater">
+  <div class="modal modal-lg">
+    <div class="modal-head"><div class="modal-title">用水记录</div><span class="modal-close" onclick="closeModal('dlgWater')">✕</span></div>
+    <div class="modal-body" style="padding:18px 22px">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>用户编号</th><th>用户名称</th><th>用户地址</th><th>表身码</th><th>抄表时间</th><th>抄表读数</th><th>用水量</th></tr></thead>
+          <tbody>
+            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>2026-09-21 14:41:49</td><td>22.47</td><td>0.73</td></tr>
+            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>2026-09-20 14:41:45</td><td>21.74</td><td>1.04</td></tr>
+            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>2026-09-19 14:41:16</td><td>20.70</td><td>1.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span>
+        <span class="page-btn active">1</span>
+        <span class="page-btn disabled">›</span><span class="page-btn disabled">»</span>
+        <span class="page-total">共 [ 1 ] 页，共 [ 7 ] 条</span>
+        <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：图表展示（近似还原：线上该功能未截取到界面） ============ -->
+<div class="modal-mask" id="dlgChart">
+  <div class="modal modal-lg" style="width:860px">
+    <div class="modal-head"><div class="modal-title">用量图表</div><span class="modal-close" onclick="closeModal('dlgChart')">✕</span></div>
+    <div class="modal-body">
+      <div class="chart-wrap">
+        <div class="chart-bar" style="height:42%"><span>0.73</span></div>
+        <div class="chart-bar" style="height:60%"><span>1.04</span></div>
+        <div class="chart-bar" style="height:58%"><span>1.00</span></div>
+        <div class="chart-bar" style="height:47%"><span>0.81</span></div>
+        <div class="chart-bar" style="height:58%"><span>1.01</span></div>
+        <div class="chart-bar" style="height:46%"><span>0.80</span></div>
+      </div>
+      <div class="chart-x"><div>09-21</div><div>09-20</div><div>09-19</div><div>09-18</div><div>09-17</div><div>09-16</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">⚠</span><span id="toastText"></span>
+  <span class="t-close" onclick="hideToast()">✕</span>
+</div>
+<div class="op-menu" id="opMenu"></div>
+
+<script>
+  function openModal(id) { document.getElementById(id).classList.add('show'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+  var toastTimer = null;
+  function showToast(text, type) {
+    var t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    document.getElementById('toastIcon').textContent = type === 'success' ? '✔' : '⚠';
+    t.className = 'toast show' + (type === 'success' ? ' success' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 3200);
+  }
+  function hideToast() { document.getElementById('toast').classList.remove('show'); }
+
+  function doReset() {
+    document.querySelectorAll('.filter-grid input').forEach(function (i) { i.value = ''; });
+    showToast('筛选条件已重置', 'success');
+  }
+
+  function checkedCount() { return document.querySelectorAll('.rowchk:checked').length; }
+  // 线上实测：未勾选数据时提示「请最少选中一条数据！」；勾选后开阀提示「已发送开阀命令」
+  function sendCmd(name) {
+    if (checkedCount() === 0) { showToast('请最少选中一条数据！'); return; }
+    showToast('已发送' + name.replace('批量','') + '命令', 'success');
+  }
+  function needChecked(id) {
+    if (checkedCount() === 0) { showToast('请最少选中一条数据！'); return; }
+    openModal(id);
+  }
+
+  // 行级命令：勾选本行并下发命令（供下拉菜单调用）
+  function rowCmd(btn, name) {
+    var tr = btn.closest('tr');
+    var chk = tr.querySelector('.rowchk');
+    if (chk) chk.checked = true;
+    showToast('已发送' + name + '命令', 'success');
+  }
+
+  // 行内「操作」下拉：纵排展示 校验/开阀/关阀/命令记录/用水记录
+  var opMenu = document.getElementById('opMenu');
+  var opItems = [['校验', 'cmd:校验'], ['开阀', 'cmd:开阀'], ['关阀', 'cmd:关阀'], ['命令记录', 'dlg:dlgCmd'], ['用水记录', 'dlg:dlgWater']];
+  function toggleOpMenu(e, btn) {
+    e.stopPropagation();
+    if (opMenu.classList.contains('show') && opMenu._btn === btn) { closeOpMenu(); return; }
+    var tr = btn.closest('tr');
+    document.querySelectorAll('#mainTable tbody tr').forEach(function (r) { r.classList.remove('selected'); });
+    tr.classList.add('selected');
+    var chk = tr.querySelector('.rowchk');
+    if (chk) chk.checked = true;
+    opMenu.innerHTML = opItems.map(function (it) {
+      return '<div class="op-item" onclick="event.stopPropagation();opAction(\'' + it[1] + '\')">' + it[0] + '</div>';
+    }).join('');
+    opMenu.classList.add('show');
+    opMenu._btn = btn;
+    var r = btn.getBoundingClientRect();
+    var mh = opMenu.offsetHeight, mw = opMenu.offsetWidth;
+    var top = r.bottom + 4;
+    if (top + mh > window.innerHeight - 8) top = r.top - mh - 4;
+    var left = r.right - mw;
+    if (left < 8) left = 8;
+    opMenu.style.top = top + 'px';
+    opMenu.style.left = left + 'px';
+  }
+  function closeOpMenu() { opMenu.classList.remove('show'); opMenu._btn = null; }
+  function opAction(a) {
+    closeOpMenu();
+    if (a.indexOf('cmd:') === 0) { showToast('已发送' + a.slice(4) + '命令', 'success'); return; }
+    openModal(a.slice(4));
+  }
+  document.addEventListener('click', closeOpMenu);
+  document.querySelector('#mainTable').closest('.table-scroll').addEventListener('scroll', closeOpMenu);
+
+  document.getElementById('chkAll').addEventListener('change', function () {
+    document.querySelectorAll('.rowchk').forEach(function (c) { c.checked = this.checked; }, this);
+  });
+
+  // 查询区收缩/展开（Vue3 风格）：默认收起只显示第一行
+  var filterGrid = document.querySelector('.filter-grid');
+  var filterToggle = document.createElement('div');
+  filterToggle.className = 'filter-toggle';
+  function placeFilterToggle(expanded) {
+    var items = filterGrid.querySelectorAll('.filter-item');
+    filterGrid.insertBefore(filterToggle, expanded ? null : items[3]);
+    filterToggle.innerHTML = expanded ? '收起 <span class="caret">▴</span>' : '展开 <span class="caret">▾</span>';
+  }
+  filterToggle.addEventListener('click', function () {
+    var collapsed = filterGrid.classList.toggle('collapsed');
+    placeFilterToggle(!collapsed);
+  });
+  filterGrid.classList.add('collapsed');
+  placeFilterToggle(false);
+  document.querySelectorAll('.radio-item').forEach(function (r) {
+    r.addEventListener('click', function () {
+      document.querySelectorAll('.radio-item').forEach(function (x) { x.classList.remove('on'); });
+      r.classList.add('on');
+    });
+  });
+  document.querySelectorAll('.modal-mask').forEach(function (m) {
+    m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('show'); });
+  });
+</script>
+</body>
+</html>

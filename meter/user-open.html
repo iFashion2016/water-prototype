@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务 - 用户开户 V1.1</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    background: #f7f7f7; color: #212121; overflow: hidden; font-size: 14px;
+  }
+
+  /* ============ 顶栏 ============ */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100;
+    background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217));
+    display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff;
+  }
+  .topbar-left { width: 204px; flex: 0 0 204px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
+  .logo-drop { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; }
+  .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+  .topbar-right { flex: 1; display: flex; align-items: center; padding-right: 18px; }
+  .collapse-btn { width: 40px; height: 53px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,.9); }
+  .top-tabs { display: flex; align-items: center; gap: 6px; height: 100%; }
+  .top-tab { padding: 7px 22px; border-radius: 18px; cursor: pointer; color: rgba(255,255,255,.92); font-size: 14.5px; white-space: nowrap; transition: background .2s; }
+  .top-tab:hover { background: rgba(255,255,255,.14); }
+  .top-tab.active { background: rgba(255,255,255,.28); font-weight: 600; }
+  .top-user { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .top-user .tenant { font-size: 14px; color: #fff; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,.65); background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+  /* ============ 侧边菜单 ============ */
+  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; }
+  .side-caption { padding: 14px 16px 6px; font-size: 12px; color: #9aa3af; }
+  .menu-group-title { display: flex; align-items: center; gap: 8px; margin: 4px 10px; padding: 10px 12px; background: #eaf3fe; color: #2a7de1; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
+  .menu-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px 11px 26px; margin: 2px 10px; color: #4b5563; cursor: pointer; border-radius: 6px; text-decoration: none; }
+  .menu-item:hover { background: #f2f7fd; color: #2a7de1; }
+  .menu-item.active { background: #eaf3fe; color: #2a7de1; font-weight: 600; }
+
+  /* ============ 主区域 ============ */
+  .main { position: fixed; top: 53px; left: 204px; right: 0; bottom: 0; display: flex; flex-direction: column; }
+  .subtabs { flex: 0 0 44px; background: #fff; border-bottom: 1px solid #eef0f3; display: flex; align-items: center; padding: 0 8px; gap: 2px; }
+  .subtab-arrow { width: 28px; height: 44px; display: flex; align-items: center; justify-content: center; color: #9aa3af; cursor: pointer; flex: 0 0 28px; }
+  .subtab-list { display: flex; align-items: center; flex: 1; overflow: hidden; }
+  .subtab { padding: 0 26px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #4b5563; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; text-decoration: none; }
+  .subtab:hover { color: #2a7de1; }
+  .subtab.active { color: #2a7de1; border-bottom-color: #2a7de1; font-weight: 600; }
+
+  .content { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
+  .footer { flex: 0 0 29px; background: #fff; border-top: 1px solid #eef0f3; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 12px; color: #9aa3af; }
+
+  /* ============ 筛选卡片 ============ */
+  .filter-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 18px 24px 16px; margin-bottom: 14px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 28px; }
+  .filter-item { display: flex; align-items: center; }
+  .filter-label { flex: 0 0 72px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; white-space: nowrap; }
+  .filter-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .filter-input.placeholder { color: #b6bdc9; }
+  .filter-input:hover { border-color: #c0c4cc; }
+  .filter-input .caret { color: #b6bdc9; font-size: 11px; }
+  input.filter-input { cursor: text; }
+  input.filter-input::placeholder { color: #b6bdc9; }
+
+  .btn-bar { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 15px; border: 1px solid #409eff; border-radius: 4px; background: #409eff; color: #fff; font-size: 13px; cursor: pointer; transition: all .15s; }
+  .btn:hover { background: #79bbff; border-color: #79bbff; }
+  .btn:active { background: #337ecc; border-color: #337ecc; }
+  .btn-plain { background: #fff; color: #606266; border: 1px solid #dcdfe6; }
+  .btn-plain:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; }
+
+  /* ============ 表格卡片 ============ */
+  .table-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); overflow: hidden; }
+  .table-scroll { overflow-x: auto; }
+  table.data-table { border-collapse: collapse; min-width: 100%; }
+  .data-table th, .data-table td { padding: 10px 14px; font-size: 13px; white-space: nowrap; border-bottom: 1px solid #ebeef5; text-align: left; }
+  .data-table thead th { background: #f5f7fa; font-weight: 600; color: #909399; font-size: 13px; position: sticky; top: 0; z-index: 2; }
+  .data-table thead th .sort { color: #c0c4cc; font-size: 11px; margin-left: 3px; }
+  .data-table tbody td { color: #606266; }
+  .data-table tbody tr { cursor: pointer; }
+  .data-table tbody tr:hover { background: #f5f7fa; }
+  .data-table tbody tr.selected { background: #ecf5ff; }
+  .op-col { position: sticky; right: 0; background: #fff; box-shadow: -6px 0 8px -6px rgba(0,0,0,.12); z-index: 1; text-align: center; }
+  thead th.op-col { background: #f5f7fa; z-index: 3; }
+  .data-table tbody tr:hover td.op-col { background: #f5f7fa; }
+  .data-table tbody tr.selected td.op-col { background: #ecf5ff; }
+  .op-link { color: #409eff; cursor: pointer; font-size: 13px; }
+  .op-link:hover { color: #79bbff; text-decoration: underline; }
+
+  .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 16px 12px; font-size: 13px; color: #6b7280; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4b5563; }
+  .page-btn:hover { color: #2a7de1; }
+  .page-btn.active { background: #409eff; color: #fff; }
+  .page-btn.disabled { color: #c8cdd5; cursor: default; }
+  .page-total { margin: 0 10px; }
+  .page-size { height: 30px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 10px; display: inline-flex; align-items: center; gap: 14px; color: #4b5563; cursor: pointer; background: #fff; }
+
+  /* ============ 弹窗 ============ */
+  .modal-mask { position: fixed; inset: 0; background: rgba(15,25,45,.45); z-index: 200; display: none; align-items: flex-start; justify-content: center; }
+  .modal-mask.show { display: flex; }
+  .modal { position: relative; background: #fff; border-radius: 8px; margin-top: 28px; width: 1240px; max-width: 94vw; max-height: calc(100vh - 56px); display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; border-bottom: 1px solid #f1f3f6; }
+  .modal-title { font-size: 16px; font-weight: 700; color: #1f2937; }
+  .modal-close { cursor: pointer; color: #9aa3af; font-size: 16px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { color: #4b5563; }
+  .modal-body { padding: 18px 26px; overflow-y: auto; flex: 1; }
+  .modal-foot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #f1f3f6; }
+
+  .dlg-section { font-size: 15px; font-weight: 700; color: #1f2937; margin: 6px 0 14px; padding-left: 10px; border-left: 3px solid #409eff; line-height: 1.1; }
+  .dlg-section-link { color: #409eff; font-size: 14px; font-weight: 600; margin: 8px 0 14px; border-bottom: 1px solid #eef0f3; padding-bottom: 8px; }
+  .dlg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 26px; margin-bottom: 20px; }
+  .dlg-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .dlg-item { display: flex; align-items: center; }
+  .dlg-label { flex: 0 0 84px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; }
+  .dlg-label .req { color: #f56c6c; margin-right: 3px; }
+  .dlg-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .dlg-input.placeholder { color: #b6bdc9; }
+  .dlg-input.disabled { background: #f5f7fa; color: #9aa3af; }
+  .dlg-input:hover { border-color: #c0c4cc; }
+  .dlg-input .caret { color: #b6bdc9; font-size: 11px; }
+  .dlg-input .clear-x { color: #b6bdc9; cursor: pointer; font-size: 12px; }
+  .dlg-input .cal { color: #b6bdc9; }
+  input.dlg-input { cursor: text; }
+  .dlg-input-search { display: flex; flex: 1; }
+  .dlg-input-search input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-right: none; border-radius: 4px 0 0 4px; padding: 0 12px; font-size: 13.5px; }
+  .dlg-input-search .search-btn { width: 40px; height: 34px; border: 1px solid #dcdfe6; border-radius: 0 4px 4px 0; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #9aa3af; }
+
+  /* 可输入可选择的组合框 */
+  .dlg-combobox { flex: 1; position: relative; }
+  .dlg-combobox input { width: 100%; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 32px 0 12px; font-size: 13.5px; color: #374151; background: #fff; }
+  .dlg-combobox input:hover { border-color: #c0c4cc; }
+  .dlg-combobox input:focus { outline: none; border-color: #409eff; }
+  .dlg-combobox .combo-caret { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #b6bdc9; font-size: 11px; cursor: pointer; pointer-events: none; }
+  .dlg-combobox .combo-dropdown { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.1); max-height: 220px; overflow-y: auto; z-index: 50; display: none; }
+  .dlg-combobox .combo-dropdown.show { display: block; }
+  .dlg-combobox .combo-option { padding: 8px 12px; font-size: 13px; color: #606266; cursor: pointer; }
+  .dlg-combobox .combo-option:hover { background: #f5f7fa; color: #409eff; }
+  .dlg-combobox .combo-option.selected { background: #ecf5ff; color: #409eff; font-weight: 600; }
+
+  /* 普通下拉选择框 */
+  .dlg-select { flex: 1; position: relative; }
+  .dlg-select .select-display { height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 28px 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; cursor: pointer; position: relative; }
+  .dlg-select .select-display.placeholder { color: #b6bdc9; }
+  .dlg-select .select-display:hover { border-color: #c0c4cc; }
+  .dlg-select .select-display .caret { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #b6bdc9; font-size: 11px; }
+  .dlg-select .select-dropdown { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.1); max-height: 220px; overflow-y: auto; z-index: 50; display: none; }
+  .dlg-select .select-dropdown.show { display: block; }
+  .dlg-select .select-option { padding: 8px 12px; font-size: 13px; color: #606266; cursor: pointer; }
+  .dlg-select .select-option:hover { background: #f5f7fa; color: #409eff; }
+  .dlg-select .select-option.selected { background: #ecf5ff; color: #409eff; font-weight: 600; }
+
+  .dlg-search-row { display: flex; align-items: center; gap: 22px; margin-bottom: 14px; }
+  .dlg-search-row .dlg-item { flex: 1; }
+  .dlg-table-wrap { border: 1px solid #eef0f3; border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+  .dlg-table-wrap .data-table tbody tr:first-child { background: #fff; }
+
+  .upload-area { border: 1.5px dashed #c8d4e5; border-radius: 8px; background: #fafcff; padding: 42px 20px; text-align: center; color: #8a94a6; cursor: pointer; margin-bottom: 14px; }
+  .upload-area:hover { border-color: #409eff; }
+  .upload-area .up-icon { margin-bottom: 10px; }
+  .upload-area .up-text { font-size: 14px; color: #4b5563; margin-bottom: 6px; }
+  .upload-area .up-hint { font-size: 12.5px; }
+  .tpl-link { color: #409eff; cursor: pointer; font-size: 13px; }
+
+  .ver-tag { margin-left: 6px; font-size: 11px; font-weight: 600; background: #ecf5ff; color: #409eff; border: 1px solid #d9ecff; border-radius: 3px; padding: 1px 6px; vertical-align: middle; }
+
+  /* ============ 提示 toast ============ */
+  .toast { position: fixed; top: 76px; right: 24px; z-index: 300; min-width: 300px; background: #fdf6e3; border: 1px solid #f5dab1; color: #b88230; border-radius: 6px; padding: 12px 16px; display: none; align-items: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .toast.show { display: flex; animation: slideIn .25s ease; }
+  .toast .t-close { margin-left: auto; cursor: pointer; color: #d3b17c; }
+  .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* 水表样例图片预览 */
+  .meter-preview { grid-column: 3; grid-row: span 3; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 10px 8px; border: 1px dashed #dcdfe6; border-radius: 6px; background: #fafbfc; min-height: 120px; cursor: zoom-in; position: relative; transition: border-color .2s; }
+  .meter-preview:hover { border-color: #409eff; }
+  .meter-preview-img { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .meter-preview-img svg { width: 100%; height: 100%; }
+  .meter-preview-name { margin-top: 6px; font-size: 12px; color: #606266; text-align: center; line-height: 1.3; }
+  .meter-preview-empty { color: #c0c4cc; font-size: 12px; display: flex; align-items: center; justify-content: center; height: 100%; text-align: center; cursor: default; }
+  .meter-preview .zoom-hint { position: absolute; top: 4px; right: 4px; font-size: 10px; color: #c0c4cc; opacity: 0; transition: opacity .2s; }
+  .meter-preview:hover .zoom-hint { opacity: 1; }
+  /* 多张图片堆叠效果 */
+  .preview-stack { position: relative; width: 80px; height: 80px; }
+  .preview-stack .stack-card { position: absolute; width: 100%; height: 100%; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; display: flex; align-items: center; justify-content: center; padding: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .preview-stack .stack-card svg { width: 100%; height: 100%; }
+  .preview-stack .stack-card:nth-child(3) { transform: translate(4px, 4px) rotate(3deg); z-index: 1; opacity: .6; }
+  .preview-stack .stack-card:nth-child(2) { transform: translate(2px, 2px) rotate(1.5deg); z-index: 2; opacity: .8; }
+  .preview-stack .stack-card:nth-child(1) { transform: translate(0, 0) rotate(0deg); z-index: 3; }
+  .photo-count-badge { position: absolute; bottom: -2px; right: -4px; background: #409eff; color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 10px; font-weight: 600; z-index: 5; }
+  /* 表具照片切换动画 */
+  .meter-preview-img { transition: opacity .25s ease, transform .25s ease; }
+  .meter-preview-img.switching { opacity: 0; transform: scale(.85); }
+  .meter-preview-name { transition: opacity .25s ease; }
+  .meter-preview-name.switching { opacity: 0; }
+  .preview-stack .stack-card { transition: transform .3s ease, opacity .3s ease; }
+  .preview-stack .stack-card.switching { transform: scale(.8) rotate(0deg) !important; opacity: 0 !important; }
+
+  /* 表具照片区块（整行展示）*/
+  .meter-photo-section { margin-top: 16px; padding: 16px 20px; background: #f8fafc; border: 1px solid #ebeef5; border-radius: 8px; display: flex; align-items: center; gap: 20px; }
+  .meter-photo-section-empty { justify-content: center; color: #c0c4cc; font-size: 13px; padding: 24px 20px; }
+  .meter-photo-stack-wrap { position: relative; width: 90px; height: 90px; flex-shrink: 0; cursor: zoom-in; }
+  .meter-photo-stack-wrap:hover .stack-big { border-color: #409eff; }
+  .stack-big { position: absolute; width: 100%; height: 100%; background: #fff; border: 1px solid #e4e7ed; border-radius: 6px; display: flex; align-items: center; justify-content: center; padding: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.08); transition: border-color .2s; }
+  .stack-big svg { width: 100%; height: 100%; }
+  .stack-big:nth-child(3) { transform: translate(6px, 6px) rotate(4deg); z-index: 1; opacity: .5; }
+  .stack-big:nth-child(2) { transform: translate(3px, 3px) rotate(2deg); z-index: 2; opacity: .75; }
+  .stack-big:nth-child(1) { transform: translate(0, 0) rotate(0deg); z-index: 3; }
+  .photo-count-badge-lg { position: absolute; bottom: -4px; right: -6px; background: #409eff; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 600; z-index: 5; }
+  .meter-photo-info { flex: 1; line-height: 2; }
+  .meter-photo-info .pt-title { font-size: 15px; font-weight: 600; color: #303133; margin-bottom: 4px; }
+  .meter-photo-info .pt-type { color: #409eff; font-weight: 500; }
+  .meter-photo-info .pt-desc { color: #909399; font-size: 13px; }
+  .meter-photo-info .pt-count { display: inline-block; background: #ecf5ff; color: #409eff; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; margin-top: 4px; }
+  .meter-photo-zoom-tip { color: #c0c4cc; font-size: 12px; margin-left: 8px; }
+  .meter-type-dropdown { position: fixed; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.1); z-index: 500; display: none; min-width: 180px; padding: 4px 0; }
+  .meter-type-dropdown.show { display: block; }
+  .meter-type-option { padding: 8px 14px; font-size: 13.5px; color: #606266; cursor: pointer; }
+  .meter-type-option:hover { background: #f5f7fa; color: #409eff; }
+
+  /* 图片放大灯箱 */
+  .img-lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 999; display: none; align-items: center; justify-content: center; cursor: default; }
+  .img-lightbox.show { display: flex; animation: fadeIn .2s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .lightbox-content { background: #fff; border-radius: 12px; padding: 24px; max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.3); position: relative; }
+  .lightbox-img-wrapper { position: relative; width: 360px; height: 360px; display: flex; align-items: center; justify-content: center; }
+  .lightbox-img { width: 320px; height: 320px; display: flex; align-items: center; justify-content: center; transition: opacity .2s; }
+  .lightbox-img svg { width: 100%; height: 100%; }
+  .lightbox-title { font-size: 15px; font-weight: 600; color: #303133; }
+  .lightbox-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 24px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,.15); transition: background .2s; z-index: 10; }
+  .lightbox-close:hover { background: rgba(255,255,255,.25); }
+  /* 左右切换按钮 */
+  .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.9); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #606266; box-shadow: 0 2px 8px rgba(0,0,0,.15); transition: all .2s; user-select: none; z-index: 5; }
+  .lightbox-nav:hover { background: #fff; color: #409eff; transform: translateY(-50%) scale(1.08); }
+  .lightbox-nav.prev { left: -22px; }
+  .lightbox-nav.next { right: -22px; }
+  .lightbox-nav.disabled { opacity: .4; cursor: default; }
+  .lightbox-nav.disabled:hover { transform: translateY(-50%); background: rgba(255,255,255,.9); color: #606266; }
+  /* 指示器 */
+  .lightbox-dots { display: flex; gap: 8px; align-items: center; }
+  .lightbox-dot { width: 8px; height: 8px; border-radius: 50%; background: #dcdfe6; cursor: pointer; transition: all .2s; }
+  .lightbox-dot:hover { background: #909399; }
+  .lightbox-dot.active { background: #409eff; width: 20px; border-radius: 4px; }
+  .lightbox-counter { font-size: 13px; color: #909399; margin-left: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ================= 顶栏 ================= -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-drop">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z" fill="#fff"/><path d="M9.2 14.5C9.2 16.4 10.4 17.8 12 18.1" stroke="#2a7de1" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <div class="brand">智慧水务</div>
+  </div>
+  <div class="topbar-right">
+    <div class="collapse-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <nav class="top-tabs">
+      <div class="top-tab active">户表管理</div>
+      <div class="top-tab" onclick="window.location.href='../收费管理/智慧水务-综合缴费-高保真.html'">收费管理</div>
+      <div class="top-tab" onclick="window.location.href='../抄表管理/智慧水务-4GNB抄表-高保真.html'">物联网</div>
+      <div class="top-tab" onclick="window.location.href='../报表分析/智慧水务-换表记录表-高保真.html'">报表分析</div>
+      <div class="top-tab" onclick="window.location.href='../档案管理/智慧水务-地址档案-高保真.html'">档案管理</div>
+      <div class="top-tab" onclick="window.location.href='../功能配置/智慧水务-功能配置-微信配置+表具类型.html'">功能配置</div>
+    </nav>
+    <div class="top-user">
+      <span class="tenant">涌恒供水</span>
+      <div class="avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.4" fill="#fff" opacity=".95"/><path d="M4.8 19.5C5.6 15.6 8.5 13.8 12 13.8C15.5 13.8 18.4 15.6 19.2 19.5" fill="#fff" opacity=".95"/></svg></div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 侧边菜单 ================= -->
+<aside class="sidebar">
+  <div class="side-caption">户表管理</div>
+  <div class="menu-group-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#2a7de1" stroke-width="1.8"/><path d="M3 9H21" stroke="#2a7de1" stroke-width="1.8"/><path d="M8 4V9" stroke="#2a7de1" stroke-width="1.8"/></svg>
+    户表管理
+    <span class="chev">︿</span>
+  </div>
+  <a class="menu-item active" href="智慧水务-用户开户-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#2a7de1" stroke-width="2" stroke-linecap="round"/></svg>
+    用户开户
+  </a>
+  <a class="menu-item" href="智慧水务-用户换表-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    用户换表
+  </a>
+  <a class="menu-item" href="智慧水务-用户销户-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    用户销户
+  </a>
+</aside>
+
+<!-- ================= 主区域 ================= -->
+<div class="main">
+  <div class="subtabs">
+    <div class="subtab-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="subtab-list">
+      <a class="subtab active" href="智慧水务-用户开户-高保真.html">用户开户</a>
+      <a class="subtab" href="智慧水务-用户换表-高保真.html">用户换表</a>
+      <a class="subtab" href="智慧水务-用户销户-高保真.html">用户销户</a>
+      <a class="subtab" href="智慧水务-综合缴费-高保真.html">综合缴费</a>
+      <a class="subtab" href="智慧水务-缴费记录-高保真.html">缴费记录</a>
+      <a class="subtab" href="智慧水务-纠正异常-高保真.html">纠正异常</a>
+      <a class="subtab" href="javascript:void(0)">4GNB抄表</a>
+      <a class="subtab" href="javascript:void(0)">异常抄表数据</a>
+    </div>
+    <div class="subtab-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </div>
+
+  <div class="content">
+    <!-- 筛选区 -->
+    <div class="filter-card">
+      <div class="filter-grid">
+        <div class="filter-item"><span class="filter-label">组织机构：</span><div class="filter-input"><span>063 涌恒供水</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">分级地址：</span><div class="filter-input placeholder"><span>请选择用户地址</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">模糊地址：</span><input class="filter-input q" placeholder="请输入模糊地址"></div>
+        <div class="filter-item"><span class="filter-label">用户编号：</span><input class="filter-input q" placeholder="请输入用户编号"></div>
+        <div class="filter-item"><span class="filter-label">用户名称：</span><input class="filter-input q" placeholder="请输入用户名称"></div>
+        <div class="filter-item"><span class="filter-label">表身码：</span><input class="filter-input q" placeholder="请输入表身码"></div>
+        <div class="filter-item"><span class="filter-label">表具类型：</span><div class="filter-input placeholder"><span>请选择表具类型</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">价格类型：</span><div class="filter-input placeholder"><span>请选择价格类型</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">营业所：</span><div class="filter-input placeholder"><span>请选择营业所</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">表&nbsp;&nbsp;册：</span><div class="filter-input placeholder"><span>请选择表册</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">安装类型：</span><div class="filter-input placeholder"><span>请选择</span><span class="caret">▾</span></div></div>
+      </div>
+      <div class="btn-bar">
+        <button class="btn" onclick="doQuery()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          查询
+        </button>
+        <button class="btn" onclick="doReset()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 12 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4V12H12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 16 8)"/></svg>
+          重置
+        </button>
+        <button class="btn" onclick="openModal('dlgQuick')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L5 13H11L10 22L19 10H13L13 2Z" fill="#fff"/></svg>
+          快速开户
+        </button>
+        <button class="btn" onclick="openModal('dlgImport')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 3L7 8M12 3L17 8" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          快速导入
+        </button>
+        <button class="btn" onclick="doExport()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 15V3M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          导出
+        </button>
+      </div>
+    </div>
+
+    <!-- 数据表 -->
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="data-table" id="mainTable">
+          <thead>
+            <tr>
+              <th>用户编号<span class="sort">↕</span></th><th>用户名称</th><th>手机号</th><th>身份证号</th><th>用户地址</th><th>表身码</th><th>表具类型</th><th>结算类型</th><th>价格类型</th><th>安装位置</th><th>安装类型</th><th>营业所</th><th>表册</th><th>表具类型</th><th>开户时间</th><th>强检日期</th><th>创建人</th><th>创建时间</th><th class="op-col">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>063000338</td><td>未提供</td><td>*</td><td>*</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>NB远传阀控水表</td><td>预付结算</td><td>按月</td><td>管道</td><td></td><td>涌恒供水</td><td>默认</td><td>NB远传阀控水表</td><td>2026-09-03 14:49:18</td><td>2032-09-03 00:00:00</td><td>涌恒供水</td><td>2026-09-03 14:49:18</td><td class="op-col"><span class="op-link" onclick="doEditRow(this)">编辑</span></td></tr>
+            <tr><td>063000336</td><td>人民路建行对面意尔康楼上</td><td>*</td><td>*</td><td>河口县公共区域-人民路门市-1212</td><td>00002624000053</td><td>WPG远传阀控水表</td><td>预付结算</td><td>按月</td><td>管道</td><td></td><td>涌恒供水</td><td>默认</td><td>WPG远传阀控水表</td><td>2026-09-03 14:26:58</td><td>2032-09-03 00:00:00</td><td>涌恒供水</td><td>2026-09-03 14:26:59</td><td class="op-col"><span class="op-link" onclick="doEditRow(this)">编辑</span></td></tr>
+            <tr><td>063000335</td><td>000053</td><td>*</td><td>*</td><td>河口县公共区域-人民路门市-123</td><td>00002624000083</td><td>WPG远传阀控水表</td><td>预付结算</td><td>按月</td><td>管道</td><td></td><td>涌恒供水</td><td>默认</td><td>WPG远传阀控水表</td><td>2026-09-03 14:18:46</td><td>2032-09-03 00:00:00</td><td>涌恒供水</td><td>2026-09-03 14:18:46</td><td class="op-col"><span class="op-link" onclick="doEditRow(this)">编辑</span></td></tr>
+            <tr><td>063000327</td><td>人民路建行对面街心花园意尔康楼上</td><td>1</td><td>1</td><td>河口县公共区域-公共公共-02</td><td>00002624000058</td><td>WPG远传阀控水表</td><td>预付结算</td><td>按月</td><td>管道</td><td></td><td>涌恒供水</td><td>默认</td><td>WPG远传阀控水表</td><td>2026-08-20 15:22:38</td><td>2026-08-18 00:00:00</td><td>涌恒供水</td><td>2026-08-20 15:22:39</td><td class="op-col"><span class="op-link" onclick="doEditRow(this)">编辑</span></td></tr>
+            <tr><td>063000322</td><td>260626116356</td><td>1</td><td>1</td><td>河口一中宏建小区-3栋-301</td><td>260626116356</td><td>NB远传阀控水表</td><td>预付结算</td><td>按月</td><td>管道</td><td></td><td>涌恒供水</td><td>默认</td><td>NB远传阀控水表</td><td>2026-08-18 09:33:57</td><td>2026-08-18 00:00:00</td><td>涌恒供水</td><td>2026-08-18 09:33:57</td><td class="op-col"><span class="op-link" onclick="doEditRow(this)">编辑</span></td></tr>
+            <tr><td>063000321</td><td>260626116404</td><td>1</td><td>1</td><td>河口一中宏建小区-1栋-260626116404</td><td>260626116404</td><td>NB远传阀控水表</td><td>预付结算</td><td>按月</td><td>管道</td><td></td><td>涌恒供水</td><td>默认</td><td>NB远传阀控水表</td><td>2026-08-18 09:33:22</td><td>2026-08-18 00:00:00</td><td>涌恒供水</td><td>2026-08-18 09:33:22</td><td class="op-col"><span class="op-link" onclick="doEditRow(this)">编辑</span></td></tr>
+            <tr><td>063000317</td><td>260626116252</td><td>1</td><td>1</td><td>河口县公共区域-公共公共-001</td><td>260626116252</td><td>NB远传阀控水表</td><td>预付结算</td><td>按月</td><td>管道</td><td></td><td>涌恒供水</td><td>默认</td><td>NB远传阀控水表</td><td>2026-08-17 13:34:25</td><td>2026-08-17 00:00:00</td><td>涌恒供水</td><td>2026-08-17 13:34:25</td><td class="op-col"><span class="op-link" onclick="doEditRow(this)">编辑</span></td></tr>
+            <tr><td>063000212</td><td>刘明日</td><td>1</td><td>1</td><td>河口一中宏建小区-1栋-702</td><td>260626116281</td><td>NB远传阀控水表</td><td>预付结算</td><td>按月</td><td>管道</td><td></td><td>涌恒供水</td><td>默认</td><td>NB远传阀控水表</td><td>2026-08-10 08:24:10</td><td>2026-08-10 00:00:00</td><td>涌恒供水</td><td>2026-08-10 08:24:11</td><td class="op-col"><span class="op-link" onclick="doEditRow(this)">编辑</span></td></tr>
+            <tr><td>063000211</td><td>邹格军</td><td>1</td><td>1</td><td>河口一中宏建小区-1栋-物业用房卫生间</td><td>260626116309</td><td>NB远传阀控水表</td><td>预付结算</td><td>按月</td><td>管道</td><td></td><td>涌恒供水</td><td>默认</td><td>NB远传阀控水表</td><td>2026-08-04 17:33:53</td><td>2026-08-04 00:00:00</td><td>涌恒供水</td><td>2026-08-04 17:33:54</td><td class="op-col"><span class="op-link" onclick="doEditRow(this)">编辑</span></td></tr>
+            <tr><td>063000210</td><td>田如燕</td><td>1</td><td>1</td><td>河口一中宏建小区-1栋-201</td><td>260626116287</td><td>NB远传阀控水表</td><td>预付结算</td><td>按月</td><td>管道</td><td></td><td>涌恒供水</td><td>默认</td><td>NB远传阀控水表</td><td>2026-08-04 17:32:25</td><td>2026-08-04 00:00:00</td><td>涌恒供水</td><td>2026-08-04 17:32:25</td><td class="op-col"><span class="op-link" onclick="doEditRow(this)">编辑</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span>
+        <span class="page-btn active">1</span><span class="page-btn">2</span><span class="page-btn">3</span><span class="page-btn">4</span><span class="page-btn">5</span>
+        <span class="page-btn">›</span><span class="page-btn">»</span>
+        <span class="page-total">共 [ 22 ] 页，共 [ 214 ] 条</span>
+        <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>当前用户：涌恒供水</span>
+    <span>2012-2025@版权所有智慧水务研发中心</span>
+  </footer>
+</div>
+
+<!-- ============ 弹窗：快速开户（新增户表信息） ============ -->
+<div class="modal-mask" id="dlgQuick">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">新增户表信息</div>
+      <span class="modal-close" onclick="closeModal('dlgQuick')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="dlg-section">用户信息</div>
+      <div class="dlg-grid">
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>用户名称：</span><input class="dlg-input"></div>
+        <div class="dlg-item"><span class="dlg-label">手机号：</span><input class="dlg-input"></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>用户地址：</span><div class="dlg-input placeholder"><span>请选择</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>详细地址：</span><input class="dlg-input"></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>用户类型：</span><div class="dlg-input"><span>居民用户</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">身份证号：</span><input class="dlg-input"></div>
+        <div class="dlg-item"><span class="dlg-label">人口数：</span><div class="dlg-input"><span>3</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">合同编号：</span><input class="dlg-input"></div>
+        <div class="dlg-item"><span class="dlg-label">企业名称：</span><input class="dlg-input"></div>
+        <div class="dlg-item"><span class="dlg-label">企业税号：</span><input class="dlg-input"></div>
+      </div>
+      <div class="dlg-section">表具信息</div>
+      <div class="dlg-grid" style="grid-template-columns: 1fr 1fr 100px;">
+        <div class="dlg-item">
+          <span class="dlg-label"><span class="req">*</span>表身码：</span>
+          <div class="dlg-combobox" data-combobox>
+            <input type="text" placeholder="请输入或选择表身码">
+            <span class="combo-caret">▾</span>
+            <div class="combo-dropdown">
+              <div class="combo-option">260626116289</div>
+              <div class="combo-option">260626116356</div>
+              <div class="combo-option">260626116404</div>
+              <div class="combo-option">260626116252</div>
+              <div class="combo-option">260626116281</div>
+              <div class="combo-option">260626116309</div>
+              <div class="combo-option">260626116287</div>
+              <div class="combo-option">00002624000053</div>
+              <div class="combo-option">00002624000083</div>
+              <div class="combo-option">00002624000058</div>
+            </div>
+          </div>
+        </div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>表底数：</span><input class="dlg-input" value="0"></div>
+        <div class="meter-preview" id="quickMeterPreview" onclick="openMeterLightbox('quick')">
+          <span class="zoom-hint">🔍</span>
+          <div class="meter-preview-img" id="quickMeterImg" style="display:none">
+            <div class="preview-stack" id="quickPreviewStack"></div>
+            <span class="photo-count-badge">3</span>
+          </div>
+          <div class="meter-preview-empty" id="quickMeterEmpty">选择表具类型后<br>显示样例图片</div>
+          <div class="meter-preview-name" id="quickMeterName" style="display:none"></div>
+        </div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>表大类：</span><div class="dlg-input disabled"><span>水表</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>表具类型：</span><div class="dlg-input" id="quickMeterType" onclick="toggleMeterTypeDropdown()"><span id="quickMeterTypeText" style="color:#c0c4cc">请选择表具类型</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>口&nbsp;&nbsp;径：</span><div class="dlg-input"><span>DN15</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">强检日期：</span><div class="dlg-input"><span>2032-09-21</span><span class="cal">📅</span></div></div>
+      </div>
+      <div class="dlg-section">价格结算</div>
+      <div class="dlg-grid">
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>结算类型：</span><div class="dlg-input placeholder"><span>请选择结算类型</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>价格类型：</span><div class="dlg-input"><span>按月</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item">
+          <span class="dlg-label">转结方式：</span>
+          <div class="dlg-select" data-select>
+            <div class="select-display"><span class="select-value">不转结</span><span class="caret">▾</span></div>
+            <div class="select-dropdown">
+              <div class="select-option selected">不转结</div>
+              <div class="select-option">用量转结</div>
+              <div class="select-option">余额转结</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dlg-section">安装信息</div>
+      <div class="dlg-grid">
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>安装日期：</span><div class="dlg-input"><span>2026-09-21</span><span class="cal">📅</span></div></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>安装位置：</span><div class="dlg-input"><span>管道</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>安装类型：</span><div class="dlg-input"><span>1</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>营业所：</span><div class="dlg-input"><span>涌恒供水</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>表&nbsp;&nbsp;册：</span><div class="dlg-input"><span>默认</span><span class="caret">▾</span></div></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgQuick')">取消</button>
+      <button class="btn" onclick="closeModal('dlgQuick');showToast('快速开户成功','success')">确认</button>
+    </div>
+  </div>
+  <!-- 表具类型下拉（快速开户） -->
+  <div class="meter-type-dropdown" id="meterTypeDropdown">
+    <div class="meter-type-option" onclick="selectMeterType('WMI/WMI-V', 'wmi')">WMI/WMI-V</div>
+    <div class="meter-type-option" onclick="selectMeterType('WMG/WMS', 'wmg')">WMG/WMS</div>
+    <div class="meter-type-option" onclick="selectMeterType('BOSTEN网联超声水表', 'bosten')">BOSTEN网联超声水表</div>
+    <div class="meter-type-option" onclick="selectMeterType('WMI-W', 'wmiw')">WMI-W</div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：修改（修改户表信息，行数据带入） ============ -->
+<div class="modal-mask" id="dlgEdit">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">修改户表信息</div>
+      <span class="modal-close" onclick="closeModal('dlgEdit')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="dlg-section">用户信息</div>
+      <div class="dlg-grid">
+        <div class="dlg-item"><span class="dlg-label">用户编号：</span><input class="dlg-input disabled" id="editUserNo" readonly></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>用户名称：</span><input class="dlg-input" id="editUserName"></div>
+        <div class="dlg-item"><span class="dlg-label">手机号：</span><input class="dlg-input" id="editPhone"></div>
+        <div class="dlg-item"><span class="dlg-label">身份证号：</span><input class="dlg-input" id="editIdcard"></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>用户地址：</span><div class="dlg-input"><span id="editAddr">-</span><span class="caret">▾</span></div></div>
+      </div>
+      <div class="dlg-section">表具信息</div>
+      <div class="dlg-grid">
+        <div class="dlg-item">
+          <span class="dlg-label"><span class="req">*</span>表身码：</span>
+          <div class="dlg-combobox" data-combobox>
+            <input type="text" id="editMeterNo">
+            <span class="combo-caret">▾</span>
+            <div class="combo-dropdown">
+              <div class="combo-option">260626116289</div>
+              <div class="combo-option">260626116356</div>
+              <div class="combo-option">260626116404</div>
+              <div class="combo-option">260626116252</div>
+              <div class="combo-option">260626116281</div>
+              <div class="combo-option">260626116309</div>
+              <div class="combo-option">260626116287</div>
+              <div class="combo-option">00002624000053</div>
+              <div class="combo-option">00002624000083</div>
+              <div class="combo-option">00002624000058</div>
+            </div>
+          </div>
+        </div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>表具类型：</span><div class="dlg-input" id="editMeterTypeBox" onclick="toggleEditMeterTypeDropdown()"><span id="editMeterType">-</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label">强检日期：</span><div class="dlg-input"><span id="editCheckDate">-</span><span class="cal">📅</span></div></div>
+      </div>
+
+      <!-- 表具照片区块 -->
+      <div class="meter-photo-section" id="editPhotoSection" onclick="openMeterLightbox('edit')">
+        <div class="meter-photo-stack-wrap" id="editPhotoStack">
+          <div class="stack-big"></div>
+          <div class="stack-big"></div>
+          <div class="stack-big"></div>
+          <span class="photo-count-badge-lg">3</span>
+        </div>
+        <div class="meter-photo-info">
+          <div class="pt-title">表具照片 <span class="meter-photo-zoom-tip">点击放大查看</span></div>
+          <div>表具类型：<span class="pt-type" id="editPhotoType">-</span></div>
+          <div class="pt-desc">共 <span id="editPhotoCount">3</span> 张照片，包含正面图、侧面图、细节图</div>
+          <span class="pt-count">3 张</span>
+        </div>
+      </div>
+      <div class="dlg-section">价格结算</div>
+      <div class="dlg-grid">
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>结算类型：</span><div class="dlg-input"><span id="editSettle">-</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>价格类型：</span><div class="dlg-input"><span id="editPrice">按月</span><span class="caret">▾</span></div></div>
+      </div>
+      <div class="dlg-section">安装信息</div>
+      <div class="dlg-grid">
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>安装位置：</span><div class="dlg-input"><span id="editPos">管道</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>营业所：</span><div class="dlg-input"><span>涌恒供水</span><span class="caret">▾</span></div></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>表&nbsp;&nbsp;册：</span><div class="dlg-input"><span>默认</span><span class="caret">▾</span></div></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgEdit')">取消</button>
+      <button class="btn" onclick="closeModal('dlgEdit');showToast('修改成功','success')">确认</button>
+    </div>
+    <!-- 表具类型下拉（修改户表信息） -->
+    <div class="meter-type-dropdown" id="editMeterTypeDropdown">
+      <div class="meter-type-option" onclick="selectEditMeterType('WMI/WMI-V', 'wmi')">WMI/WMI-V</div>
+      <div class="meter-type-option" onclick="selectEditMeterType('WMG/WMS', 'wmg')">WMG/WMS</div>
+      <div class="meter-type-option" onclick="selectEditMeterType('BOSTEN网联超声水表', 'bosten')">BOSTEN网联超声水表</div>
+      <div class="meter-type-option" onclick="selectEditMeterType('WMI-W', 'wmiw')">WMI-W</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：快速导入 ============ -->
+<div class="modal-mask" id="dlgImport">
+  <div class="modal" style="width:640px">
+    <div class="modal-head">
+      <div class="modal-title">快速导入</div>
+      <span class="modal-close" onclick="closeModal('dlgImport')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="upload-area" onclick="this.querySelector('.up-text').textContent='用户开户导入模板.xlsx'">
+        <div class="up-icon">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="M12 16V5M12 5L7 10M12 5L17 10" stroke="#409eff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V17" stroke="#409eff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="up-text">点击选择文件，或将文件拖拽到此处</div>
+        <div class="up-hint">仅支持 .xlsx / .xls 格式，单次最多导入 1000 条</div>
+      </div>
+      <div>没有模板？<span class="tpl-link" onclick="showToast('模板下载成功','success')">下载导入模板</span></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgImport')">取消</button>
+      <button class="btn" onclick="closeModal('dlgImport');showToast('导入任务已提交，请在导入记录中查看结果','success')">确认导入</button>
+    </div>
+  </div>
+</div>
+
+<!-- 图片放大灯箱 -->
+<div class="img-lightbox" id="meterLightbox" onclick="closeMeterLightbox()">
+  <span class="lightbox-close">✕</span>
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <div class="lightbox-img-wrapper">
+      <span class="lightbox-nav prev" onclick="event.stopPropagation();prevPhoto()">‹</span>
+      <div class="lightbox-img" id="lightboxImg"></div>
+      <span class="lightbox-nav next" onclick="event.stopPropagation();nextPhoto()">›</span>
+    </div>
+    <div class="lightbox-title" id="lightboxTitle">-</div>
+    <div class="lightbox-dots" id="lightboxDots"></div>
+  </div>
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast">
+  <span id="toastIcon">⚠</span><span id="toastText">请选中一行数据进行编辑</span>
+  <span class="t-close" onclick="hideToast()">✕</span>
+</div>
+
+<script>
+  var selectedRow = null;
+
+  // 行选择
+  document.querySelectorAll('#mainTable tbody tr').forEach(function (tr) {
+    tr.addEventListener('click', function () {
+      if (selectedRow === tr) { tr.classList.remove('selected'); selectedRow = null; return; }
+      document.querySelectorAll('#mainTable tbody tr').forEach(function (r) { r.classList.remove('selected'); });
+      tr.classList.add('selected');
+      selectedRow = tr;
+    });
+  });
+
+  function openModal(id) { document.getElementById(id).classList.add('show'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+  var toastTimer = null;
+  function showToast(text, type) {
+    var t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    document.getElementById('toastIcon').textContent = type === 'success' ? '✔' : '⚠';
+    t.className = 'toast show' + (type === 'success' ? ' success' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 3200);
+  }
+  function hideToast() { document.getElementById('toast').classList.remove('show'); }
+
+  function doQuery() { showToast('查询成功', 'success'); }
+  function doReset() {
+    document.querySelectorAll('.filter-grid input').forEach(function (i) { i.value = ''; });
+    showToast('筛选条件已重置', 'success');
+  }
+  function doExport() { showToast('导出任务已提交，请稍后下载', 'success'); }
+
+  function doEditRow(el) {
+    var tr = el.closest('tr');
+    document.querySelectorAll('#mainTable tbody tr').forEach(function (r) { r.classList.remove('selected'); });
+    tr.classList.add('selected');
+    selectedRow = tr;
+    doEdit();
+  }
+
+  function doEdit() {
+    if (!selectedRow) { showToast('请选中一行数据进行编辑'); return; }
+    var c = selectedRow.cells;
+    document.getElementById('editUserNo').value = c[0].textContent;
+    document.getElementById('editUserName').value = c[1].textContent;
+    document.getElementById('editPhone').value = c[2].textContent === '*' ? '' : c[2].textContent;
+    document.getElementById('editIdcard').value = c[3].textContent === '*' ? '' : c[3].textContent;
+    document.getElementById('editAddr').textContent = c[4].textContent;
+    document.getElementById('editMeterNo').value = c[5].textContent;
+    document.getElementById('editMeterType').textContent = c[6].textContent;
+    document.getElementById('editSettle').textContent = c[7].textContent;
+    document.getElementById('editPrice').textContent = c[8].textContent;
+    document.getElementById('editPos').textContent = c[9].textContent;
+    document.getElementById('editCheckDate').textContent = c[15].textContent.split(' ')[0];
+    // 加载表具图片
+    var meterTypeText = c[6].textContent.trim();
+    var keyMap = { 'WMI/WMI-V': 'wmi', 'WMG/WMS': 'wmg', 'BOSTEN网联超声水表': 'bosten', 'WMI-W': 'wmiw' };
+    var typeKey = keyMap[meterTypeText] || 'wmi';
+    updateEditMeterPreview(typeKey, meterTypeText || '-');
+    currentMeterKey.edit = typeKey;
+    openModal('dlgEdit');
+  }
+
+  // 点击遮罩关闭
+  document.querySelectorAll('.modal-mask').forEach(function (m) {
+    m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('show'); });
+  });
+
+  // 组合框（表身码：可输入可选择）
+  document.querySelectorAll('[data-combobox]').forEach(function (cb) {
+    var input = cb.querySelector('input');
+    var dropdown = cb.querySelector('.combo-dropdown');
+    var options = cb.querySelectorAll('.combo-option');
+
+    // 点击输入框展开/收起
+    input.addEventListener('click', function (e) {
+      e.stopPropagation();
+      // 先关闭其他所有组合框
+      document.querySelectorAll('.combo-dropdown.show').forEach(function (d) {
+        if (d !== dropdown) d.classList.remove('show');
+      });
+      dropdown.classList.toggle('show');
+      filterOptions(input.value);
+    });
+
+    // 输入时过滤选项
+    input.addEventListener('input', function () {
+      filterOptions(this.value);
+      if (!dropdown.classList.contains('show')) {
+        dropdown.classList.add('show');
+      }
+    });
+
+    // 点击选项
+    options.forEach(function (opt) {
+      opt.addEventListener('click', function (e) {
+        e.stopPropagation();
+        input.value = opt.textContent;
+        dropdown.classList.remove('show');
+        // 更新选中状态
+        options.forEach(function (o) { o.classList.remove('selected'); });
+        opt.classList.add('selected');
+        input.focus();
+      });
+    });
+
+    function filterOptions(keyword) {
+      var kw = keyword.trim().toLowerCase();
+      options.forEach(function (opt) {
+        if (!kw || opt.textContent.toLowerCase().indexOf(kw) !== -1) {
+          opt.style.display = '';
+        } else {
+          opt.style.display = 'none';
+        }
+      });
+    }
+  });
+
+  // 点击页面其他地方关闭组合框下拉
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.combo-dropdown.show').forEach(function (d) {
+      d.classList.remove('show');
+    });
+    document.querySelectorAll('.select-dropdown.show').forEach(function (d) {
+      d.classList.remove('show');
+    });
+  });
+
+  // 普通下拉选择框
+  document.querySelectorAll('[data-select]').forEach(function (sel) {
+    var display = sel.querySelector('.select-display');
+    var valueEl = sel.querySelector('.select-value');
+    var dropdown = sel.querySelector('.select-dropdown');
+    var options = sel.querySelectorAll('.select-option');
+
+    display.addEventListener('click', function (e) {
+      e.stopPropagation();
+      // 关闭其他下拉
+      document.querySelectorAll('.select-dropdown.show').forEach(function (d) {
+        if (d !== dropdown) d.classList.remove('show');
+      });
+      document.querySelectorAll('.combo-dropdown.show').forEach(function (d) {
+        d.classList.remove('show');
+      });
+      dropdown.classList.toggle('show');
+    });
+
+    options.forEach(function (opt) {
+      opt.addEventListener('click', function (e) {
+        e.stopPropagation();
+        valueEl.textContent = opt.textContent;
+        display.classList.remove('placeholder');
+        options.forEach(function (o) { o.classList.remove('selected'); });
+        opt.classList.add('selected');
+        dropdown.classList.remove('show');
+      });
+    });
+  });
+
+  // ===== 水表样例图片预览（每种表具3张：正面、侧面、铭牌） =====
+  var meterImages = {
+    wmi: [
+      // 正面
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="65" rx="40" ry="28" fill="#ecf5ff" stroke="#409eff" stroke-width="2"/><ellipse cx="60" cy="58" rx="28" ry="18" fill="#fff" stroke="#409eff" stroke-width="1.5"/><rect x="40" y="48" width="40" height="16" rx="2" fill="#409eff" opacity=".1" stroke="#409eff" stroke-width="1"/><text x="60" y="59" text-anchor="middle" font-size="11" fill="#409eff" font-weight="bold">WMI</text><rect x="35" y="75" width="50" height="8" rx="2" fill="#409eff" opacity=".2" stroke="#409eff" stroke-width="1"/><rect x="20" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="85" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="52" y="28" width="16" height="20" rx="2" fill="#409eff" opacity=".25" stroke="#409eff" stroke-width="1"/><circle cx="60" cy="26" r="5" fill="#67c23a" stroke="#4b8f35" stroke-width="1"/><text x="60" y="29" text-anchor="middle" font-size="6" fill="#fff" font-weight="bold">V</text></svg>',
+      // 侧面
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="38" y="38" width="44" height="56" rx="6" fill="#ecf5ff" stroke="#409eff" stroke-width="2"/><rect x="44" y="46" width="32" height="14" rx="2" fill="#fff" stroke="#409eff" stroke-width="1"/><text x="60" y="56" text-anchor="middle" font-size="8" fill="#409eff" font-weight="bold">WMI</text><rect x="44" y="66" width="32" height="8" rx="2" fill="#409eff" opacity=".2" stroke="#409eff" stroke-width="1"/><rect x="20" y="62" width="18" height="8" rx="2" fill="#909399"/><rect x="82" y="62" width="18" height="8" rx="2" fill="#909399"/><rect x="50" y="22" width="20" height="16" rx="3" fill="#409eff" opacity=".3" stroke="#409eff" stroke-width="1"/><circle cx="60" cy="20" r="4" fill="#67c23a" stroke="#4b8f35" stroke-width="1"/><text x="60" y="23" text-anchor="middle" font-size="5" fill="#fff" font-weight="bold">V</text></svg>',
+      // 铭牌细节
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="30" width="80" height="60" rx="6" fill="#fff" stroke="#409eff" stroke-width="2"/><rect x="28" y="38" width="64" height="20" rx="2" fill="#409eff" opacity=".12" stroke="#409eff" stroke-width="1"/><text x="60" y="52" text-anchor="middle" font-size="12" fill="#409eff" font-weight="bold">WMI/V 型</text><line x1="28" y1="64" x2="92" y2="64" stroke="#e4e7ed" stroke-width="1"/><text x="30" y="75" font-size="9" fill="#606266">公称口径: DN20</text><text x="30" y="85" font-size="9" fill="#606266">精度等级: 2级</text><text x="30" y="58" font-size="8" fill="#909399">No. 260626116289</text></svg>'
+    ],
+    wmg: [
+      // 正面
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="65" rx="40" ry="28" fill="#f0f9eb" stroke="#67c23a" stroke-width="2"/><ellipse cx="60" cy="58" rx="28" ry="18" fill="#fff" stroke="#67c23a" stroke-width="1.5"/><circle cx="60" cy="58" r="14" fill="none" stroke="#67c23a" stroke-width="1.5"/><line x1="60" y1="58" x2="60" y2="46" stroke="#67c23a" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="58" x2="69" y2="60" stroke="#f56c6c" stroke-width="1.2" stroke-linecap="round"/><text x="60" y="72" text-anchor="middle" font-size="7" fill="#67c23a" font-weight="bold">WMG</text><rect x="35" y="75" width="50" height="8" rx="2" fill="#67c23a" opacity=".2" stroke="#67c23a" stroke-width="1"/><rect x="20" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="85" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="54" y="30" width="12" height="22" rx="2" fill="#909399"/><ellipse cx="60" cy="30" rx="6" ry="3" fill="#67c23a" stroke="#4b8f35" stroke-width="1"/></svg>',
+      // 侧面
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="40" width="40" height="52" rx="6" fill="#f0f9eb" stroke="#67c23a" stroke-width="2"/><circle cx="60" cy="58" r="12" fill="#fff" stroke="#67c23a" stroke-width="1.5"/><line x1="60" y1="58" x2="60" y2="48" stroke="#67c23a" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="58" x2="67" y2="59" stroke="#f56c6c" stroke-width="1" stroke-linecap="round"/><rect x="20" y="62" width="20" height="8" rx="2" fill="#909399"/><rect x="80" y="62" width="20" height="8" rx="2" fill="#909399"/><rect x="52" y="24" width="16" height="16" rx="2" fill="#909399"/><ellipse cx="60" cy="24" rx="5" ry="2.5" fill="#67c23a" stroke="#4b8f35" stroke-width="1"/><text x="60" y="76" text-anchor="middle" font-size="7" fill="#67c23a" font-weight="bold">WMG</text></svg>',
+      // 表盘细节
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="48" fill="#fff" stroke="#67c23a" stroke-width="3"/><circle cx="60" cy="60" r="40" fill="#f0f9eb" stroke="#67c23a" stroke-width="1"/><circle cx="60" cy="60" r="6" fill="#67c23a"/><line x1="60" y1="60" x2="60" y2="26" stroke="#67c23a" stroke-width="2.5" stroke-linecap="round"/><line x1="60" y1="60" x2="78" y2="64" stroke="#f56c6c" stroke-width="1.5" stroke-linecap="round"/><text x="60" y="18" text-anchor="middle" font-size="9" fill="#67c23a" font-weight="bold">m³</text><text x="60" y="92" text-anchor="middle" font-size="7" fill="#606266">00000.000</text></svg>'
+    ],
+    bosten: [
+      // 正面
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="65" rx="42" ry="30" fill="#e8edf2" stroke="#909399" stroke-width="2"/><ellipse cx="60" cy="58" rx="30" ry="20" fill="#fff" stroke="#606266" stroke-width="1.5"/><rect x="36" y="46" width="48" height="22" rx="4" fill="#1e88e5" stroke="#1565c0" stroke-width="1.5"/><text x="60" y="56" text-anchor="middle" font-size="8" fill="#fff" font-weight="bold">BOSTEN</text><text x="60" y="66" text-anchor="middle" font-size="6" fill="#bbdefb">超声波流量计</text><rect x="32" y="75" width="56" height="8" rx="2" fill="#909399" stroke="#606266" stroke-width="1"/><rect x="16" y="77" width="16" height="6" rx="2" fill="#606266"/><rect x="88" y="77" width="16" height="6" rx="2" fill="#606266"/><rect x="50" y="26" width="20" height="18" rx="3" fill="#1e88e5" opacity=".3" stroke="#1e88e5" stroke-width="1"/><circle cx="55" cy="35" r="3" fill="#67c23a"/><circle cx="65" cy="35" r="3" fill="#f56c6c"/><path d="M42 55 L38 50 L38 60 Z" fill="#1e88e5" opacity=".6"/><path d="M78 55 L82 50 L82 60 Z" fill="#1e88e5" opacity=".6"/></svg>',
+      // 侧面
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="36" y="38" width="48" height="56" rx="8" fill="#e8edf2" stroke="#606266" stroke-width="2"/><rect x="42" y="46" width="36" height="20" rx="3" fill="#1e88e5" stroke="#1565c0" stroke-width="1"/><text x="60" y="56" text-anchor="middle" font-size="8" fill="#fff" font-weight="bold">BOSTEN</text><text x="60" y="65" text-anchor="middle" font-size="6" fill="#bbdefb">超声</text><rect x="16" y="62" width="20" height="8" rx="2" fill="#606266"/><rect x="84" y="62" width="20" height="8" rx="2" fill="#606266"/><rect x="48" y="24" width="24" height="14" rx="2" fill="#1e88e5" opacity=".3" stroke="#1e88e5" stroke-width="1"/><circle cx="54" cy="31" r="2.5" fill="#67c23a"/><circle cx="66" cy="31" r="2.5" fill="#f56c6c"/><rect x="42" y="74" width="36" height="6" rx="2" fill="#909399" stroke="#606266" stroke-width="1"/></svg>',
+      // 显示屏细节
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="16" y="24" width="88" height="72" rx="6" fill="#1e88e5" stroke="#1565c0" stroke-width="2"/><rect x="24" y="32" width="72" height="36" rx="4" fill="#0d47a1"/><text x="60" y="52" text-anchor="middle" font-size="16" fill="#4fc3f7" font-weight="bold" font-family="monospace">0128.56</text><text x="60" y="64" text-anchor="middle" font-size="9" fill="#90caf9">m³</text><circle cx="34" cy="82" r="4" fill="#67c23a"/><circle cx="50" cy="82" r="4" fill="#ffc107"/><circle cx="66" cy="82" r="4" fill="#f56c6c"/><text x="80" y="86" font-size="9" fill="#bbdefb">BOSTEN</text></svg>'
+    ],
+    wmiw: [
+      // 正面
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="65" rx="40" ry="28" fill="#fef0f0" stroke="#f56c6c" stroke-width="2"/><ellipse cx="60" cy="58" rx="28" ry="18" fill="#fff" stroke="#f56c6c" stroke-width="1.5"/><rect x="40" y="48" width="40" height="16" rx="2" fill="#f56c6c" opacity=".1" stroke="#f56c6c" stroke-width="1"/><text x="60" y="59" text-anchor="middle" font-size="11" fill="#f56c6c" font-weight="bold">WMI-W</text><rect x="35" y="75" width="50" height="8" rx="2" fill="#f56c6c" opacity=".2" stroke="#f56c6c" stroke-width="1"/><rect x="20" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="85" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="48" y="28" width="24" height="22" rx="2" fill="#f56c6c" opacity=".25" stroke="#f56c6c" stroke-width="1"/><path d="M54 34 L54 44 L60 40 L66 44 L66 34" stroke="#f56c6c" stroke-width="1.5" fill="none" stroke-linejoin="round"/><circle cx="60" cy="26" r="4" fill="#f56c6c"/></svg>',
+      // 侧面
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="40" width="40" height="52" rx="6" fill="#fef0f0" stroke="#f56c6c" stroke-width="2"/><rect x="46" y="50" width="28" height="14" rx="2" fill="#fff" stroke="#f56c6c" stroke-width="1"/><text x="60" y="60" text-anchor="middle" font-size="8" fill="#f56c6c" font-weight="bold">WMI-W</text><rect x="20" y="62" width="20" height="8" rx="2" fill="#909399"/><rect x="80" y="62" width="20" height="8" rx="2" fill="#909399"/><rect x="48" y="22" width="24" height="18" rx="2" fill="#f56c6c" opacity=".25" stroke="#f56c6c" stroke-width="1"/><path d="M54 28 L54 36 L60 32 L66 36 L66 28" stroke="#f56c6c" stroke-width="1.5" fill="none" stroke-linejoin="round"/><circle cx="60" cy="20" r="3.5" fill="#f56c6c"/><rect x="44" y="76" width="32" height="8" rx="2" fill="#f56c6c" opacity=".2" stroke="#f56c6c" stroke-width="1"/></svg>',
+      // 无线模块细节
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="26" y="28" width="68" height="64" rx="8" fill="#fef0f0" stroke="#f56c6c" stroke-width="2"/><rect x="36" y="38" width="48" height="20" rx="3" fill="#fff" stroke="#f56c6c" stroke-width="1"/><text x="60" y="52" text-anchor="middle" font-size="11" fill="#f56c6c" font-weight="bold">WMI-W</text><rect x="36" y="64" width="48" height="20" rx="3" fill="#fff" stroke="#f56c6c" stroke-width="1"/><text x="60" y="77" text-anchor="middle" font-size="10" fill="#606266" font-family="monospace">00:15:8D:3F</text><path d="M50 24 Q55 18 60 24 Q65 18 70 24" stroke="#f56c6c" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M54 20 Q60 12 66 20" stroke="#f56c6c" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="60" cy="16" r="3" fill="#f56c6c"/></svg>'
+    ]
+  };
+
+  // 当前灯箱状态
+  var lightboxState = { photos: [], currentIndex: 0, title: '' };
+
+  // 更新预览区（堆叠3张图）
+  function renderPreviewStack(stackEl, photos) {
+    stackEl.innerHTML = '';
+    for (var i = 0; i < Math.min(photos.length, 3); i++) {
+      var card = document.createElement('div');
+      card.className = 'stack-card';
+      card.innerHTML = photos[i];
+      stackEl.appendChild(card);
+    }
+    // 触发堆叠卡片的入场动画
+    var cards = stackEl.querySelectorAll('.stack-card');
+    for (var j = 0; j < cards.length; j++) {
+      cards[j].style.opacity = '0';
+      cards[j].style.transform = 'scale(.8)';
+      (function (card, idx) {
+        setTimeout(function () {
+          card.style.opacity = '';
+          card.style.transform = '';
+        }, 80 + idx * 60);
+      })(cards[j], j);
+    }
+  }
+
+  function updateMeterPreview(typeKey, typeName) {
+    var imgEl = document.getElementById('quickMeterImg');
+    var nameEl = document.getElementById('quickMeterName');
+    var stackEl = document.getElementById('quickPreviewStack');
+    if (imgEl && nameEl && meterImages[typeKey]) {
+      imgEl.style.display = 'flex';
+      nameEl.style.display = 'block';
+      nameEl.textContent = typeName;
+      renderPreviewStack(stackEl, meterImages[typeKey]);
+    }
+  }
+
+  function toggleMeterTypeDropdown() {
+    var dd = document.getElementById('meterTypeDropdown');
+    var input = document.getElementById('quickMeterType');
+    if (dd.classList.contains('show')) {
+      dd.classList.remove('show');
+    } else {
+      var rect = input.getBoundingClientRect();
+      dd.style.left = rect.left + 'px';
+      dd.style.top = (rect.bottom + 4) + 'px';
+      dd.style.minWidth = rect.width + 'px';
+      dd.classList.add('show');
+    }
+  }
+
+  function selectMeterType(name, key) {
+    currentMeterKey.quick = key;
+    var textEl = document.getElementById('quickMeterTypeText');
+    textEl.textContent = name;
+    textEl.style.color = '#606266';
+    document.getElementById('meterTypeDropdown').classList.remove('show');
+    document.getElementById('quickMeterEmpty').style.display = 'none';
+    // 切换动画
+    var imgEl = document.getElementById('quickMeterImg');
+    var nameEl2 = document.getElementById('quickMeterName');
+    imgEl.classList.add('switching');
+    nameEl2.classList.add('switching');
+    setTimeout(function () {
+      imgEl.style.display = 'flex';
+      nameEl2.style.display = 'block';
+      nameEl2.textContent = name;
+      updateMeterPreview(key, name);
+      requestAnimationFrame(function () {
+        imgEl.classList.remove('switching');
+        nameEl2.classList.remove('switching');
+      });
+    }, 200);
+  }
+
+  // 点击其他地方关闭下拉
+  document.addEventListener('click', function (e) {
+    var dd = document.getElementById('meterTypeDropdown');
+    var input = document.getElementById('quickMeterType');
+    if (dd && dd.classList.contains('show') && !dd.contains(e.target) && !input.contains(e.target)) {
+      dd.classList.remove('show');
+    }
+    var editDd = document.getElementById('editMeterTypeDropdown');
+    var editInput = document.getElementById('editMeterTypeBox');
+    if (editDd && editDd.classList.contains('show') && !editDd.contains(e.target) && !editInput.contains(e.target)) {
+      editDd.classList.remove('show');
+    }
+  });
+
+  // ===== 修改户表信息弹窗的水表预览 =====
+  function toggleEditMeterTypeDropdown() {
+    var dd = document.getElementById('editMeterTypeDropdown');
+    var input = document.getElementById('editMeterTypeBox');
+    if (dd.classList.contains('show')) {
+      dd.classList.remove('show');
+    } else {
+      var rect = input.getBoundingClientRect();
+      dd.style.left = rect.left + 'px';
+      dd.style.top = (rect.bottom + 4) + 'px';
+      dd.style.minWidth = rect.width + 'px';
+      dd.classList.add('show');
+    }
+  }
+
+  function selectEditMeterType(name, key) {
+    currentMeterKey.edit = key;
+    document.getElementById('editMeterType').textContent = name;
+    document.getElementById('editMeterTypeDropdown').classList.remove('show');
+    // 切换动画
+    var stackEl = document.getElementById('editPhotoStack');
+    if (stackEl) {
+      var cards = stackEl.querySelectorAll('.stack-big');
+      cards.forEach(function(c) { c.style.transition = 'opacity .2s ease, transform .2s ease'; c.style.opacity = '0'; c.style.transform = 'scale(.85)'; });
+      setTimeout(function () {
+        updateEditMeterPreview(key, name);
+        cards.forEach(function(c) { c.style.opacity = ''; c.style.transform = ''; });
+      }, 200);
+    } else {
+      updateEditMeterPreview(key, name);
+    }
+  }
+
+  function updateEditMeterPreview(typeKey, typeName) {
+    var stackEl = document.getElementById('editPhotoStack');
+    var typeEl = document.getElementById('editPhotoType');
+    var sectionEl = document.getElementById('editPhotoSection');
+    if (stackEl && meterImages[typeKey]) {
+      var imgs = meterImages[typeKey];
+      var cards = stackEl.querySelectorAll('.stack-big');
+      for (var i = 0; i < cards.length && i < imgs.length; i++) {
+        cards[i].innerHTML = imgs[i];
+      }
+      if (typeEl) typeEl.textContent = typeName;
+      if (sectionEl) {
+        sectionEl.classList.remove('meter-photo-section-empty');
+      }
+    }
+  }
+
+  // 当前显示的表具类型（用于灯箱）
+  var currentMeterKey = { quick: null, edit: null };
+
+  // ===== 图片灯箱（多图切换）=====
+  function renderDots(total, active) {
+    var dotsEl = document.getElementById('lightboxDots');
+    dotsEl.innerHTML = '';
+    for (var i = 0; i < total; i++) {
+      var dot = document.createElement('span');
+      dot.className = 'lightbox-dot' + (i === active ? ' active' : '');
+      dot.setAttribute('data-index', i);
+      dot.onclick = function (e) {
+        e.stopPropagation();
+        goToPhoto(parseInt(this.getAttribute('data-index')));
+      };
+      dotsEl.appendChild(dot);
+    }
+    var counter = document.createElement('span');
+    counter.className = 'lightbox-counter';
+    counter.textContent = (active + 1) + ' / ' + total;
+    dotsEl.appendChild(counter);
+  }
+
+  function updateNavBtns() {
+    var prev = document.querySelector('.lightbox-nav.prev');
+    var next = document.querySelector('.lightbox-nav.next');
+    if (lightboxState.currentIndex === 0) {
+      prev.classList.add('disabled');
+    } else {
+      prev.classList.remove('disabled');
+    }
+    if (lightboxState.currentIndex === lightboxState.photos.length - 1) {
+      next.classList.add('disabled');
+    } else {
+      next.classList.remove('disabled');
+    }
+  }
+
+  function showCurrentPhoto() {
+    var imgEl = document.getElementById('lightboxImg');
+    imgEl.style.opacity = '0';
+    setTimeout(function () {
+      imgEl.innerHTML = lightboxState.photos[lightboxState.currentIndex];
+      imgEl.style.opacity = '1';
+    }, 100);
+    renderDots(lightboxState.photos.length, lightboxState.currentIndex);
+    updateNavBtns();
+  }
+
+  function openMeterLightbox(which) {
+    var key = currentMeterKey[which];
+    if (!key) {
+      showToast('请先选择表具类型', '');
+      return;
+    }
+    var nameEl = document.getElementById(which === 'quick' ? 'quickMeterName' : 'editMeterName');
+    lightboxState.photos = meterImages[key];
+    lightboxState.currentIndex = 0;
+    lightboxState.title = nameEl ? nameEl.textContent : '';
+    document.getElementById('lightboxImg').innerHTML = lightboxState.photos[0];
+    document.getElementById('lightboxTitle').textContent = lightboxState.title;
+    renderDots(lightboxState.photos.length, 0);
+    updateNavBtns();
+    document.getElementById('meterLightbox').classList.add('show');
+  }
+
+  function closeMeterLightbox() {
+    document.getElementById('meterLightbox').classList.remove('show');
+  }
+
+  function prevPhoto() {
+    if (lightboxState.currentIndex > 0) {
+      lightboxState.currentIndex--;
+      showCurrentPhoto();
+    }
+  }
+  function nextPhoto() {
+    if (lightboxState.currentIndex < lightboxState.photos.length - 1) {
+      lightboxState.currentIndex++;
+      showCurrentPhoto();
+    }
+  }
+  function goToPhoto(idx) {
+    if (idx >= 0 && idx < lightboxState.photos.length && idx !== lightboxState.currentIndex) {
+      lightboxState.currentIndex = idx;
+      showCurrentPhoto();
+    }
+  }
+
+  // 键盘操作
+  document.addEventListener('keydown', function (e) {
+    var lb = document.getElementById('meterLightbox');
+    if (!lb.classList.contains('show')) return;
+    if (e.key === 'Escape') {
+      closeMeterLightbox();
+    } else if (e.key === 'ArrowLeft') {
+      prevPhoto();
+    } else if (e.key === 'ArrowRight') {
+      nextPhoto();
+    }
+  });
+</script>
+</body>
+</html>

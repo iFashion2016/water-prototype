@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务云平台 - 登录</title>
+<style>
+  :root {
+    --primary: #1a7ae0;
+    --primary-deep: #0f4aa2;
+    --teal: #22b8cf;
+    --text-main: #17233d;
+    --text-sub: #6b7686;
+    --text-weak: #9aa4b2;
+    --border: #dde3ec;
+    --radius: 10px;
+    --gap-section: 22px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    color: var(--text-main);
+    background:
+      radial-gradient(900px 480px at 12% -10%, rgba(26, 122, 224, 0.10), transparent 60%),
+      radial-gradient(700px 420px at 105% 110%, rgba(34, 184, 207, 0.10), transparent 60%),
+      #f3f6fb;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    min-height: 100vh;
+    overflow: auto;
+  }
+
+  /* ========== 卡片整体 ========== */
+  .login-wrapper {
+    width: min(1020px, 100%);
+    height: min(640px, calc(100vh - 64px));
+    min-height: 580px;
+    display: grid;
+    grid-template-columns: 1.08fr 1fr;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 24px 64px rgba(15, 74, 162, 0.14), 0 4px 16px rgba(15, 74, 162, 0.06);
+    overflow: hidden;
+  }
+
+  /* ========== 左侧品牌区：上中下三段均衡 ========== */
+  .brand-side {
+    position: relative;
+    background: linear-gradient(155deg, #0d3f8f 0%, #1065c0 46%, #1590d4 78%, #1fb6cf 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 48px 52px 40px;
+    color: #fff;
+    overflow: hidden;
+  }
+  /* 装饰圆形 */
+  .brand-side::before {
+    content: "";
+    position: absolute;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    top: -170px; right: -130px;
+  }
+  .brand-side::after {
+    content: "";
+    position: absolute;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    bottom: -110px; left: -70px;
+  }
+  /* 底部水波纹 */
+  .brand-wave {
+    position: absolute;
+    left: 0; right: 0; bottom: -2px;
+    width: 100%;
+    height: 90px;
+    z-index: 1;
+  }
+
+  .brand-top, .brand-mid, .brand-bottom { position: relative; z-index: 2; }
+
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-mark {
+    width: 46px; height: 46px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-mark svg { width: 24px; height: 24px; }
+  .brand-name { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+  .brand-tag {
+    margin-left: 2px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: 2px;
+  }
+
+  .brand-mid { text-align: center; }
+  .brand-illustration { display: flex; justify-content: center; margin-bottom: 26px; }
+  .brand-illustration svg { width: 250px; height: auto; }
+  .brand-slogan { font-size: 22px; font-weight: 700; letter-spacing: 3px; margin-bottom: 10px; }
+  .brand-desc {
+    font-size: 13px;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.78);
+    letter-spacing: 1px;
+  }
+
+  /* 底部三个卖点，等分对齐 */
+  .brand-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .brand-feature {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 10px;
+    padding: 10px 6px;
+  }
+  .brand-feature svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  /* ========== 右侧表单区：单流式、间距统一 ========== */
+  .form-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 52px 56px;
+    background: #fff;
+  }
+
+  .form-header { margin-bottom: var(--gap-section); }
+  .form-title { font-size: 26px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+  .form-subtitle { font-size: 13.5px; color: var(--text-sub); }
+
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #414c5e;
+    margin-bottom: 8px;
+  }
+  .input-wrap { position: relative; }
+  .form-input {
+    width: 100%;
+    height: 46px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0 42px 0 42px;
+    font-size: 14px;
+    color: var(--text-main);
+    background: #fafbfd;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  .form-input:hover { border-color: #b8c2d2; }
+  .form-input:focus {
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(26, 122, 224, 0.10);
+  }
+  .form-input::placeholder { color: var(--text-weak); }
+  .input-icon {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-weak);
+    width: 18px; height: 18px;
+    pointer-events: none;
+  }
+  .input-action {
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-weak);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.15s;
+  }
+  .input-action:hover { color: var(--primary); }
+
+  /* 验证码 */
+  .captcha-row { display: flex; gap: 12px; }
+  .captcha-row .input-wrap { flex: 1; }
+  .captcha-box {
+    width: 116px;
+    height: 46px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #e8f3fe, #d5eafd);
+    border: 1px solid #b9d6f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Courier New", monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1065c0;
+    letter-spacing: 3px;
+    font-style: italic;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.15s;
+  }
+  .captcha-box:hover { opacity: 0.82; }
+
+  /* 选项行 */
+  .form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 2px 0 18px;
+  }
+  .remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #4b5563;
+    user-select: none;
+  }
+  .checkbox {
+    width: 16px; height: 16px;
+    border: 1.5px solid #c6cdd8;
+    border-radius: 4px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .checkbox.checked { background: var(--primary); border-color: var(--primary); }
+  .checkbox.checked::after {
+    content: "";
+    width: 4px; height: 8px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
+  .forgot-link {
+    font-size: 13px;
+    color: var(--primary);
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .forgot-link:hover { text-decoration: underline; }
+
+  /* 登录按钮 */
+  .login-btn {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: var(--radius);
+    background: linear-gradient(100deg, #1a7ae0, #23a9e8 55%, #1fb6cf);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 6px;
+    text-indent: 6px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(26, 122, 224, 0.28);
+    transition: all 0.2s;
+  }
+  .login-btn:hover {
+    filter: brightness(1.06);
+    box-shadow: 0 8px 20px rgba(26, 122, 224, 0.36);
+    transform: translateY(-1px);
+  }
+  .login-btn:active { transform: translateY(0); }
+
+  /* 协议 */
+  .agreement {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .agreement .checkbox { margin-top: 1px; cursor: pointer; }
+  .agreement-text { font-size: 12px; color: var(--text-weak); line-height: 1.6; }
+  .agreement-text a { color: var(--primary); text-decoration: none; }
+  .agreement-text a:hover { text-decoration: underline; }
+
+  /* 注册提示：贴在表单流末尾，不再被踢到屏幕边缘 */
+  .signup-tip {
+    margin-top: var(--gap-section);
+    padding-top: var(--gap-section);
+    border-top: 1px solid #eef1f6;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-sub);
+  }
+  .signup-tip a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 4px;
+  }
+  .signup-tip a:hover { text-decoration: underline; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 30px; left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: #fff;
+    border-radius: 8px;
+    padding: 12px 22px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+    font-size: 14px;
+    color: var(--text-main);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.25s ease;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success .t-icon { color: #10b981; }
+  .toast.error .t-icon { color: #ef4444; }
+
+  /* ========== 响应式 ========== */
+  @media (max-width: 880px) {
+    body { padding: 20px 14px; }
+    .login-wrapper {
+      grid-template-columns: 1fr;
+      height: auto;
+      min-height: 0;
+    }
+    .brand-side { display: none; }
+    .form-side { padding: 44px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="login-wrapper">
+  <!-- ================= 左侧品牌区 ================= -->
+  <div class="brand-side">
+    <!-- 底部水波纹装饰 -->
+    <svg class="brand-wave" viewBox="0 0 600 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 55 Q75 25 150 50 T300 48 T450 52 T600 46 V90 H0 Z" fill="rgba(255,255,255,0.07)"/>
+      <path d="M0 68 Q100 45 200 64 T400 62 T600 60 V90 H0 Z" fill="rgba(255,255,255,0.08)"/>
+    </svg>
+
+    <!-- 上：Logo -->
+    <div class="brand-top">
+      <div class="brand-logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z" fill="#fff"/>
+            <path d="M9.2 14.5C9.2 16.4 10.4 17.8 12 18.1" stroke="#0f4aa2" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="brand-name">智慧水务云平台</span>
+        <span class="brand-tag">SAAS</span>
+      </div>
+    </div>
+
+    <!-- 中：插画 + 标语 -->
+    <div class="brand-mid">
+      <div class="brand-illustration">
+        <svg viewBox="0 0 300 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- 背景圆环 -->
+          <circle cx="150" cy="100" r="88" fill="rgba(255,255,255,0.07)"/>
+          <circle cx="150" cy="100" r="62" fill="rgba(255,255,255,0.09)"/>
+
+          <!-- 水表仪表盘 -->
+          <circle cx="150" cy="100" r="46" stroke="rgba(255,255,255,0.85)" stroke-width="3" fill="rgba(255,255,255,0.10)"/>
+          <path d="M150 100 L150 66" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+          <path d="M150 100 L176 112" stroke="#7fe3f0" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="150" cy="100" r="5" fill="#fff"/>
+          <!-- 刻度 -->
+          <line x1="150" y1="56" x2="150" y2="62" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="108" y1="100" x2="114" y2="100" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="186" y1="100" x2="192" y2="100" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="120" y1="70" x2="124" y2="74" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="180" y1="70" x2="176" y2="74" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+
+          <!-- 上升数据曲线（监测趋势） -->
+          <path d="M62 138 Q95 128 118 136 T172 128 T238 112" stroke="#7fe3f0" stroke-width="3" stroke-linecap="round" fill="none" stroke-dasharray="7 5"/>
+          <circle cx="238" cy="112" r="5" fill="#7fe3f0"/>
+          <circle cx="118" cy="136" r="4" fill="rgba(255,255,255,0.9)"/>
+
+          <!-- 水滴点缀 -->
+          <path d="M66 62 C66 62 58 72 58 78 C58 82.4 61.6 86 66 86 C70.4 86 74 82.4 74 78 C74 72 66 62 66 62Z" fill="rgba(255,255,255,0.55)"/>
+          <path d="M236 56 C236 56 230 64 230 69 C230 72.3 232.7 75 236 75 C239.3 75 242 72.3 242 69 C242 64 236 56 236 56Z" fill="rgba(127,227,240,0.75)"/>
+
+          <!-- 星星 -->
+          <circle cx="95" cy="45" r="3" fill="#fde68a"/>
+          <circle cx="212" cy="150" r="3.5" fill="rgba(255,255,255,0.6)"/>
+          <circle cx="55" cy="108" r="2.5" fill="rgba(255,255,255,0.5)"/>
+        </svg>
+      </div>
+      <div class="brand-slogan">智慧水务 · 数字赋能</div>
+    </div>
+
+    <!-- 下：三个卖点 -->
+    <div class="brand-bottom">
+      <div class="brand-feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z"/>
+        </svg>
+        <span>实时监测</span>
+      </div>
+      <div class="brand-feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="20" x2="20" y2="20"/>
+          <rect x="6" y="12" width="3" height="8" rx="1"/>
+          <rect x="11" y="7" width="3" height="13" rx="1"/>
+          <rect x="16" y="3" width="3" height="17" rx="1"/>
+        </svg>
+        <span>营收分析</span>
+      </div>
+      <div class="brand-feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="7" y="2" width="10" height="20" rx="2.5"/>
+          <line x1="11" y1="18.5" x2="13" y2="18.5"/>
+        </svg>
+        <span>移动办公</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 右侧表单区 ================= -->
+  <div class="form-side">
+    <div class="form-header">
+      <div class="form-title">欢迎回来</div>
+      <div class="form-subtitle">请登录您的账号，开始使用智慧水务云平台</div>
+    </div>
+
+    <form onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label class="form-label">账号</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <input type="text" class="form-input" placeholder="请输入账号/邮箱/手机号" value="admin">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">密码</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input type="password" class="form-input" id="pwdInput" placeholder="请输入密码" value="123456">
+          <span class="input-action" onclick="togglePwd()">
+            <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">验证码</label>
+        <div class="captcha-row">
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 12l2 2 4-4"/>
+              <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c2.39 0 4.68.94 6.36 2.64"/>
+            </svg>
+            <input type="text" class="form-input" placeholder="请输入验证码" maxlength="4">
+          </div>
+          <div class="captcha-box" onclick="refreshCaptcha(this)">A7k9</div>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <label class="remember" onclick="toggleCheck(this)">
+          <span class="checkbox checked"></span>
+          <span>记住我</span>
+        </label>
+        <a class="forgot-link" href="javascript:void(0)" onclick="showToast('请联系管理员重置密码','')">忘记密码？</a>
+      </div>
+
+      <button type="submit" class="login-btn">登 录</button>
+
+      <div class="agreement">
+        <span class="checkbox checked" onclick="event.stopPropagation(); toggleAgree(this)"></span>
+        <span class="agreement-text">
+          登录即表示您同意 <a href="javascript:void(0)">《服务协议》</a> 和 <a href="javascript:void(0)">《隐私政策》</a>
+        </span>
+      </div>
+    </form>
+
+    <div class="signup-tip">
+      还没有账号？<a href="javascript:void(0)" onclick="showToast('请联系管理员开通账号','')">联系开通</a>
+    </div>
+  </div>
+</div>
+
+<!-- Toast 提示 -->
+<div class="toast" id="toast">
+  <span class="t-icon" id="toastIcon">✓</span>
+  <span id="toastText">登录成功</span>
+</div>
+
+<script>
+  // 切换密码可见性
+  var pwdVisible = false;
+  function togglePwd() {
+    var input = document.getElementById('pwdInput');
+    var icon = document.getElementById('eyeIcon');
+    pwdVisible = !pwdVisible;
+    if (pwdVisible) {
+      input.type = 'text';
+      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      input.type = 'password';
+      icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
+
+  // 复选框切换
+  function toggleCheck(el) {
+    el.querySelector('.checkbox').classList.toggle('checked');
+  }
+  function toggleAgree(el) {
+    el.classList.toggle('checked');
+  }
+
+  // 刷新验证码
+  var captchaChars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  function refreshCaptcha(el) {
+    var code = '';
+    for (var i = 0; i < 4; i++) {
+      code += captchaChars.charAt(Math.floor(Math.random() * captchaChars.length));
+    }
+    el.textContent = code;
+  }
+
+  // 登录
+  function doLogin(e) {
+    e.preventDefault();
+    showToast('登录成功，正在进入系统...', 'success');
+    setTimeout(function() {
+      window.location.href = '智慧水务-用户开户-高保真.html';
+    }, 1200);
+  }
+
+  // Toast
+  var toastTimer = null;
+  function showToast(text, type) {
+    var t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    var icon = document.getElementById('toastIcon');
+    if (type === 'success') {
+      icon.textContent = '✓';
+      t.className = 'toast show success';
+    } else if (type === 'error') {
+      icon.textContent = '✕';
+      t.className = 'toast show error';
+    } else {
+      icon.textContent = 'ⓘ';
+      t.className = 'toast show';
+    }
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      t.classList.remove('show');
+    }, 2500);
+  }
+</script>
+</body>
+</html>

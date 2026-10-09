@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务 - 抄表记录表</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f7f7f7; color: #212121; overflow: hidden; font-size: 14px; }
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
+  .topbar-left { width: 204px; flex: 0 0 204px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
+  .logo-drop { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; }
+  .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+  .topbar-right { flex: 1; display: flex; align-items: center; padding-right: 18px; }
+  .collapse-btn { width: 40px; height: 53px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,.9); }
+  .top-tabs { display: flex; align-items: center; gap: 6px; height: 100%; }
+  .top-tab { padding: 7px 22px; border-radius: 18px; cursor: pointer; color: rgba(255,255,255,.92); font-size: 14.5px; white-space: nowrap; transition: background .2s; }
+  .top-tab:hover { background: rgba(255,255,255,.14); }
+  .top-tab.active { background: rgba(255,255,255,.28); font-weight: 600; }
+  .top-user { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .top-user .tenant { font-size: 14px; color: #fff; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,.65); background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; padding-bottom: 16px; }
+  .side-caption { padding: 14px 16px 6px; font-size: 12px; color: #9aa3af; }
+  .menu-group-title { display: flex; align-items: center; gap: 8px; margin: 4px 10px; padding: 10px 12px; background: #eaf3fe; color: #2a7de1; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
+  .menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px 10px 26px; margin: 2px 10px; color: #4b5563; cursor: pointer; border-radius: 6px; text-decoration: none; font-size: 13.5px; }
+  .menu-item:hover { background: #f2f7fd; color: #2a7de1; }
+  .menu-item.active { background: #eaf3fe; color: #2a7de1; font-weight: 600; }
+  .main { position: fixed; top: 53px; left: 204px; right: 0; bottom: 0; display: flex; flex-direction: column; }
+  .subtabs { flex: 0 0 44px; background: #fff; border-bottom: 1px solid #eef0f3; display: flex; align-items: center; padding: 0 8px; gap: 2px; }
+  .subtab-list { display: flex; align-items: center; flex: 1; overflow: hidden; }
+  .subtab { padding: 0 26px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #4b5563; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; text-decoration: none; }
+  .subtab:hover { color: #2a7de1; }
+  .subtab.active { color: #2a7de1; border-bottom-color: #2a7de1; font-weight: 600; }
+  .content { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
+  .footer { flex: 0 0 29px; background: #fff; border-top: 1px solid #eef0f3; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 12px; color: #9aa3af; }
+  .filter-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 18px 24px 16px; margin-bottom: 14px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 28px; }
+  .filter-item { display: flex; align-items: center; }
+  .filter-label { flex: 0 0 72px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; white-space: nowrap; }
+  .filter-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .filter-input.placeholder { color: #b6bdc9; }
+  .filter-input:hover { border-color: #3b9dff; }
+  .filter-input .caret { color: #b6bdc9; font-size: 11px; }
+  .filter-input .clock { color: #b6bdc9; font-size: 12px; margin-right: 6px; }
+  input.filter-input { cursor: text; }
+  input.filter-input::placeholder { color: #b6bdc9; }
+  .btn-bar { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 16px; border: none; border-radius: 4px; background: #3b9dff; color: #fff; font-size: 13.5px; cursor: pointer; box-shadow: 0 1px 3px rgba(59,157,255,.3); }
+  .btn:hover { background: #2a8ef0; }
+  .table-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); overflow: hidden; }
+  .table-scroll { overflow-x: auto; }
+  table.data-table { border-collapse: collapse; min-width: 100%; }
+  .data-table th, .data-table td { padding: 11px 14px; font-size: 13px; white-space: nowrap; border-bottom: 1px solid #eef0f3; text-align: left; }
+  .row-link { color: #3b9dff; cursor: pointer; }
+  .data-table th.col-op, .data-table td.col-op { position: sticky; right: 0; background: #fff; z-index: 2; min-width: 120px; text-align: center; }
+  .data-table thead th.col-op { z-index: 3; }
+  .data-table thead th { background: #fff; font-weight: 600; color: #374151; font-size: 13.5px; }
+  .data-table tbody td { color: #4b5563; }
+  .sort-ico { color: #c0c6cf; font-size: 10px; margin-left: 2px; }
+  .empty-tip { text-align: center; color: #9aa3af; padding: 80px 0; font-size: 14px; }
+  .dlg-mask { position: fixed; inset: 0; z-index: 200; background: rgba(15,23,42,.42); display: none; align-items: center; justify-content: center; }
+  .dlg-mask.show { display: flex; }
+  .dlg { width: 520px; background: #fff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.22); animation: slideIn .22s ease; }
+  .dlg-head { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid #eef0f3; font-size: 16px; font-weight: 600; color: #212121; }
+  .dlg-close { margin-left: auto; cursor: pointer; color: #9aa3af; font-size: 16px; }
+  .dlg-body { padding: 20px; }
+  .dlg-foot { display: flex; justify-content: center; gap: 12px; padding: 0 20px 18px; }
+  .pt48-dlg { width: 760px; max-width: 94vw; }
+  .pt48-dlg .dlg-head { background: #f5f9fc; }
+  .pt48-subtitle { font-size: 13px; color: #6b7280; margin-bottom: 12px; padding: 0 4px; }
+  .pt48-table { width: 100%; border-collapse: collapse; }
+  .pt48-table th { background: #f5f7fa; padding: 10px 12px; font-size: 13px; font-weight: 600; color: #374151; text-align: center; border-bottom: 1px solid #e4e7ed; }
+  .pt48-table td { padding: 9px 12px; font-size: 13px; color: #4b5563; border-bottom: 1px solid #f0f2f5; text-align: center; }
+  .pt48-table tbody tr:hover { background: #f9fbfe; }
+  .pt48-table .pt-idx { color: #9099a5; width: 60px; }
+  .pt48-table .pt-time { color: #374151; width: 140px; font-family: 'Courier New', monospace; }
+  .pt48-table .pt-reading { color: #212121; width: 120px; font-weight: 500; }
+  .pt48-table .pt-usage { width: 120px; }
+  .pt48-table .pt-usage.pos { color: #f56c6c; }
+  .pt48-table .pt-usage.zero { color: #9099a5; }
+  .pt48-table .pt-flag { width: 100px; }
+  .pt48-table .flag-abn { display: inline-block; padding: 2px 8px; border-radius: 10px; background: #fef0f0; color: #f56c6c; font-size: 12px; }
+  .pt48-table .flag-nor { display: inline-block; padding: 2px 8px; border-radius: 10px; background: #f0f9eb; color: #67c23a; font-size: 12px; }
+  .pt48-summary { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f5f9fc; border-radius: 6px; margin-top: 14px; font-size: 13.5px; color: #4b5563; }
+  .pt48-summary .sum-val { color: #f56c6c; font-weight: 600; font-size: 16px; margin: 0 4px; }
+  .pt48-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding-top: 14px; font-size: 13px; color: #6b7280; }
+  .pt48-pagination .pg-btn { min-width: 28px; height: 28px; padding: 0 8px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4b5563; border: 1px solid #e4e7ed; background: #fff; font-size: 12.5px; }
+  .pt48-pagination .pg-btn:hover { border-color: #3b9dff; color: #3b9dff; }
+  .pt48-pagination .pg-btn.cur { background: #3b9dff; border-color: #3b9dff; color: #fff; }
+  .pt48-pagination .pg-btn.disabled { color: #c8cdd5; cursor: not-allowed; border-color: #eef0f3; }
+  .pt48-pagination .pg-btn.disabled:hover { border-color: #eef0f3; color: #c8cdd5; }
+  .pt48-pagination .pg-size { display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 0 8px; height: 28px; border: 1px solid #e4e7ed; border-radius: 4px; background: #fff; }
+  .pt48-pagination .pg-jump { display: flex; align-items: center; gap: 4px; }
+  .pt48-pagination .pg-jump input { width: 40px; height: 26px; border: 1px solid #e4e7ed; border-radius: 4px; text-align: center; font-size: 12.5px; }
+  .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 16px 12px; font-size: 13px; color: #6b7280; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4b5563; }
+  .page-btn.disabled { color: #c8cdd5; cursor: default; }
+  .page-btn.cur { background: #3b9dff; color: #fff; }
+  .page-total { margin: 0 10px; }
+  .page-size { height: 30px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 10px; display: inline-flex; align-items: center; gap: 14px; color: #4b5563; cursor: pointer; background: #fff; }
+  .toast { position: fixed; top: 76px; right: 24px; z-index: 300; min-width: 300px; background: #fdf6e3; border: 1px solid #f5dab1; color: #b88230; border-radius: 6px; padding: 12px 16px; display: none; align-items: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .toast.show { display: flex; animation: slideIn .25s ease; }
+  .toast .t-close { margin-left: auto; cursor: pointer; color: #d3b17c; }
+  .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-drop"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z" fill="#fff"/><path d="M9.2 14.5C9.2 16.4 10.4 17.8 12 18.1" stroke="#2a7de1" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+    <div class="brand">智慧水务</div>
+  </div>
+  <div class="topbar-right">
+    <div class="collapse-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <nav class="top-tabs">
+      <div class="top-tab" onclick="window.location.href='../户表管理/智慧水务-用户开户-高保真.html'">户表管理</div>
+      <div class="top-tab" onclick="window.location.href='../收费管理/智慧水务-综合缴费-高保真.html'">收费管理</div>
+      <div class="top-tab" onclick="window.location.href='../抄表管理/智慧水务-4GNB抄表-高保真.html'">物联网</div>
+      <div class="top-tab active">报表分析</div>
+      <div class="top-tab" onclick="window.location.href='../档案管理/智慧水务-地址档案-高保真.html'">档案管理</div>
+      <div class="top-tab" onclick="window.location.href='../功能配置/智慧水务-功能配置-微信配置+表具类型.html'">功能配置</div>
+    </nav>
+    <div class="top-user">
+      <span class="tenant">涌恒供水</span>
+      <div class="avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.4" fill="#fff" opacity=".95"/><path d="M4.8 19.5C5.6 15.6 8.5 13.8 12 13.8C15.5 13.8 18.4 15.6 19.2 19.5" fill="#fff" opacity=".95"/></svg></div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar"><div class="side-caption">报表分析</div>
+<div class="menu-group-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg>户表统计<span class="chev">︿</span></div>
+<a class="menu-item" href="智慧水务-换表记录表-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>换表记录表</a>
+<a class="menu-item" href="智慧水务-报停复开记录-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>报停复开记录</a>
+<a class="menu-item" href="智慧水务-销户记录表-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>销户记录表</a>
+<div class="menu-group-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg>财务统计<span class="chev">︿</span></div>
+<a class="menu-item" href="智慧水务-用户缴费明细表-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>用户缴费明细表</a>
+<a class="menu-item" href="智慧水务-用户缴费汇总表-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>用户缴费汇总表</a>
+<a class="menu-item" href="智慧水务-周期账单表-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>周期账单表</a>
+<a class="menu-item" href="智慧水务-欠费用户查询-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>欠费用户查询</a>
+<a class="menu-item" href="智慧水务-余额不足统计-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>余额不足统计</a>
+<a class="menu-item" href="智慧水务-报停费用汇总-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>报停费用汇总</a>
+<a class="menu-item" href="智慧水务-价格计费统计-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>价格计费统计</a>
+<div class="menu-group-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg>远传统计<span class="chev">︿</span></div>
+<a class="menu-item active" href="智慧水务-抄表记录表-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#2a7de1" stroke-width="2" stroke-linecap="round"/></svg>抄表记录表</a>
+<a class="menu-item" href="智慧水务-命令记录表-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>命令记录表</a>
+<a class="menu-item" href="智慧水务-关阀户表统计-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>关阀户表统计</a>
+<a class="menu-item" href="智慧水务-未上报统计表-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>未上报统计表</a>
+<a class="menu-item" href="智慧水务-关阀用水用户稽查-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>关阀用水用户稽查</a>
+<a class="menu-item" href="智慧水务-户内漏水预警稽查-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>户内漏水预警稽查</a>
+</aside>
+
+<div class="main">
+  <div class="subtabs"><div class="subtab-list" style="margin-left:12px"><a class="subtab active" href="智慧水务-抄表记录表-高保真.html">抄表记录表</a><a class="subtab" href="智慧水务-命令记录表-高保真.html">命令记录表</a><a class="subtab" href="智慧水务-关阀户表统计-高保真.html">关阀户表统计</a><a class="subtab" href="智慧水务-未上报统计表-高保真.html">未上报统计表</a><a class="subtab" href="智慧水务-关阀用水用户稽查-高保真.html">关阀用水用户稽查</a><a class="subtab" href="智慧水务-户内漏水预警稽查-高保真.html">户内漏水预警稽查</a></div></div>
+
+  <div class="content">
+    <div class="filter-card">
+      <div class="filter-grid">
+      <div class="filter-item"><span class="filter-label">组织机构：</span><div class="filter-input placeholder"><span>请选择组织机构</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">用户地址：</span><div class="filter-input placeholder"><span>请选择用户地址</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">用户编号：</span><input class="filter-input q" placeholder="请输入用户编号"></div>
+      <div class="filter-item"><span class="filter-label">用户名称：</span><input class="filter-input q" placeholder="请输入用户名称"></div>
+      <div class="filter-item"><span class="filter-label">表身码：</span><input class="filter-input q" placeholder="请输入表身码"></div>
+      <div class="filter-item"><span class="filter-label">开始时间：</span><div class="filter-input" style="justify-content:flex-start;gap:8px"><span class="clock">&#128337;</span><span>2026-09-22 00:00:00</span></div></div>
+      <div class="filter-item"><span class="filter-label">结束时间：</span><div class="filter-input" style="justify-content:flex-start;gap:8px"><span class="clock">&#128337;</span><span>请选择结束时间</span></div></div>
+      </div>
+      <div class="btn-bar">
+        <button class="btn" onclick="showToast('查询成功','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>查询</button>
+        <button class="btn" onclick="doReset()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 12 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4V12H12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 16 8)"/></svg>重置</button>
+        <button class="btn" onclick="showToast('导出任务已提交，请稍后下载','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 15V3M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>导出</button>
+      </div>
+    </div>
+
+    <div class="table-card"><div class="table-scroll"><table class="data-table"><thead><tr><th>用户编号</th><th>用户名称</th><th>用户地址</th><th>表身码</th><th>记录状态</th><th>上次抄表时间</th><th>上次读数</th><th>本次抄表时间</th><th>本次读数</th><th>本次用量</th><th>本次金额</th><th>计费余额</th><th>抄表员</th><th class="col-op">操作</th></tr></thead><tbody><tr><td>063000023</td><td>朱秀梅</td><td>河口计委小区-1单元-6/2/副</td><td>260725036517</td><td>已计费</td><td>2026-09-21 16:55:32</td><td>4.24</td><td>2026-09-22 16:58:27</td><td>4.29</td><td>0.05</td><td>0.0500</td><td>-4.2900</td><td>系统自动</td><td class="col-op"><span class="row-link" onclick="openPt48()">48点位数据详情</span></td></tr><tr><td>063000007</td><td>陈蕾</td><td>河口计委小区-1单元-2/1/副表</td><td>260725036533</td><td>已计费</td><td>2026-09-21 16:36:00</td><td>22.58</td><td>2026-09-22 16:41:34</td><td>22.58</td><td>0.00</td><td>0.0000</td><td>-22.5800</td><td>系统自动</td><td class="col-op"><span class="row-link" onclick="openPt48()">48点位数据详情</span></td></tr><tr><td>063000335</td><td>000053</td><td>河口县公共区域-人民路门市-123</td><td>00002624000083</td><td>已计费</td><td>2026-09-22 16:41:16</td><td>0.58</td><td>2026-09-22 16:41:11</td><td>0.58</td><td>0.00</td><td>0.0000</td><td>-0.5800</td><td>系统推送</td><td class="col-op"><span class="row-link" onclick="openPt48()">48点位数据详情</span></td></tr><tr><td>063000335</td><td>000053</td><td>河口县公共区域-人民路门市-123</td><td>00002624000083</td><td>已计费</td><td>2026-09-21 16:41:32</td><td>0.58</td><td>2026-09-22 16:41:10</td><td>0.58</td><td>0.00</td><td>0.0000</td><td>-0.5800</td><td>系统推送</td><td class="col-op"><span class="row-link" onclick="openPt48()">48点位数据详情</span></td></tr><tr><td>063000033</td><td>王文兴</td><td>河口计委小区-2单元-4/副</td><td>260725036556</td><td>已计费</td><td>2026-09-21 16:28:48</td><td>40.38</td><td>2026-09-22 16:32:21</td><td>40.41</td><td>0.03</td><td>0.0300</td><td>-40.4100</td><td>系统自动</td><td class="col-op"><span class="row-link" onclick="openPt48()">48点位数据详情</span></td></tr><tr><td>063000035</td><td>邓琇祯</td><td>河口计委小区-2单元-5/副</td><td>260725036516</td><td>已计费</td><td>2026-09-21 16:23:32</td><td>161.18</td><td>2026-09-22 16:30:25</td><td>161.49</td><td>0.31</td><td>0.3100</td><td>-161.4900</td><td>系统自动</td><td class="col-op"><span class="row-link" onclick="openPt48()">48点位数据详情</span></td></tr><tr><td>063000076</td><td>王应德</td><td>大围山管理所新楼-一单元402</td><td>260725036555</td><td>已计费</td><td>2026-09-21 15:28:48</td><td>0.32</td><td>2026-09-22 15:25:14</td><td>0.32</td><td>0.00</td><td>0.0000</td><td>-0.3200</td><td>系统自动</td><td class="col-op"><span class="row-link" onclick="openPt48()">48点位数据详情</span></td></tr><tr><td>063000030</td><td>张建云</td><td>河口计委小区-2单元-3</td><td>260725036490</td><td>已计费</td><td>2026-09-21 15:06:48</td><td>64.82</td><td>2026-09-22 15:09:51</td><td>64.95</td><td>0.13</td><td>0.1300</td><td>-64.9500</td><td>系统自动</td><td class="col-op"><span class="row-link" onclick="openPt48()">48点位数据详情</span></td></tr><tr><td>063000322</td><td>260626116356</td><td>河口一中宏建小区-3栋-301</td><td>260626116356</td><td>已计费</td><td>2026-09-21 14:58:32</td><td>0.41</td><td>2026-09-22 14:57:49</td><td>0.41</td><td>0.00</td><td>0.0000</td><td>-0.4100</td><td>系统自动</td><td class="col-op"><span class="row-link" onclick="openPt48()">48点位数据详情</span></td></tr><tr><td>063000160</td><td>廖 军</td><td>河口一中宏建小区-3栋-1</td><td>260626116348</td><td>已计费</td><td>2026-09-21 14:45:16</td><td>69.97</td><td>2026-09-22 14:53:32</td><td>71.15</td><td>1.18</td><td>1.1800</td><td>-71.1500</td><td>系统自动</td><td class="col-op"><span class="row-link" onclick="openPt48()">48点位数据详情</span></td></tr></tbody></table></div><div class="pagination"><span class="page-btn disabled">&laquo;</span><span class="page-btn disabled">&lsaquo;</span><span class="page-btn cur">1</span><span class="page-btn disabled">&rsaquo;</span><span class="page-btn disabled">&raquo;</span><span class="page-total">共 [ 20 ] 页，共 [ 199 ] 条</span><span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">&#9662;</span></span></div></div>
+  </div>
+
+  <footer class="footer">
+    <span>当前用户：涌恒供水</span>
+    <span>2012-2025@版权所有智慧水务研发中心</span>
+  </footer>
+</div>
+
+<!-- 48点位数据详情弹窗 -->
+<div class="dlg-mask" id="pt48Mask" onclick="if(event.target===this)closePt48()">
+  <div class="dlg pt48-dlg">
+    <div class="dlg-head">48点位数据详情<span class="dlg-close" onclick="closePt48()">&#10005;</span></div>
+    <div class="dlg-body">
+      <div class="pt48-subtitle">记录本条抄表上报时间前一天，完整24小时的表端用水冻结量</div>
+      <div style="max-height:420px;overflow-y:auto;border:1px solid #eef0f3;border-radius:6px">
+        <table class="pt48-table" id="pt48Table">
+          <thead><tr><th class="pt-idx">序号</th><th class="pt-time">时间段</th><th class="pt-reading">本次读数(吨)</th><th class="pt-usage">时段水量(吨)</th><th class="pt-flag">状态</th></tr></thead>
+          <tbody id="pt48Body"></tbody>
+        </table>
+      </div>
+      <div class="pt48-summary">
+        <span>48个时段合计用水量：<span class="sum-val" id="pt48Total">0.00</span>吨</span>
+        <span>异常时段：<span class="sum-val" id="pt48Abn">0</span>个</span>
+      </div>
+      <div class="pt48-pagination">
+        <span id="pt48PageTotal">共 48 条</span>
+        <span class="pg-size" id="pt48PageSize">10 <span style="color:#b6bdc9;font-size:11px;">&#9662;</span></span>
+        <span class="pg-btn disabled" id="pt48Prev" onclick="pt48GoPage(-1)">&lsaquo;</span>
+        <span id="pt48PageNums"></span>
+        <span class="pg-btn" id="pt48Next" onclick="pt48GoPage(1)">&rsaquo;</span>
+        <span class="pg-jump">跳至 <input type="text" id="pt48Jump" onkeydown="if(event.key==='Enter')pt48JumpPage()"> 页</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">&#9888;</span><span id="toastText"></span>
+  <span class="t-close" onclick="hideToast()">&#10005;</span>
+</div>
+
+<script>
+  var toastTimer = null;
+  function showToast(text, type) {
+    var t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    document.getElementById('toastIcon').textContent = type === 'success' ? '\u2714' : '\u26a0';
+    t.className = 'toast show' + (type === 'success' ? ' success' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 3200);
+  }
+  function hideToast() { document.getElementById('toast').classList.remove('show'); }
+  function doReset() {
+    document.querySelectorAll('.filter-grid input').forEach(function (i) { i.value = ''; });
+    showToast('筛选条件已重置', 'success');
+  }
+  // 48点位数据
+  var pt48Data = [];
+  var pt48CurPage = 1;
+  var pt48PageSize = 10;
+  function genPt48Data() {
+    pt48Data = [];
+    var baseRead = 25.36;
+    var totalUsage = 0;
+    var abnCount = 0;
+    for (var i = 0; i < 48; i++) {
+      var h = Math.floor(i / 2);
+      var m = (i % 2) * 30;
+      var h2 = m === 30 ? h + 1 : h;
+      var m2 = m === 30 ? 0 : 30;
+      var timeStr = pad(h) + ':' + pad(m) + '-' + pad(h2) + ':' + pad(m2 === 0 ? '00' : m2);
+      // 模拟用水量：夜间少，白天多，随机几个异常
+      var usage = 0;
+      if (h >= 6 && h < 9) usage = Math.random() * 0.15 + 0.05;
+      else if (h >= 11 && h < 14) usage = Math.random() * 0.1 + 0.02;
+      else if (h >= 17 && h < 22) usage = Math.random() * 0.2 + 0.08;
+      else if (h >= 22 || h < 2) usage = Math.random() * 0.05;
+      else usage = Math.random() * 0.08;
+      usage = Math.round(usage * 100) / 100;
+      baseRead = Math.round((baseRead + usage) * 100) / 100;
+      // 随机异常点（用量突增或为0）
+      var isAbn = false;
+      if (i === 17 || i === 33 || i === 41) { isAbn = true; usage = Math.round(usage * 3 * 100) / 100; baseRead = Math.round((baseRead + usage * 2) * 100) / 100; }
+      if (usage > 0) totalUsage += usage;
+      if (isAbn) abnCount++;
+      pt48Data.push({
+        idx: i + 1,
+        time: timeStr,
+        reading: baseRead.toFixed(2),
+        usage: usage.toFixed(2),
+        abn: isAbn
+      });
+    }
+    document.getElementById('pt48Total').textContent = totalUsage.toFixed(2);
+    document.getElementById('pt48Abn').textContent = abnCount;
+  }
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function openPt48() {
+    genPt48Data();
+    pt48CurPage = 1;
+    renderPt48Page();
+    document.getElementById('pt48Mask').classList.add('show');
+  }
+  function closePt48() { document.getElementById('pt48Mask').classList.remove('show'); }
+  function renderPt48Page() {
+    var tbody = document.getElementById('pt48Body');
+    var total = pt48Data.length;
+    var totalPages = Math.ceil(total / pt48PageSize);
+    if (pt48CurPage > totalPages) pt48CurPage = totalPages;
+    var start = (pt48CurPage - 1) * pt48PageSize;
+    var end = Math.min(start + pt48PageSize, total);
+    var html = '';
+    for (var i = start; i < end; i++) {
+      var d = pt48Data[i];
+      var usageClass = parseFloat(d.usage) > 0 ? 'pos' : 'zero';
+      var flagHtml = d.abn ? '<span class="flag-abn">异常</span>' : '<span class="flag-nor">正常</span>';
+      html += '<tr><td class="pt-idx">' + d.idx + '</td><td class="pt-time">' + d.time + '</td><td class="pt-reading">' + d.reading + '</td><td class="pt-usage ' + usageClass + '">' + d.usage + '</td><td class="pt-flag">' + flagHtml + '</td></tr>';
+    }
+    tbody.innerHTML = html;
+    document.getElementById('pt48PageTotal').textContent = '共 ' + total + ' 条';
+    // 页码按钮
+    var numsEl = document.getElementById('pt48PageNums');
+    var numsHtml = '';
+    for (var p = 1; p <= totalPages; p++) {
+      numsHtml += '<span class="pg-btn' + (p === pt48CurPage ? ' cur' : '') + '" onclick="pt48GoPage(' + p + ')">' + p + '</span>';
+    }
+    numsEl.innerHTML = numsHtml;
+    document.getElementById('pt48Prev').classList.toggle('disabled', pt48CurPage === 1);
+    document.getElementById('pt48Next').classList.toggle('disabled', pt48CurPage === totalPages);
+  }
+  function pt48GoPage(p) {
+    var totalPages = Math.ceil(pt48Data.length / pt48PageSize);
+    if (p === -1) p = pt48CurPage - 1;
+    if (p === 1 && pt48CurPage > 1 && typeof arguments[0] === 'number' && arguments[0] === -1) {}
+    if (p < 1 || p > totalPages) return;
+    pt48CurPage = p;
+    renderPt48Page();
+  }
+  function pt48JumpPage() {
+    var v = parseInt(document.getElementById('pt48Jump').value);
+    if (isNaN(v)) return;
+    var totalPages = Math.ceil(pt48Data.length / pt48PageSize);
+    if (v < 1) v = 1;
+    if (v > totalPages) v = totalPages;
+    pt48CurPage = v;
+    renderPt48Page();
+  }
+</script>
+</body>
+</html>

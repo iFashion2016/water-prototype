@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务 - 价格类型</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f7f7f7; color: #212121; overflow: hidden; font-size: 14px; }
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
+  .topbar-left { width: 204px; flex: 0 0 204px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
+  .logo-drop { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; }
+  .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+  .topbar-right { flex: 1; display: flex; align-items: center; padding-right: 18px; }
+  .collapse-btn { width: 40px; height: 53px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,.9); }
+  .top-tabs { display: flex; align-items: center; gap: 6px; height: 100%; }
+  .top-tab { padding: 7px 22px; border-radius: 18px; cursor: pointer; color: rgba(255,255,255,.92); font-size: 14.5px; white-space: nowrap; transition: background .2s; }
+  .top-tab:hover { background: rgba(255,255,255,.14); }
+  .top-tab.active { background: rgba(255,255,255,.28); font-weight: 600; }
+  .top-user { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .top-user .tenant { font-size: 14px; color: #fff; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,.65); background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; padding-bottom: 16px; }
+  .side-caption { padding: 14px 16px 6px; font-size: 12px; color: #9aa3af; }
+  .menu-group-title { display: flex; align-items: center; gap: 8px; margin: 4px 10px; padding: 10px 12px; background: #eaf3fe; color: #2a7de1; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
+  .menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px 10px 26px; margin: 2px 10px; color: #4b5563; cursor: pointer; border-radius: 6px; text-decoration: none; font-size: 13.5px; }
+  .menu-item:hover { background: #f2f7fd; color: #2a7de1; }
+  .menu-item.active { background: #eaf3fe; color: #2a7de1; font-weight: 600; }
+  .main { position: fixed; top: 53px; left: 204px; right: 0; bottom: 0; display: flex; flex-direction: column; }
+  .subtabs { flex: 0 0 44px; background: #fff; border-bottom: 1px solid #eef0f3; display: flex; align-items: center; padding: 0 8px; gap: 2px; }
+  .subtab-list { display: flex; align-items: center; flex: 1; overflow: hidden; }
+  .subtab { padding: 0 26px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #4b5563; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; text-decoration: none; }
+  .subtab:hover { color: #2a7de1; }
+  .subtab.active { color: #2a7de1; border-bottom-color: #2a7de1; font-weight: 600; }
+  .content { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
+  .footer { flex: 0 0 29px; background: #fff; border-top: 1px solid #eef0f3; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 12px; color: #9aa3af; }
+  .filter-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 18px 24px 16px; margin-bottom: 14px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 28px; }
+  .filter-item { display: flex; align-items: center; }
+  .filter-label { flex: 0 0 76px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; }
+  .filter-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .filter-input.placeholder { color: #b6bdc9; }
+  .filter-input:hover { border-color: #3b9dff; }
+  .filter-input .caret { color: #b6bdc9; font-size: 11px; }
+  .filter-input .clock { color: #b6bdc9; font-size: 12px; margin-right: 6px; }
+  input.filter-input { cursor: text; }
+  input.filter-input::placeholder { color: #b6bdc9; }
+  .btn-bar { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; justify-content: flex-end; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 16px; border: none; border-radius: 4px; background: #3b9dff; color: #fff; font-size: 13.5px; cursor: pointer; box-shadow: 0 1px 3px rgba(59,157,255,.3); }
+  .btn:hover { background: #2a8ef0; }
+  .btn.plain { background: #fff; color: #4b5563; border: 1px solid #dcdfe6; box-shadow: none; }
+  .btn.plain:hover { border-color: #3b9dff; color: #2a7de1; }
+  .table-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); overflow: hidden; }
+  .table-scroll { overflow-x: auto; }
+  table.data-table { border-collapse: collapse; min-width: 100%; }
+  .data-table th, .data-table td { padding: 11px 14px; font-size: 13px; white-space: nowrap; border-bottom: 1px solid #eef0f3; text-align: left; }
+  .data-table thead th { background: #fff; font-weight: 600; color: #374151; font-size: 13.5px; }
+  .data-table tbody td { color: #4b5563; }
+  .empty-tip { text-align: center; color: #9aa3af; padding: 80px 0; font-size: 14px; }
+  .hint-tip { padding: 10px 14px; color: #3b9dff; font-size: 13px; border-bottom: 1px solid #eef0f3; }
+  .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 16px 12px; font-size: 13px; color: #6b7280; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4b5563; }
+  .page-btn.disabled { color: #c8cdd5; cursor: default; }
+  .page-btn.cur { background: #3b9dff; color: #fff; }
+  .page-total { margin: 0 10px; }
+  .page-size { height: 30px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 10px; display: inline-flex; align-items: center; gap: 14px; color: #4b5563; cursor: pointer; background: #fff; }
+  .toast { position: fixed; top: 76px; right: 24px; z-index: 300; min-width: 300px; background: #fdf6e3; border: 1px solid #f5dab1; color: #b88230; border-radius: 6px; padding: 12px 16px; display: none; align-items: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .toast.show { display: flex; animation: slideIn .25s ease; }
+  .toast .t-close { margin-left: auto; cursor: pointer; color: #d3b17c; }
+  .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .dlg-mask { position: fixed; inset: 0; z-index: 200; background: rgba(15,23,42,.42); display: none; align-items: flex-start; justify-content: center; }
+  .dlg-mask.show { display: flex; }
+  .dlg { margin-top: 90px; width: 720px; max-width: 92vw; background: #fff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.22); animation: slideIn .22s ease; }
+  .dlg-head { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eef0f3; font-size: 16px; font-weight: 600; color: #212121; }
+  .dlg-close { margin-left: auto; cursor: pointer; color: #9aa3af; font-size: 16px; }
+  .dlg-body { padding: 22px 24px 8px; }
+  .dlg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 28px; }
+  .dlg-item { display: flex; align-items: center; }
+  .dlg-item label { flex: 0 0 92px; text-align: right; font-size: 13.5px; color: #4b5563; margin-right: 10px; }
+  .dlg-item label .req { color: #f56c6c; margin-right: 3px; }
+  .dlg-foot { display: flex; justify-content: center; gap: 12px; padding: 14px 20px 20px; }
+  .split { display: flex; gap: 14px; align-items: stretch; }
+  .tree-card { flex: 0 0 300px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 14px; overflow: auto; }
+  .tree-search { width: 100%; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13px; margin-bottom: 12px; color: #374151; }
+  .tree-search::placeholder { color: #b6bdc9; }
+  .tree-node { display: flex; align-items: center; gap: 6px; padding: 7px 6px; border-radius: 5px; cursor: pointer; font-size: 13.5px; color: #4b5563; }
+  .tree-node:hover { background: #f2f7fd; color: #2a7de1; }
+  .tree-node.active { background: #eaf3fe; color: #2a7de1; }
+  .tree-node.child { padding-left: 30px; }
+  .tree-node .arrow { color: #b6bdc9; font-size: 10px; width: 12px; }
+  .grow-card { flex: 1; min-width: 0; }
+  .row-link { color: #3b9dff; cursor: pointer; margin-right: 10px; }
+  .data-table th.col-check, .data-table td.col-check { width: 42px; text-align: center; position: sticky; left: 0; background: #fff; z-index: 2; }
+  .data-table th.col-check input[type="checkbox"], .data-table td.col-check input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #3b9dff; }
+  .data-table th.col-op, .data-table td.col-op { width: 160px; text-align: center; position: sticky; right: 0; background: #fff; z-index: 2; }
+  .data-table thead th.col-check, .data-table thead th.col-op { z-index: 3; }
+  .act-btn { color: #3b9dff; cursor: pointer; font-size: 13px; margin: 0 6px; }
+  .act-btn:hover { text-decoration: underline; }
+  .confirm-mask { position: fixed; inset: 0; z-index: 300; background: rgba(15,23,42,.42); display: none; align-items: center; justify-content: center; }
+  .confirm-mask.show { display: flex; }
+  .confirm-box { width: 420px; background: #fff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.22); animation: slideIn .22s ease; }
+  .confirm-head { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid #eef0f3; font-size: 16px; font-weight: 600; color: #212121; }
+  .confirm-close { margin-left: auto; cursor: pointer; color: #9aa3af; font-size: 16px; }
+  .confirm-body { padding: 24px 20px; font-size: 14px; color: #4b5563; line-height: 1.6; }
+  .confirm-body .warn-icon { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; background: #fdf6e3; color: #e6a23c; align-items: center; justify-content: center; margin-right: 10px; font-weight: bold; }
+  .confirm-foot { display: flex; justify-content: center; gap: 12px; padding: 0 20px 18px; }
+  .price-dlg { width: 900px; max-width: 94vw; }
+  .price-dlg .dlg-head { background: #f5f9fc; }
+  .price-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 28px; padding-bottom: 16px; border-bottom: 1px solid #eef0f3; }
+  .price-form .form-item { display: flex; align-items: center; }
+  .price-form .form-item label { flex: 0 0 90px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; }
+  .price-form .form-item label .req { color: #f56c6c; margin-right: 3px; }
+  .price-form .form-item .form-ctl { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; }
+  .price-form .form-item .form-ctl:hover { border-color: #3b9dff; }
+  .price-form .form-item .form-ctl .caret { color: #b6bdc9; font-size: 11px; }
+  .price-form .form-item input.form-ctl { cursor: text; }
+  .price-section-title { font-size: 18px; font-weight: 600; color: #212121; margin: 20px 0 14px; }
+  .price-detail-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+  .price-detail-table th { background: #e8e8e8; padding: 12px 14px; font-size: 18px; font-weight: 500; color: #212121; text-align: center; border: 1px solid #dcdfe6; }
+  .price-detail-table td { padding: 10px 8px; border: 1px solid #dcdfe6; text-align: center; vertical-align: middle; }
+  .price-detail-table .pdd-select { width: 100%; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; }
+  .price-detail-table .pdd-input { width: 100%; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; }
+  .price-detail-table .pdd-req { color: #f56c6c; margin-right: 4px; font-weight: bold; vertical-align: middle; }
+  .btn-del-item { height: 34px; padding: 0 20px; background: #3b9dff; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+  .btn-del-item:hover { background: #2a8ef0; }
+  .btn-add-item { width: 100%; height: 44px; background: #3b9dff; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-add-item:hover { background: #2a8ef0; }
+  .dlg-foot-right { justify-content: flex-end; padding: 14px 20px 18px; border-top: 1px solid #eef0f3; }
+  .btn-link-cancel { background: none; border: none; color: #606266; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; }
+  .btn-link-cancel:hover { color: #3b9dff; }
+  .ptype-wrap { position: relative; }
+  .ptype-select { height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; flex: 1; }
+  .ptype-select:hover { border-color: #3b9dff; }
+  .ptype-select .caret { color: #b6bdc9; font-size: 11px; transition: transform .2s; }
+  .ptype-select.open .caret { transform: rotate(180deg); }
+  .ptype-dropdown { position: absolute; top: 100%; left: 90px; right: 0; z-index: 20; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.12); margin-top: 4px; display: none; }
+  .ptype-dropdown.show { display: block; }
+  .ptype-dropdown .dd-item { padding: 10px 14px; font-size: 14px; color: #606266; cursor: pointer; }
+  .ptype-dropdown .dd-item:hover { background: #f5f7fa; color: #3b9dff; }
+  .min-consume-wrap { position: relative; }
+  .min-consume-select { height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; flex: 1; }
+  .min-consume-select:hover { border-color: #3b9dff; }
+  .min-consume-select .caret { color: #b6bdc9; font-size: 11px; transition: transform .2s; }
+  .min-consume-select.open .caret { transform: rotate(180deg); }
+  .min-consume-dropdown { position: absolute; top: 100%; left: 90px; right: 0; z-index: 20; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.12); margin-top: 4px; display: none; }
+  .min-consume-dropdown.show { display: block; }
+  .min-consume-dropdown .dd-item { padding: 10px 14px; font-size: 14px; color: #606266; cursor: pointer; }
+  .min-consume-dropdown .dd-item:hover { background: #f5f7fa; color: #3b9dff; }
+  .switch { position: relative; display: inline-block; width: 40px; height: 20px; vertical-align: middle; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #dcdfe6; transition: .3s; border-radius: 20px; }
+  .switch .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: #fff; transition: .3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+  .switch input:checked + .slider { background-color: #3b9dff; }
+  .switch input:checked + .slider:before { transform: translateX(20px); }
+  .ladder-count-wrap { position: relative; }
+  .ladder-count-select { height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; flex: 1; }
+  .ladder-count-select:hover { border-color: #3b9dff; }
+  .ladder-count-select .caret { color: #b6bdc9; font-size: 11px; transition: transform .2s; }
+  .ladder-count-select.open .caret { transform: rotate(180deg); }
+  .ladder-count-dropdown { position: absolute; top: 100%; left: 90px; right: 0; z-index: 20; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.12); margin-top: 4px; display: none; }
+  .ladder-count-dropdown.show { display: block; }
+  .ladder-count-dropdown .dd-item { padding: 10px 14px; font-size: 14px; color: #606266; cursor: pointer; }
+  .ladder-count-dropdown .dd-item:hover { background: #f5f7fa; color: #3b9dff; }
+  .ladder-type-wrap { position: relative; }
+  .ladder-type-select { height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; flex: 1; }
+  .ladder-type-select:hover { border-color: #3b9dff; }
+  .ladder-type-select .caret { color: #b6bdc9; font-size: 11px; transition: transform .2s; }
+  .ladder-type-select.open .caret { transform: rotate(180deg); }
+  .ladder-type-dropdown { position: absolute; top: 100%; left: 90px; right: 0; z-index: 20; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.12); margin-top: 4px; display: none; }
+  .ladder-type-dropdown.show { display: block; }
+  .ladder-type-dropdown .dd-item { padding: 10px 14px; font-size: 14px; color: #606266; cursor: pointer; }
+  .ladder-type-dropdown .dd-item:hover { background: #f5f7fa; color: #3b9dff; }
+  .ladder-min-ext { padding-bottom: 0; }
+  .form-ladder-amount { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 28px; padding: 12px 0; }
+  .form-ladder-amount .form-item { display: flex; align-items: center; }
+  .form-ladder-amount .form-item label { flex: 0 0 90px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; }
+  .form-ladder-amount .form-item label .req { color: #f56c6c; margin-right: 3px; }
+  .form-ladder-amount .form-item input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; }
+  .form-section { display: none; }
+  .form-section.active { display: block; }
+  .ladder-amount-row { display: none; }
+  .ladder-amount-row.active { display: flex; }
+  .sub-price-wrap { position: relative; display: flex; align-items: center; }
+  .sub-price-wrap .pdd-req { position: absolute; left: -18px; }
+  .sub-price-select { width: 100%; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .sub-price-select:hover { border-color: #3b9dff; }
+  .sub-price-select.open { border-color: #3b9dff; }
+  .sub-price-select .caret { color: #b6bdc9; font-size: 11px; transition: transform .2s; }
+  .sub-price-select.open .caret { transform: rotate(180deg); }
+  .sub-price-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 10; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.12); margin-top: 4px; max-height: 200px; overflow-y: auto; display: none; }
+  .sub-price-dropdown.show { display: block; }
+  .sub-price-dropdown .dd-item { padding: 10px 14px; font-size: 14px; color: #606266; cursor: pointer; }
+  .sub-price-dropdown .dd-item:hover { background: #f5f7fa; color: #3b9dff; }
+  .sub-price-dropdown .dd-item.selected { color: #3b9dff; font-weight: 500; background: #ecf5ff; }
+  .read-only .form-ctl, .read-only input.form-ctl, .read-only .pdd-input,
+  .read-only .sub-price-select, .read-only .form-ctl input, .read-only input {
+    background: #f5f7fa !important; color: #606266 !important; cursor: default !important; border-color: #e4e7ed !important;
+  }
+  .read-only .sub-price-select .caret, .read-only .form-ctl .caret { display: none; }
+  .read-only .btn-del-item, .read-only .btn-add-item { display: none; }
+  .read-only .pdd-req { display: none; }
+  .read-only .req { display: none; }
+  .edit-dlg { width: 720px; max-width: 92vw; }
+  .edit-dlg .dlg-head { background: #f5f9fc; }
+  .edit-form { padding: 24px 30px 10px; }
+  .edit-form .form-row { display: flex; align-items: flex-start; margin-bottom: 18px; }
+  .edit-form .form-row label { flex: 0 0 90px; text-align: right; font-size: 15px; color: #212121; margin-right: 14px; padding-top: 7px; }
+  .edit-form .form-row .edit-ctl { flex: 1; position: relative; }
+  .edit-form .form-row .edit-input { width: 100%; height: 38px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 14px; font-size: 14px; color: #374151; background: #fff; box-sizing: border-box; }
+  .edit-form .form-row .edit-input:hover { border-color: #3b9dff; }
+  .edit-form .form-row .edit-select { width: 100%; height: 38px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 14px; font-size: 14px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; box-sizing: border-box; }
+  .edit-form .form-row .edit-select:hover { border-color: #3b9dff; }
+  .edit-form .form-row .edit-select .caret { color: #b6bdc9; font-size: 12px; }
+  .edit-form .form-row .edit-textarea { width: 100%; height: 280px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 10px 14px; font-size: 14px; color: #374151; background: #fff; resize: vertical; font-family: inherit; box-sizing: border-box; }
+  .edit-form .form-row .edit-textarea:hover { border-color: #3b9dff; }
+  .edit-dlg .dlg-foot-right { padding: 14px 30px 20px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-drop"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z" fill="#fff"/><path d="M9.2 14.5C9.2 16.4 10.4 17.8 12 18.1" stroke="#2a7de1" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+    <div class="brand">智慧水务</div>
+  </div>
+  <div class="topbar-right">
+    <div class="collapse-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <nav class="top-tabs">
+      <div class="top-tab" onclick="window.location.href='../户表管理/智慧水务-用户开户-高保真.html'">户表管理</div>
+      <div class="top-tab" onclick="window.location.href='../收费管理/智慧水务-综合缴费-高保真.html'">收费管理</div>
+      <div class="top-tab" onclick="window.location.href='../抄表管理/智慧水务-4GNB抄表-高保真.html'">物联网</div>
+      <div class="top-tab" onclick="window.location.href='../报表分析/智慧水务-换表记录表-高保真.html'">报表分析</div>
+      <div class="top-tab active">档案管理</div>
+      <div class="top-tab" onclick="window.location.href='../功能配置/智慧水务-功能配置-微信配置+表具类型.html'">功能配置</div>
+    </nav>
+    <div class="top-user">
+      <span class="tenant">涌恒供水</span>
+      <div class="avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.4" fill="#fff" opacity=".95"/><path d="M4.8 19.5C5.6 15.6 8.5 13.8 12 13.8C15.5 13.8 18.4 15.6 19.2 19.5" fill="#fff" opacity=".95"/></svg></div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar"><div class="side-caption">档案管理</div>
+<div class="menu-group-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg>基础管理<span class="chev">︿</span></div>
+<a class="menu-item" href="智慧水务-地址档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>地址档案</a>
+<a class="menu-item" href="智慧水务-用户档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>用户档案</a>
+<a class="menu-item" href="智慧水务-表具档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>表具档案</a>
+<a class="menu-item" href="智慧水务-表具类型-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>表具类型</a>
+<a class="menu-item" href="智慧水务-职员档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>职员档案</a>
+<div class="menu-group-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg>价格结算<span class="chev">︿</span></div>
+<a class="menu-item active" href="智慧水务-价格类型-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#2a7de1" stroke-width="2" stroke-linecap="round"/></svg>价格类型</a>
+<a class="menu-item" href="智慧水务-结算类型-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>结算类型</a>
+</aside>
+
+<div class="main">
+  <div class="subtabs"><div class="subtab-list" style="margin-left:12px"><a class="subtab active" href="智慧水务-价格类型-高保真.html">价格类型</a><a class="subtab" href="智慧水务-结算类型-高保真.html">结算类型</a></div></div>
+
+  <div class="content">
+    <div class="filter-card">
+      <div class="filter-grid">
+      <div class="filter-item"><span class="filter-label">组织机构：</span><div class="filter-input placeholder"><span>请选择组织机构</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">价格名称：</span><input class="filter-input q" placeholder="请输入价格名称"></div>
+      <div class="filter-item"><span class="filter-label">价格状态：</span><div class="filter-input placeholder"><span>请选择价格状态</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">欠费关阀：</span><div class="filter-input placeholder"><span>请选择欠费关阀</span><span class="caret">&#9662;</span></div></div>
+      </div>
+      <div class="btn-bar">
+        <button class="btn" onclick="showToast('查询成功','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>查询</button>
+        <button class="btn" onclick="doReset()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 12 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4V12H12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 16 8)"/></svg>重置</button>
+        <button class="btn" onclick="openDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>新增</button>
+        <button class="btn" onclick="confirmDelete()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 7H18M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7M8 7V19C8 20.1 8.9 21 10 21H14C15.1 21 16 20.1 16 19V7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>删除</button>
+      </div>
+    </div>
+
+    <div class="table-card"><div class="table-scroll"><table class="data-table"><thead><tr><th class="col-check"><input type="checkbox" onclick="toggleAll(this)"></th><th>价格编号</th><th>价格名称</th><th>价格类型</th><th>一阶价格</th><th>一阶用量</th><th>二阶价格</th><th>二阶用量</th><th>三阶价格</th><th>价格状态</th><th>欠费关阀</th><th>启用时间</th><th>结束时间</th><th>创建人</th><th>创建时间</th><th class="col-op">操作</th></tr></thead><tbody>
+<tr data-pidx="0"><td class="col-check"><input type="checkbox"></td><td>251</td><td>按月</td><td>固定单价</td><td>1.000000</td><td>100.00</td><td>1.000000</td><td>100.00</td><td>1.000000</td><td>使用中</td><td>是</td><td>2026-07-06 00:00:00</td><td>9999-07-06 09:07:31</td><td>涌恒供水</td><td>2026-07-06 09:07:31</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(0)">调价</span><span class="act-btn" onclick="openEditDlg(0)">编辑</span><span class="act-btn" onclick="openDetailDlg(0)">详情</span></td></tr>
+<tr data-pidx="1"><td class="col-check"><input type="checkbox"></td><td>241</td><td>阶梯水价</td><td>阶梯价格</td><td>2.500000</td><td>15.00</td><td>3.500000</td><td>25.00</td><td>5.000000</td><td>使用中</td><td>是</td><td>2026-01-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>管理员</td><td>2025-12-20 14:30:22</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(1)">调价</span><span class="act-btn" onclick="openEditDlg(1)">编辑</span><span class="act-btn" onclick="openDetailDlg(1)">详情</span></td></tr>
+<tr data-pidx="2"><td class="col-check"><input type="checkbox"></td><td>231</td><td>居民用水</td><td>固定单价</td><td>2.800000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>使用中</td><td>否</td><td>2026-03-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>管理员</td><td>2026-02-28 10:15:48</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(2)">调价</span><span class="act-btn" onclick="openEditDlg(2)">编辑</span><span class="act-btn" onclick="openDetailDlg(2)">详情</span></td></tr>
+<tr data-pidx="3"><td class="col-check"><input type="checkbox"></td><td>221</td><td>商业用水</td><td>固定单价</td><td>4.500000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>使用中</td><td>是</td><td>2026-02-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>涌恒供水</td><td>2026-01-25 16:05:33</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(3)">调价</span><span class="act-btn" onclick="openEditDlg(3)">编辑</span><span class="act-btn" onclick="openDetailDlg(3)">详情</span></td></tr>
+<tr data-pidx="4"><td class="col-check"><input type="checkbox"></td><td>211</td><td>工业用水</td><td>固定单价</td><td>3.800000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>停用</td><td>是</td><td>2025-06-01 00:00:00</td><td>2026-05-31 23:59:59</td><td>管理员</td><td>2025-05-20 11:20:10</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(4)">调价</span><span class="act-btn" onclick="openEditDlg(4)">编辑</span><span class="act-btn" onclick="openDetailDlg(4)">详情</span></td></tr>
+<tr data-pidx="5"><td class="col-check"><input type="checkbox"></td><td>201</td><td>特种行业</td><td>阶梯价格</td><td>6.000000</td><td>50.00</td><td>8.000000</td><td>100.00</td><td>10.000000</td><td>使用中</td><td>是</td><td>2026-04-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>涌恒供水</td><td>2026-03-15 09:45:56</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(5)">调价</span><span class="act-btn" onclick="openEditDlg(5)">编辑</span><span class="act-btn" onclick="openDetailDlg(5)">详情</span></td></tr>
+<tr data-pidx="6"><td class="col-check"><input type="checkbox"></td><td>191</td><td>行政事业</td><td>固定单价</td><td>3.200000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>使用中</td><td>否</td><td>2026-01-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>管理员</td><td>2025-12-10 14:22:15</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(6)">调价</span><span class="act-btn" onclick="openEditDlg(6)">编辑</span><span class="act-btn" onclick="openDetailDlg(6)">详情</span></td></tr>
+<tr data-pidx="7"><td class="col-check"><input type="checkbox"></td><td>181</td><td>经营服务</td><td>固定单价</td><td>5.000000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>停用</td><td>是</td><td>2025-01-01 00:00:00</td><td>2025-12-31 23:59:59</td><td>涌恒供水</td><td>2024-12-28 10:08:15</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(7)">调价</span><span class="act-btn" onclick="openEditDlg(7)">编辑</span><span class="act-btn" onclick="openDetailDlg(7)">详情</span></td></tr>
+</tbody></table></div><div class="pagination"><span class="page-btn disabled">&laquo;</span><span class="page-btn disabled">&lsaquo;</span><span class="page-btn cur">1</span><span class="page-btn disabled">&rsaquo;</span><span class="page-btn disabled">&raquo;</span><span class="page-total">共 [ 1 ] 页，共 [ 8 ] 条</span><span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">&#9662;</span></span></div></div>
+  </div>
+
+  <footer class="footer">
+    <span>当前用户：涌恒供水</span>
+    <span>2012-2025@版权所有智慧水务研发中心</span>
+  </footer>
+</div>
+
+<div class="dlg-mask" id="dlgMask" onclick="if(event.target===this)closeDlg()">
+  <div class="dlg price-dlg">
+    <div class="dlg-head">新增价格类型<span class="dlg-close" onclick="closeDlg()">&#10005;</span></div>
+    <div class="dlg-body">
+      <!-- 顶部三列：组织机构 + 价格类型 + 欠费关阀 -->
+      <div class="price-form" style="border-bottom:none;padding-bottom:0">
+        <div class="form-item"><label><span class="req">*</span>组织机构：</label><div class="form-ctl"><span>063 涌恒供水</span><span class="caret">&#9662;</span></div></div>
+        <div class="form-item ptype-wrap">
+          <label><span class="req">*</span>价格类型：</label>
+          <div class="ptype-select" id="ptypeSelect" onclick="togglePtype(event)">
+            <span id="ptypeLabel">固定单价</span><span class="caret">&#9662;</span>
+          </div>
+          <div class="ptype-dropdown" id="ptypeDropdown">
+            <div class="dd-item" onclick="pickPtype(event,'固定单价')">固定单价</div>
+            <div class="dd-item" onclick="pickPtype(event,'阶梯单价')">阶梯单价</div>
+            <div class="dd-item" onclick="pickPtype(event,'最低消费单价')">最低消费单价</div>
+            <div class="dd-item" onclick="pickPtype(event,'含最低消费阶梯单价')">含最低消费阶梯单价</div>
+          </div>
+        </div>
+        <div class="form-item"><label><span class="req">*</span>欠费关阀：</label><div class="form-ctl"><span>是</span><span class="caret">&#9662;</span></div></div>
+      </div>
+
+      <!-- 固定单价模式 -->
+      <div class="form-section active" id="fixedSection">
+        <div class="price-form" style="padding-top:16px">
+          <div class="form-item"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" placeholder="请输入价格名称"></div>
+          <div class="form-item"><label><span class="req">*</span>报警量：</label><input class="form-ctl" value="0"></div>
+          <div class="form-item"><label><span class="req">*</span>启用日期：</label><input class="form-ctl" value="2026-09-28"></div>
+        </div>
+        <div class="price-section-title">价格明细</div>
+        <table class="price-detail-table">
+          <thead><tr><th style="width:38%">子价格名称</th><th style="width:38%">价格</th><th style="width:24%">操作</th></tr></thead>
+          <tbody id="fixedBody">
+            <tr>
+              <td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">请选择子价格名称</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,'基础水费')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,'污水处理费')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,'水资源费')">水资源费</div></div></div></td>
+              <td><input class="pdd-input" value="0"></td>
+              <td><button class="btn-del-item" onclick="delRow(this,'fixedBody')">删除</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn-add-item" onclick="addFixedRow()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>新增收费项目</button>
+      </div>
+
+      <!-- 阶梯单价模式 -->
+      <div class="form-section" id="ladderSection">
+        <div class="price-form" style="padding-top:16px">
+          <div class="form-item"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" placeholder="请输入价格名称"></div>
+          <div class="form-item"><label><span class="req">*</span>阶梯类型：</label><div class="form-ctl"><span>户阶梯</span><span class="caret">&#9662;</span></div></div>
+          <div class="form-item ladder-count-wrap">
+            <label><span class="req">*</span>阶梯数量：</label>
+            <div class="ladder-count-select" id="ladderCountSelect" onclick="toggleLadderCount(event)">
+              <span id="ladderCountLabel">3</span><span class="caret">&#9662;</span>
+            </div>
+            <div class="ladder-count-dropdown" id="ladderCountDropdown">
+              <div class="dd-item" onclick="pickLadderCount(event,1)">1</div>
+              <div class="dd-item" onclick="pickLadderCount(event,2)">2</div>
+              <div class="dd-item" onclick="pickLadderCount(event,3)">3</div>
+              <div class="dd-item" onclick="pickLadderCount(event,4)">4</div>
+            </div>
+          </div>
+        </div>
+        <!-- 阶梯量行（动态显示） -->
+        <div class="form-ladder-amount" id="ladderAmountRow">
+          <div class="form-item ladder-amt-item" data-idx="1"><label><span class="req">*</span>阶梯一(量)：</label><input value="0"></div>
+          <div class="form-item ladder-amt-item" data-idx="2"><label><span class="req">*</span>阶梯二(量)：</label><input value="0"></div>
+          <div class="form-item ladder-amt-item" data-idx="3"><label><span class="req">*</span>阶梯三(量)：</label><input value="0"></div>
+          <div class="form-item ladder-amt-item" data-idx="4" style="display:none"><label><span class="req">*</span>阶梯四(量)：</label><input value="0"></div>
+        </div>
+        <div class="price-form" style="padding-top:0">
+          <div class="form-item"><label><span class="req">*</span>阶梯周期：</label><div class="form-ctl placeholder"><span style="color:#b6bdc9">请选择阶梯周期</span><span class="caret">&#9662;</span></div></div>
+          <div class="form-item"><label><span class="req">*</span>报警量：</label><input class="form-ctl" value="0"></div>
+          <div class="form-item"><label><span class="req">*</span>启用日期：</label><input class="form-ctl" value="2026-09-28"></div>
+        </div>
+        <div class="price-section-title">价格明细</div>
+        <table class="price-detail-table" id="ladderTable">
+          <thead id="ladderHead">
+            <tr>
+              <th style="width:22%">子价格名称</th>
+              <th class="ladder-col" data-lidx="1">一阶价格</th>
+              <th class="ladder-col" data-lidx="2">二阶价格</th>
+              <th class="ladder-col" data-lidx="3">三阶价格</th>
+              <th class="ladder-col" data-lidx="4" style="display:none">四阶价格</th>
+              <th style="width:18%">操作</th>
+            </tr>
+          </thead>
+          <tbody id="ladderBody">
+            <tr>
+              <td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">请选择子价格名称</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,'基础水费')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,'污水处理费')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,'水资源费')">水资源费</div></div></div></td>
+              <td class="ladder-col" data-lidx="1"><input class="pdd-input" value="0"></td>
+              <td class="ladder-col" data-lidx="2"><input class="pdd-input" value="0"></td>
+              <td class="ladder-col" data-lidx="3"><input class="pdd-input" value="0"></td>
+              <td class="ladder-col" data-lidx="4" style="display:none"><input class="pdd-input" value="0"></td>
+              <td><button class="btn-del-item" onclick="delRow(this,'ladderBody')">删除</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn-add-item" onclick="addLadderRow()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>新增收费项目</button>
+      </div>
+
+      <!-- 最低消费单价模式 -->
+      <div class="form-section" id="latestSection">
+        <div class="price-form" style="padding-top:16px">
+          <div class="form-item"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" placeholder="请输入价格名称"></div>
+          <div class="form-item min-consume-wrap">
+            <label><span class="req">*</span>最低消费标志：</label>
+            <div class="min-consume-select" id="latestMinConsumeSelect" onclick="toggleMinConsume(event,'latest')">
+              <span id="latestMinConsumeLabel">最低消费标志</span><span class="caret">&#9662;</span>
+            </div>
+            <div class="min-consume-dropdown" id="latestMinConsumeDropdown">
+              <div class="dd-item" onclick="pickMinConsume(event,'latest','最低消费金额')">最低消费金额</div>
+              <div class="dd-item" onclick="pickMinConsume(event,'latest','最低消费数量')">最低消费数量</div>
+            </div>
+          </div>
+          <div class="form-item min-consume-amount" id="latestMinConsumeAmount" style="display:none"><label><span class="req">*</span>最低消费金额：</label><input class="form-ctl" value="0"></div>
+          <div class="form-item min-consume-quantity" id="latestMinConsumeQuantity" style="display:none"><label><span class="req">*</span>最低消费数量：</label><input class="form-ctl" value="0"></div>
+          <div class="form-item"><label><span class="req">*</span>报警量：</label><input class="form-ctl" value="0"></div>
+          <div class="form-item"><label><span class="req">*</span>启用日期：</label><input class="form-ctl" value="2026-09-29"></div>
+        </div>
+        <div class="price-section-title">价格明细</div>
+        <table class="price-detail-table">
+          <thead><tr><th style="width:28%">子价格名称</th><th style="width:32%">价格</th><th style="width:24%">是否计算最低消费</th><th style="width:16%">操作</th></tr></thead>
+          <tbody id="latestBody">
+            <tr>
+              <td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">请选择子价格名称</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,'基础水费')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,'污水处理费')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,'水资源费')">水资源费</div></div></div></td>
+              <td><input class="pdd-input" value="0"></td>
+              <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
+              <td><button class="btn-del-item" onclick="delRow(this,'latestBody')">删除</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn-add-item" onclick="addLatestRow()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>新增收费项目</button>
+      </div>
+
+      <!-- 含最低消费阶梯单价模式 -->
+      <div class="form-section" id="ladderMinSection">
+        <div class="price-form" style="padding-top:16px">
+          <div class="form-item"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" placeholder="请输入价格名称"></div>
+          <div class="form-item min-consume-wrap">
+            <label><span class="req">*</span>最低消费标志：</label>
+            <div class="min-consume-select" id="ladderMinConsumeSelect" onclick="toggleMinConsume(event,'ladder')">
+              <span id="ladderMinConsumeLabel">最低消费标志</span><span class="caret">&#9662;</span>
+            </div>
+            <div class="min-consume-dropdown" id="ladderMinConsumeDropdown">
+              <div class="dd-item" onclick="pickMinConsume(event,'ladder','最低消费金额')">最低消费金额</div>
+              <div class="dd-item" onclick="pickMinConsume(event,'ladder','最低消费数量')">最低消费数量</div>
+            </div>
+          </div>
+          <div class="form-item min-consume-amount" id="ladderMinConsumeAmount" style="display:none"><label><span class="req">*</span>最低消费金额：</label><input class="form-ctl" value="0"></div>
+          <div class="form-item min-consume-quantity" id="ladderMinConsumeQuantity" style="display:none"><label><span class="req">*</span>最低消费数量：</label><input class="form-ctl" value="0"></div>
+          <div class="form-item ladder-type-wrap">
+            <label><span class="req">*</span>阶梯类型：</label>
+            <div class="ladder-type-select" id="ladderMinTypeSelect" onclick="toggleLadderMinType(event)">
+              <span id="ladderMinTypeLabel">户阶梯</span><span class="caret">&#9662;</span>
+            </div>
+            <div class="ladder-type-dropdown" id="ladderMinTypeDropdown">
+              <div class="dd-item" onclick="pickLadderMinType(event,'户阶梯')">户阶梯</div>
+            </div>
+          </div>
+        </div>
+        <!-- 户阶梯扩展字段 -->
+        <div class="ladder-min-ext" id="ladderMinExt">
+          <div class="price-form" style="padding-top:0">
+            <div class="form-item ladder-count-wrap">
+              <label><span class="req">*</span>阶梯数量：</label>
+              <div class="ladder-count-select" id="ladderMinCountSelect" onclick="toggleLadderMinCount(event)">
+                <span id="ladderMinCountLabel">3</span><span class="caret">&#9662;</span>
+              </div>
+              <div class="ladder-count-dropdown" id="ladderMinCountDropdown">
+                <div class="dd-item" onclick="pickLadderMinCount(event,1)">1</div>
+                <div class="dd-item" onclick="pickLadderMinCount(event,2)">2</div>
+                <div class="dd-item" onclick="pickLadderMinCount(event,3)">3</div>
+                <div class="dd-item" onclick="pickLadderMinCount(event,4)">4</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-ladder-amount" id="ladderMinAmountRow">
+            <div class="form-item ladder-amt-item" data-idx="1"><label><span class="req">*</span>阶梯一(量)：</label><input value="0"></div>
+            <div class="form-item ladder-amt-item" data-idx="2"><label><span class="req">*</span>阶梯二(量)：</label><input value="0"></div>
+            <div class="form-item ladder-amt-item" data-idx="3"><label><span class="req">*</span>阶梯三(量)：</label><input value="0"></div>
+            <div class="form-item ladder-amt-item" data-idx="4" style="display:none"><label><span class="req">*</span>阶梯四(量)：</label><input value="0"></div>
+          </div>
+          <div class="price-form" style="padding-top:0">
+            <div class="form-item"><label><span class="req">*</span>阶梯周期：</label><div class="form-ctl placeholder"><span style="color:#b6bdc9">请选择阶梯周期</span><span class="caret">&#9662;</span></div></div>
+          </div>
+        </div>
+        <div class="price-form" style="padding-top:0">
+          <div class="form-item"><label><span class="req">*</span>报警量：</label><input class="form-ctl" value="0"></div>
+          <div class="form-item"><label><span class="req">*</span>启用日期：</label><input class="form-ctl" value="2026-09-29"></div>
+        </div>
+        <div class="price-section-title">价格明细</div>
+        <table class="price-detail-table" id="ladderMinTable">
+          <thead id="ladderMinHead">
+            <tr>
+              <th style="width:18%">子价格名称</th>
+              <th class="ladder-min-col" data-lidx="1">一阶价格</th>
+              <th class="ladder-min-col" data-lidx="2">二阶价格</th>
+              <th class="ladder-min-col" data-lidx="3">三阶价格</th>
+              <th class="ladder-min-col" data-lidx="4" style="display:none">四阶价格</th>
+              <th style="width:18%">是否计算最低消费</th>
+              <th style="width:14%">操作</th>
+            </tr>
+          </thead>
+          <tbody id="ladderMinBody">
+            <tr>
+              <td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">请选择子价格名称</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,'基础水费')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,'污水处理费')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,'水资源费')">水资源费</div></div></div></td>
+              <td class="ladder-min-col" data-lidx="1"><input class="pdd-input" value="0"></td>
+              <td class="ladder-min-col" data-lidx="2"><input class="pdd-input" value="0"></td>
+              <td class="ladder-min-col" data-lidx="3"><input class="pdd-input" value="0"></td>
+              <td class="ladder-min-col" data-lidx="4" style="display:none"><input class="pdd-input" value="0"></td>
+              <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
+              <td><button class="btn-del-item" onclick="delRow(this,'ladderMinBody')">删除</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn-add-item" onclick="addLadderMinRow()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>新增收费项目</button>
+      </div>
+    </div>
+    <div class="dlg-foot dlg-foot-right">
+      <button class="btn-link-cancel" onclick="closeDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>取消</button>
+      <button class="btn" onclick="confirmDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12L10 17L19 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 价格调整弹窗 -->
+<div class="dlg-mask" id="adjustDlgMask" onclick="if(event.target===this)closeAdjustDlg()">
+  <div class="dlg price-dlg">
+    <div class="dlg-head">价格调整<span class="dlg-close" onclick="closeAdjustDlg()">&#10005;</span></div>
+    <div class="dlg-body">
+      <div class="price-form" style="border-bottom:none;padding-bottom:0">
+        <div class="form-item"><label><span class="req">*</span>组织机构：</label><div class="form-ctl"><span>063 涌恒供水</span><span class="caret">&#9662;</span></div></div>
+        <div class="form-item"><label><span class="req">*</span>价格类型：</label><div class="form-ctl" id="adjPtypeVal"><span>固定单价</span><span class="caret">&#9662;</span></div></div>
+        <div class="form-item"><label><span class="req">*</span>欠费关阀：</label><div class="form-ctl" id="adjFeeValve"><span>是</span><span class="caret">&#9662;</span></div></div>
+      </div>
+      <!-- 固定单价模式 -->
+      <div class="form-section active" id="adjFixedSection">
+        <div class="price-form" style="padding-top:16px">
+          <div class="form-item"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" id="adjFixedName"></div>
+          <div class="form-item"><label><span class="req">*</span>报警量：</label><input class="form-ctl" id="adjFixedAlarm"></div>
+          <div class="form-item"><label><span class="req">*</span>启用日期：</label><input class="form-ctl" id="adjFixedDate"></div>
+        </div>
+        <div class="price-section-title">价格明细</div>
+        <table class="price-detail-table">
+          <thead><tr><th style="width:38%">子价格名称</th><th style="width:38%">价格</th><th style="width:24%">操作</th></tr></thead>
+          <tbody id="adjFixedBody"></tbody>
+        </table>
+        <button class="btn-add-item" onclick="addAdjFixedRow()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>新增收费项目</button>
+      </div>
+      <!-- 阶梯单价模式 -->
+      <div class="form-section" id="adjLadderSection">
+        <div class="price-form" style="padding-top:16px">
+          <div class="form-item"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" id="adjLadderName"></div>
+          <div class="form-item"><label><span class="req">*</span>阶梯类型：</label><div class="form-ctl"><span>户阶梯</span><span class="caret">&#9662;</span></div></div>
+          <div class="form-item"><label><span class="req">*</span>阶梯数量：</label><div class="form-ctl" id="adjLadderCount"><span>3</span><span class="caret">&#9662;</span></div></div>
+        </div>
+        <div class="form-ladder-amount" id="adjLadderAmountRow">
+          <div class="form-item ladder-amt-item" data-idx="1"><label><span class="req">*</span>阶梯一(量)：</label><input id="adjLadAmt1"></div>
+          <div class="form-item ladder-amt-item" data-idx="2"><label><span class="req">*</span>阶梯二(量)：</label><input id="adjLadAmt2"></div>
+          <div class="form-item ladder-amt-item" data-idx="3"><label><span class="req">*</span>阶梯三(量)：</label><input id="adjLadAmt3"></div>
+          <div class="form-item ladder-amt-item" data-idx="4" style="display:none"><label><span class="req">*</span>阶梯四(量)：</label><input id="adjLadAmt4"></div>
+        </div>
+        <div class="price-form" style="padding-top:0">
+          <div class="form-item"><label><span class="req">*</span>阶梯周期：</label><div class="form-ctl placeholder"><span style="color:#b6bdc9">请选择阶梯周期</span><span class="caret">&#9662;</span></div></div>
+          <div class="form-item"><label><span class="req">*</span>报警量：</label><input class="form-ctl" id="adjLadderAlarm"></div>
+          <div class="form-item"><label><span class="req">*</span>启用日期：</label><input class="form-ctl" id="adjLadderDate"></div>
+        </div>
+        <div class="price-section-title">价格明细</div>
+        <table class="price-detail-table" id="adjLadderTable">
+          <thead>
+            <tr>
+              <th style="width:22%">子价格名称</th>
+              <th class="ladder-col" data-lidx="1">一阶价格</th>
+              <th class="ladder-col" data-lidx="2">二阶价格</th>
+              <th class="ladder-col" data-lidx="3">三阶价格</th>
+              <th class="ladder-col" data-lidx="4" style="display:none">四阶价格</th>
+              <th style="width:18%">操作</th>
+            </tr>
+          </thead>
+          <tbody id="adjLadderBody"></tbody>
+        </table>
+        <button class="btn-add-item" onclick="addAdjLadderRow()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>新增收费项目</button>
+      </div>
+    </div>
+    <div class="dlg-foot dlg-foot-right">
+      <button class="btn-link-cancel" onclick="closeAdjustDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>取消</button>
+      <button class="btn" onclick="confirmAdjustDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12L10 17L19 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 价格详情弹窗 -->
+<div class="dlg-mask" id="detailDlgMask" onclick="if(event.target===this)closeDetailDlg()">
+  <div class="dlg price-dlg read-only">
+    <div class="dlg-head">价格详情<span class="dlg-close" onclick="closeDetailDlg()">&#10005;</span></div>
+    <div class="dlg-body">
+      <div class="price-form" style="border-bottom:none;padding-bottom:0">
+        <div class="form-item"><label><span class="req">*</span>组织机构：</label><div class="form-ctl"><span>063 涌恒供水</span><span class="caret">&#9662;</span></div></div>
+        <div class="form-item"><label><span class="req">*</span>价格类型：</label><div class="form-ctl" id="detPtypeVal"><span>固定单价</span><span class="caret">&#9662;</span></div></div>
+        <div class="form-item"><label><span class="req">*</span>欠费关阀：</label><div class="form-ctl" id="detFeeValve"><span>是</span><span class="caret">&#9662;</span></div></div>
+      </div>
+      <!-- 固定单价模式 -->
+      <div class="form-section active" id="detFixedSection">
+        <div class="price-form" style="padding-top:16px">
+          <div class="form-item"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" id="detFixedName" readonly></div>
+          <div class="form-item"><label><span class="req">*</span>报警量：</label><input class="form-ctl" id="detFixedAlarm" readonly></div>
+          <div class="form-item"><label><span class="req">*</span>启用日期：</label><input class="form-ctl" id="detFixedDate" readonly></div>
+        </div>
+        <div class="price-section-title">价格明细</div>
+        <table class="price-detail-table">
+          <thead><tr><th style="width:38%">子价格名称</th><th style="width:38%">价格</th><th style="width:24%">操作</th></tr></thead>
+          <tbody id="detFixedBody"></tbody>
+        </table>
+        <button class="btn-add-item" onclick="return false">新增收费项目</button>
+      </div>
+      <!-- 阶梯单价模式 -->
+      <div class="form-section" id="detLadderSection">
+        <div class="price-form" style="padding-top:16px">
+          <div class="form-item"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" id="detLadderName" readonly></div>
+          <div class="form-item"><label><span class="req">*</span>阶梯类型：</label><div class="form-ctl"><span>户阶梯</span><span class="caret">&#9662;</span></div></div>
+          <div class="form-item"><label><span class="req">*</span>阶梯数量：</label><div class="form-ctl" id="detLadderCount"><span>3</span><span class="caret">&#9662;</span></div></div>
+        </div>
+        <div class="form-ladder-amount" id="detLadderAmountRow">
+          <div class="form-item ladder-amt-item" data-idx="1"><label><span class="req">*</span>阶梯一(量)：</label><input id="detLadAmt1" readonly></div>
+          <div class="form-item ladder-amt-item" data-idx="2"><label><span class="req">*</span>阶梯二(量)：</label><input id="detLadAmt2" readonly></div>
+          <div class="form-item ladder-amt-item" data-idx="3"><label><span class="req">*</span>阶梯三(量)：</label><input id="detLadAmt3" readonly></div>
+          <div class="form-item ladder-amt-item" data-idx="4" style="display:none"><label><span class="req">*</span>阶梯四(量)：</label><input id="detLadAmt4" readonly></div>
+        </div>
+        <div class="price-form" style="padding-top:0">
+          <div class="form-item"><label><span class="req">*</span>阶梯周期：</label><div class="form-ctl placeholder"><span style="color:#b6bdc9">请选择阶梯周期</span><span class="caret">&#9662;</span></div></div>
+          <div class="form-item"><label><span class="req">*</span>报警量：</label><input class="form-ctl" id="detLadderAlarm" readonly></div>
+          <div class="form-item"><label><span class="req">*</span>启用日期：</label><input class="form-ctl" id="detLadderDate" readonly></div>
+        </div>
+        <div class="price-section-title">价格明细</div>
+        <table class="price-detail-table" id="detLadderTable">
+          <thead>
+            <tr>
+              <th style="width:22%">子价格名称</th>
+              <th class="ladder-col" data-lidx="1">一阶价格</th>
+              <th class="ladder-col" data-lidx="2">二阶价格</th>
+              <th class="ladder-col" data-lidx="3">三阶价格</th>
+              <th class="ladder-col" data-lidx="4" style="display:none">四阶价格</th>
+              <th style="width:18%">操作</th>
+            </tr>
+          </thead>
+          <tbody id="detLadderBody"></tbody>
+        </table>
+        <button class="btn-add-item" onclick="return false">新增收费项目</button>
+      </div>
+    </div>
+    <div class="dlg-foot dlg-foot-right">
+      <button class="btn" onclick="closeDetailDlg()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 编辑弹窗 -->
+<div class="dlg-mask" id="editDlgMask" onclick="if(event.target===this)closeEditDlg()">
+  <div class="dlg edit-dlg">
+    <div class="dlg-head">修改<span class="dlg-close" onclick="closeEditDlg()">&#10005;</span></div>
+    <div class="dlg-body" style="padding:0">
+      <div class="edit-form">
+        <div class="form-row">
+          <label>价格名称：</label>
+          <div class="edit-ctl"><input class="edit-input" id="editPriceName"></div>
+        </div>
+        <div class="form-row">
+          <label>欠费关阀：</label>
+          <div class="edit-ctl">
+            <div class="edit-select" id="editFeeValveSel" onclick="toggleEditFee(event)">
+              <span id="editFeeValveLabel">是</span><span class="caret">&#9662;</span>
+            </div>
+            <div class="ptype-dropdown" id="editFeeValveDD" style="left:0;top:100%;z-index:20">
+              <div class="dd-item" onclick="pickEditFee(event,'是')">是</div>
+              <div class="dd-item" onclick="pickEditFee(event,'否')">否</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>水价政策：</label>
+          <div class="edit-ctl"><textarea class="edit-textarea" id="editPolicy">0</textarea></div>
+        </div>
+      </div>
+    </div>
+    <div class="dlg-foot dlg-foot-right">
+      <button class="btn-link-cancel" onclick="closeEditDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>取消</button>
+      <button class="btn" onclick="confirmEditDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12L10 17L19 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">&#9888;</span><span id="toastText"></span>
+  <span class="t-close" onclick="hideToast()">&#10005;</span>
+</div>
+
+<div class="confirm-mask" id="confirmMask" onclick="if(event.target===this)closeConfirm()">
+  <div class="confirm-box">
+    <div class="confirm-head">删除确认<span class="confirm-close" onclick="closeConfirm()">&#10005;</span></div>
+    <div class="confirm-body" id="confirmBody"><span class="warn-icon">!</span>确定要删除选中的价格类型记录吗？删除后将无法恢复。</div>
+    <div class="confirm-foot">
+      <button class="btn plain" onclick="closeConfirm()">取消</button>
+      <button class="btn" onclick="doDelete()">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var toastTimer = null;
+  function showToast(text, type) {
+    var t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    document.getElementById('toastIcon').textContent = type === 'success' ? '\u2714' : '\u26a0';
+    t.className = 'toast show' + (type === 'success' ? ' success' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 3200);
+  }
+  function hideToast() { document.getElementById('toast').classList.remove('show'); }
+  function doReset() {
+    document.querySelectorAll('.filter-grid input').forEach(function (i) { i.value = ''; });
+    showToast('筛选条件已重置', 'success');
+  }
+  function openDlg() { document.getElementById('dlgMask').classList.add('show'); }
+  function closeDlg() { document.getElementById('dlgMask').classList.remove('show'); }
+  function confirmDlg() { closeDlg(); showToast('保存成功', 'success'); }
+  // 价格类型切换
+  var currentPtype = '固定单价';
+  var currentLadderCount = 3;
+  var currentLadderMinCount = 3;
+  function togglePtype(e) {
+    var dd = document.getElementById('ptypeDropdown');
+    var sel = document.getElementById('ptypeSelect');
+    var isOpen = dd.classList.contains('show');
+    dd.classList.toggle('show', !isOpen);
+    sel.classList.toggle('open', !isOpen);
+    e.stopPropagation();
+  }
+  function pickPtype(e, val) {
+    currentPtype = val;
+    document.getElementById('ptypeLabel').textContent = val;
+    document.getElementById('ptypeDropdown').classList.remove('show');
+    document.getElementById('ptypeSelect').classList.remove('open');
+    document.getElementById('fixedSection').classList.remove('active');
+    document.getElementById('ladderSection').classList.remove('active');
+    document.getElementById('latestSection').classList.remove('active');
+    document.getElementById('ladderMinSection').classList.remove('active');
+    if (val === '固定单价') {
+      document.getElementById('fixedSection').classList.add('active');
+    } else if (val === '阶梯单价') {
+      document.getElementById('ladderSection').classList.add('active');
+      updateLadderCount(currentLadderCount);
+    } else if (val === '最低消费单价') {
+      document.getElementById('latestSection').classList.add('active');
+    } else if (val === '含最低消费阶梯单价') {
+      document.getElementById('ladderMinSection').classList.add('active');
+    }
+    e.stopPropagation();
+  }
+  // 最低消费标志切换
+  function toggleMinConsume(e, prefix) {
+    var dd = document.getElementById(prefix + 'MinConsumeDropdown');
+    var sel = document.getElementById(prefix + 'MinConsumeSelect');
+    var isOpen = dd.classList.contains('show');
+    dd.classList.toggle('show', !isOpen);
+    sel.classList.toggle('open', !isOpen);
+    e.stopPropagation();
+  }
+  function pickMinConsume(e, prefix, val) {
+    document.getElementById(prefix + 'MinConsumeLabel').textContent = val;
+    document.getElementById(prefix + 'MinConsumeDropdown').classList.remove('show');
+    document.getElementById(prefix + 'MinConsumeSelect').classList.remove('open');
+    var amountEl = document.getElementById(prefix + 'MinConsumeAmount');
+    var quantityEl = document.getElementById(prefix + 'MinConsumeQuantity');
+    if (amountEl && quantityEl) {
+      if (val === '最低消费金额' || val === '金额最低消费') {
+        amountEl.style.display = 'flex';
+        quantityEl.style.display = 'none';
+      } else if (val === '最低消费数量' || val === '用量最低消费') {
+        amountEl.style.display = 'none';
+        quantityEl.style.display = 'flex';
+      } else {
+        amountEl.style.display = 'none';
+        quantityEl.style.display = 'none';
+      }
+    }
+    e.stopPropagation();
+  }
+  // 阶梯数量切换
+  function toggleLadderCount(e) {
+    var dd = document.getElementById('ladderCountDropdown');
+    var sel = document.getElementById('ladderCountSelect');
+    var isOpen = dd.classList.contains('show');
+    dd.classList.toggle('show', !isOpen);
+    sel.classList.toggle('open', !isOpen);
+    e.stopPropagation();
+  }
+  function pickLadderCount(e, n) {
+    currentLadderCount = n;
+    document.getElementById('ladderCountLabel').textContent = n;
+    document.getElementById('ladderCountDropdown').classList.remove('show');
+    document.getElementById('ladderCountSelect').classList.remove('open');
+    updateLadderCount(n);
+    e.stopPropagation();
+  }
+  function updateLadderCount(n) {
+    // 更新阶梯量字段显示
+    document.querySelectorAll('.ladder-amt-item').forEach(function (el) {
+      var idx = parseInt(el.dataset.idx);
+      el.style.display = idx <= n ? 'flex' : 'none';
+    });
+    // 更新价格明细表格列
+    document.querySelectorAll('#ladderTable .ladder-col').forEach(function (el) {
+      var idx = parseInt(el.dataset.lidx);
+      el.style.display = idx <= n ? '' : 'none';
+    });
+  }
+  // 含最低消费阶梯单价的阶梯类型切换
+  function toggleLadderMinType(e) {
+    var dd = document.getElementById('ladderMinTypeDropdown');
+    var sel = document.getElementById('ladderMinTypeSelect');
+    var isOpen = dd.classList.contains('show');
+    dd.classList.toggle('show', !isOpen);
+    sel.classList.toggle('open', !isOpen);
+    e.stopPropagation();
+  }
+  function pickLadderMinType(e, val) {
+    document.getElementById('ladderMinTypeLabel').textContent = val;
+    document.getElementById('ladderMinTypeDropdown').classList.remove('show');
+    document.getElementById('ladderMinTypeSelect').classList.remove('open');
+    var ext = document.getElementById('ladderMinExt');
+    if (ext) {
+      ext.style.display = val === '户阶梯' ? 'block' : 'none';
+      if (val === '户阶梯') {
+        updateLadderMinCount(currentLadderMinCount);
+      }
+    }
+    e.stopPropagation();
+  }
+  // 含最低消费阶梯单价的阶梯数量切换
+  function toggleLadderMinCount(e) {
+    var dd = document.getElementById('ladderMinCountDropdown');
+    var sel = document.getElementById('ladderMinCountSelect');
+    var isOpen = dd.classList.contains('show');
+    dd.classList.toggle('show', !isOpen);
+    sel.classList.toggle('open', !isOpen);
+    e.stopPropagation();
+  }
+  function pickLadderMinCount(e, n) {
+    currentLadderMinCount = n;
+    document.getElementById('ladderMinCountLabel').textContent = n;
+    document.getElementById('ladderMinCountDropdown').classList.remove('show');
+    document.getElementById('ladderMinCountSelect').classList.remove('open');
+    updateLadderMinCount(n);
+    e.stopPropagation();
+  }
+  function updateLadderMinCount(n) {
+    document.querySelectorAll('#ladderMinAmountRow .ladder-amt-item').forEach(function (el) {
+      var idx = parseInt(el.dataset.idx);
+      el.style.display = idx <= n ? 'flex' : 'none';
+    });
+    document.querySelectorAll('#ladderMinTable .ladder-min-col').forEach(function (el) {
+      var idx = parseInt(el.dataset.lidx);
+      el.style.display = idx <= n ? '' : 'none';
+    });
+  }
+  // 子价格下拉
+  function toggleSubPrice(el) {
+    var dd = el.nextElementSibling;
+    var isOpen = dd.classList.contains('show');
+    document.querySelectorAll('.sub-price-dropdown.show').forEach(function (d) { d.classList.remove('show'); });
+    document.querySelectorAll('.sub-price-select.open').forEach(function (s) { s.classList.remove('open'); });
+    if (!isOpen) {
+      dd.classList.add('show');
+      el.classList.add('open');
+    }
+    event.stopPropagation();
+  }
+  function pickSubPrice(el, val) {
+    var wrap = el.closest('.sub-price-wrap');
+    var select = wrap.querySelector('.sub-price-select');
+    select.querySelector('.sp-label').textContent = val;
+    select.querySelector('.sp-label').style.color = '#374151';
+    wrap.querySelectorAll('.dd-item').forEach(function (i) { i.classList.remove('selected'); });
+    el.classList.add('selected');
+    wrap.querySelector('.sub-price-dropdown').classList.remove('show');
+    select.classList.remove('open');
+    event.stopPropagation();
+  }
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.sub-price-dropdown.show').forEach(function (d) { d.classList.remove('show'); });
+    document.querySelectorAll('.sub-price-select.open').forEach(function (s) { s.classList.remove('open'); });
+    document.getElementById('ptypeDropdown').classList.remove('show');
+    document.getElementById('ptypeSelect').classList.remove('open');
+    document.getElementById('ladderCountDropdown').classList.remove('show');
+    document.getElementById('ladderCountSelect').classList.remove('open');
+    var lmtDd = document.getElementById('ladderMinTypeDropdown');
+    if (lmtDd) lmtDd.classList.remove('show');
+    var lmtSel = document.getElementById('ladderMinTypeSelect');
+    if (lmtSel) lmtSel.classList.remove('open');
+    var lmcDd = document.getElementById('ladderMinCountDropdown');
+    if (lmcDd) lmcDd.classList.remove('show');
+    var lmcSel = document.getElementById('ladderMinCountSelect');
+    if (lmcSel) lmcSel.classList.remove('open');
+    document.querySelectorAll('.min-consume-dropdown.show').forEach(function (d) { d.classList.remove('show'); });
+    document.querySelectorAll('.min-consume-select.open').forEach(function (s) { s.classList.remove('open'); });
+  });
+  // 新增/删除收费项目 - 固定单价
+  function addFixedRow() {
+    var tbody = document.getElementById('fixedBody');
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">请选择子价格名称</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,\'基础水费\')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,\'污水处理费\')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,\'水资源费\')">水资源费</div></div></div></td><td><input class="pdd-input" value="0"></td><td><button class="btn-del-item" onclick="delRow(this,\'fixedBody\')">删除</button></td>';
+    tbody.appendChild(tr);
+  }
+  // 新增/删除收费项目 - 阶梯单价
+  function addLadderRow() {
+    var tbody = document.getElementById('ladderBody');
+    var tr = document.createElement('tr');
+    var n = currentLadderCount;
+    var cols = '';
+    for (var i = 1; i <= 4; i++) {
+      var display = i <= n ? '' : 'display:none';
+      cols += '<td class="ladder-col" data-lidx="' + i + '" style="' + display + '"><input class="pdd-input" value="0"></td>';
+    }
+    tr.innerHTML = '<td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">请选择子价格名称</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,\'基础水费\')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,\'污水处理费\')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,\'水资源费\')">水资源费</div></div></div></td>' + cols + '<td><button class="btn-del-item" onclick="delRow(this,\'ladderBody\')">删除</button></td>';
+    tbody.appendChild(tr);
+  }
+  // 新增/删除收费项目 - 最低消费单价
+  function addLatestRow() {
+    var tbody = document.getElementById('latestBody');
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">请选择子价格名称</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,\'基础水费\')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,\'污水处理费\')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,\'水资源费\')">水资源费</div></div></div></td><td><input class="pdd-input" value="0"></td><td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td><td><button class="btn-del-item" onclick="delRow(this,\'latestBody\')">删除</button></td>';
+    tbody.appendChild(tr);
+  }
+  // 新增/删除收费项目 - 含最低消费阶梯单价
+  function addLadderMinRow() {
+    var tbody = document.getElementById('ladderMinBody');
+    var tr = document.createElement('tr');
+    var n = currentLadderMinCount;
+    var cols = '';
+    for (var i = 1; i <= 4; i++) {
+      var display = i <= n ? '' : 'display:none';
+      cols += '<td class="ladder-min-col" data-lidx="' + i + '" style="' + display + '"><input class="pdd-input" value="0"></td>';
+    }
+    tr.innerHTML = '<td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">请选择子价格名称</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,\'基础水费\')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,\'污水处理费\')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,\'水资源费\')">水资源费</div></div></div></td>' + cols + '<td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td><td><button class="btn-del-item" onclick="delRow(this,\'ladderMinBody\')">删除</button></td>';
+    tbody.appendChild(tr);
+  }
+  function delRow(el, bodyId) {
+    var tbody = document.getElementById(bodyId);
+    if (tbody.rows.length <= 1) {
+      showToast('至少保留一条收费项目', 'warn');
+      return;
+    }
+    el.closest('tr').remove();
+  }
+  // 价格数据
+  var priceData = [
+    { ptype: '固定单价', feeValve: '是', name: '按月', policy: '居民生活用水按月计价，每吨1.00元', stock: 0, alarm: 0, date: '2026-07-06',
+      items: [{ sub: '基础水费', price: '1.000000', percent: 100 }] },
+    { ptype: '阶梯价格', feeValve: '是', name: '阶梯水价', policy: '阶梯式计量水价，一阶2.5元/吨(15吨内)，二阶3.5元/吨(25吨内)，三阶5.0元/吨', ladderType: '户阶梯', ladderCount: 3,
+      ladderAmounts: [15, 25, 0], ladderPeriod: '', stock: 0, alarm: 0, date: '2026-01-01',
+      items: [{ sub: '基础水费', prices: ['2.500000', '3.500000', '5.000000'], percent: 100 }] },
+    { ptype: '固定单价', feeValve: '否', name: '居民用水', policy: '居民生活用水统一价格2.8元/吨', stock: 0, alarm: 0, date: '2026-03-01',
+      items: [{ sub: '基础水费', price: '2.800000', percent: 100 }] },
+    { ptype: '固定单价', feeValve: '是', name: '商业用水', policy: '商业经营用水4.5元/吨，包含污水处理费', stock: 0, alarm: 0, date: '2026-02-01',
+      items: [{ sub: '基础水费', price: '4.500000', percent: 100 }] },
+    { ptype: '固定单价', feeValve: '是', name: '工业用水', policy: '工业生产用水3.8元/吨，按实际抄表计量', stock: 0, alarm: 0, date: '2025-06-01',
+      items: [{ sub: '基础水费', price: '3.800000', percent: 100 }] },
+    { ptype: '阶梯价格', feeValve: '是', name: '特种行业', policy: '特种行业用水阶梯计价，一阶6元/吨(50吨内)，二阶8元/吨(100吨内)，三阶10元/吨', ladderType: '户阶梯', ladderCount: 3,
+      ladderAmounts: [50, 100, 0], ladderPeriod: '', stock: 0, alarm: 0, date: '2026-04-01',
+      items: [{ sub: '基础水费', prices: ['6.000000', '8.000000', '10.000000'], percent: 100 }] },
+    { ptype: '固定单价', feeValve: '否', name: '行政事业', policy: '行政事业单位用水3.2元/吨', stock: 0, alarm: 0, date: '2026-01-01',
+      items: [{ sub: '基础水费', price: '3.200000', percent: 100 }] },
+    { ptype: '固定单价', feeValve: '是', name: '经营服务', policy: '经营服务类用水5.0元/吨', stock: 0, alarm: 0, date: '2025-01-01',
+      items: [{ sub: '基础水费', price: '5.000000', percent: 100 }] }
+  ];
+  var adjLadderCount = 3;
+  function openAdjustDlg(idx) {
+    var d = priceData[idx];
+    document.getElementById('adjPtypeVal').querySelector('span').textContent = d.ptype;
+    document.getElementById('adjFeeValve').querySelector('span').textContent = d.feeValve;
+    if (d.ptype === '固定单价') {
+      document.getElementById('adjFixedSection').classList.add('active');
+      document.getElementById('adjLadderSection').classList.remove('active');
+      document.getElementById('adjFixedName').value = d.name;
+      document.getElementById('adjFixedAlarm').value = d.alarm;
+      document.getElementById('adjFixedDate').value = d.date;
+      // 填充明细
+      var tbody = document.getElementById('adjFixedBody');
+      tbody.innerHTML = '';
+      d.items.forEach(function (it) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">' + it.sub + '</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,\'基础水费\')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,\'污水处理费\')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,\'水资源费\')">水资源费</div></div></div></td><td><input class="pdd-input" value="' + it.price + '"></td><td><button class="btn-del-item" onclick="delRow(this,\'adjFixedBody\')">删除</button></td>';
+        tbody.appendChild(tr);
+      });
+    } else {
+      document.getElementById('adjFixedSection').classList.remove('active');
+      document.getElementById('adjLadderSection').classList.add('active');
+      adjLadderCount = d.ladderCount;
+      document.getElementById('adjLadderName').value = d.name;
+      document.getElementById('adjLadderCount').querySelector('span').textContent = d.ladderCount;
+      document.getElementById('adjLadderAlarm').value = d.alarm;
+      document.getElementById('adjLadderDate').value = d.date;
+      // 更新阶梯量显示
+      document.querySelectorAll('#adjLadderAmountRow .ladder-amt-item').forEach(function (el) {
+        var i = parseInt(el.dataset.idx);
+        el.style.display = i <= d.ladderCount ? 'flex' : 'none';
+        if (i <= d.ladderCount) {
+          el.querySelector('input').value = d.ladderAmounts[i - 1] || 0;
+        }
+      });
+      // 更新价格列表头
+      document.querySelectorAll('#adjLadderTable .ladder-col').forEach(function (el) {
+        var i = parseInt(el.dataset.lidx);
+        el.style.display = i <= d.ladderCount ? '' : 'none';
+      });
+      // 填充明细
+      var tbody = document.getElementById('adjLadderBody');
+      tbody.innerHTML = '';
+      d.items.forEach(function (it) {
+        var tr = document.createElement('tr');
+        var cols = '';
+        for (var i = 1; i <= 4; i++) {
+          var display = i <= d.ladderCount ? '' : 'display:none';
+          var val = it.prices[i - 1] || '0';
+          cols += '<td class="ladder-col" data-lidx="' + i + '" style="' + display + '"><input class="pdd-input" value="' + val + '"></td>';
+        }
+        tr.innerHTML = '<td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">' + it.sub + '</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,\'基础水费\')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,\'污水处理费\')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,\'水资源费\')">水资源费</div></div></div></td>' + cols + '<td><button class="btn-del-item" onclick="delRow(this,\'adjLadderBody\')">删除</button></td>';
+        tbody.appendChild(tr);
+      });
+    }
+    document.getElementById('adjustDlgMask').classList.add('show');
+  }
+  function closeAdjustDlg() { document.getElementById('adjustDlgMask').classList.remove('show'); }
+  function confirmAdjustDlg() { closeAdjustDlg(); showToast('价格调整成功', 'success'); }
+  function addAdjFixedRow() {
+    var tbody = document.getElementById('adjFixedBody');
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">请选择子价格名称</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,\'基础水费\')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,\'污水处理费\')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,\'水资源费\')">水资源费</div></div></div></td><td><input class="pdd-input" value="0"></td><td><button class="btn-del-item" onclick="delRow(this,\'adjFixedBody\')">删除</button></td>';
+    tbody.appendChild(tr);
+  }
+  function addAdjLadderRow() {
+    var tbody = document.getElementById('adjLadderBody');
+    var tr = document.createElement('tr');
+    var n = adjLadderCount;
+    var cols = '';
+    for (var i = 1; i <= 4; i++) {
+      var display = i <= n ? '' : 'display:none';
+      cols += '<td class="ladder-col" data-lidx="' + i + '" style="' + display + '"><input class="pdd-input" value="0"></td>';
+    }
+    tr.innerHTML = '<td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select" onclick="toggleSubPrice(this)"><span class="sp-label">请选择子价格名称</span><span class="caret">&#9662;</span></div><div class="sub-price-dropdown"><div class="dd-item" onclick="pickSubPrice(this,\'基础水费\')">基础水费</div><div class="dd-item" onclick="pickSubPrice(this,\'污水处理费\')">污水处理费</div><div class="dd-item" onclick="pickSubPrice(this,\'水资源费\')">水资源费</div></div></div></td>' + cols + '<td><button class="btn-del-item" onclick="delRow(this,\'adjLadderBody\')">删除</button></td>';
+    tbody.appendChild(tr);
+  }
+  // 详情弹窗
+  function openDetailDlg(idx) {
+    var d = priceData[idx];
+    document.getElementById('detPtypeVal').querySelector('span').textContent = d.ptype;
+    document.getElementById('detFeeValve').querySelector('span').textContent = d.feeValve;
+    if (d.ptype === '固定单价') {
+      document.getElementById('detFixedSection').classList.add('active');
+      document.getElementById('detLadderSection').classList.remove('active');
+      document.getElementById('detFixedName').value = d.name;
+      document.getElementById('detFixedAlarm').value = d.alarm;
+      document.getElementById('detFixedDate').value = d.date;
+      var tbody = document.getElementById('detFixedBody');
+      tbody.innerHTML = '';
+      d.items.forEach(function (it) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select"><span class="sp-label">' + it.sub + '</span><span class="caret">&#9662;</span></div></div></td><td><input class="pdd-input" value="' + it.price + '" readonly></td><td><button class="btn-del-item">删除</button></td>';
+        tbody.appendChild(tr);
+      });
+    } else {
+      document.getElementById('detFixedSection').classList.remove('active');
+      document.getElementById('detLadderSection').classList.add('active');
+      document.getElementById('detLadderName').value = d.name;
+      document.getElementById('detLadderCount').querySelector('span').textContent = d.ladderCount;
+      document.getElementById('detLadderAlarm').value = d.alarm;
+      document.getElementById('detLadderDate').value = d.date;
+      document.querySelectorAll('#detLadderAmountRow .ladder-amt-item').forEach(function (el) {
+        var i = parseInt(el.dataset.idx);
+        el.style.display = i <= d.ladderCount ? 'flex' : 'none';
+        if (i <= d.ladderCount) {
+          el.querySelector('input').value = d.ladderAmounts[i - 1] || 0;
+        }
+      });
+      document.querySelectorAll('#detLadderTable .ladder-col').forEach(function (el) {
+        var i = parseInt(el.dataset.lidx);
+        el.style.display = i <= d.ladderCount ? '' : 'none';
+      });
+      var tbody = document.getElementById('detLadderBody');
+      tbody.innerHTML = '';
+      d.items.forEach(function (it) {
+        var tr = document.createElement('tr');
+        var cols = '';
+        for (var i = 1; i <= 4; i++) {
+          var display = i <= d.ladderCount ? '' : 'display:none';
+          var val = it.prices[i - 1] || '0';
+          cols += '<td class="ladder-col" data-lidx="' + i + '" style="' + display + '"><input class="pdd-input" value="' + val + '" readonly></td>';
+        }
+        tr.innerHTML = '<td><div class="sub-price-wrap"><span class="pdd-req">*</span><div class="sub-price-select"><span class="sp-label">' + it.sub + '</span><span class="caret">&#9662;</span></div></div></td>' + cols + '<td><button class="btn-del-item">删除</button></td>';
+        tbody.appendChild(tr);
+      });
+    }
+    document.getElementById('detailDlgMask').classList.add('show');
+  }
+  function closeDetailDlg() { document.getElementById('detailDlgMask').classList.remove('show'); }
+  // 编辑弹窗
+  function openEditDlg(idx) {
+    var d = priceData[idx];
+    document.getElementById('editPriceName').value = d.name;
+    document.getElementById('editFeeValveLabel').textContent = d.feeValve;
+    document.getElementById('editPolicy').value = d.policy || '0';
+    document.getElementById('editDlgMask').classList.add('show');
+  }
+  function closeEditDlg() { document.getElementById('editDlgMask').classList.remove('show'); }
+  function confirmEditDlg() { closeEditDlg(); showToast('修改成功', 'success'); }
+  function toggleEditFee(e) {
+    var dd = document.getElementById('editFeeValveDD');
+    var sel = document.getElementById('editFeeValveSel');
+    var isOpen = dd.classList.contains('show');
+    dd.classList.toggle('show', !isOpen);
+    sel.classList.toggle('open', !isOpen);
+    e.stopPropagation();
+  }
+  function pickEditFee(e, val) {
+    document.getElementById('editFeeValveLabel').textContent = val;
+    document.getElementById('editFeeValveDD').classList.remove('show');
+    document.getElementById('editFeeValveSel').classList.remove('open');
+    e.stopPropagation();
+  }
+  function needSelect(name) { showToast('请先勾选要' + name + '的记录', 'warn'); }
+  function toggleAll(el) {
+    document.querySelectorAll('.data-table tbody input[type="checkbox"]').forEach(function (c) { c.checked = el.checked; });
+  }
+  function confirmDelete() {
+    var checked = document.querySelectorAll('.data-table tbody input[type="checkbox"]:checked');
+    if (checked.length === 0) {
+      showToast('请先勾选要删除的记录', 'warn');
+      return;
+    }
+    var body = document.getElementById('confirmBody');
+    body.innerHTML = '<span class="warn-icon">!</span>当前共选中 <b style="color:#f56c6c">' + checked.length + '</b> 条价格类型记录，确定要删除吗？删除后将无法恢复。';
+    document.getElementById('confirmMask').classList.add('show');
+  }
+  function closeConfirm() { document.getElementById('confirmMask').classList.remove('show'); }
+  function doDelete() {
+    closeConfirm();
+    showToast('删除成功', 'success');
+  }
+  function pickTree(el) {
+    document.querySelectorAll('.tree-node').forEach(function (n) { n.classList.remove('active'); });
+    el.classList.add('active');
+  }
+</script>
+</body>
+</html>

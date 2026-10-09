@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务 - 表具档案</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f7f7f7; color: #212121; overflow: hidden; font-size: 14px; }
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
+  .topbar-left { width: 204px; flex: 0 0 204px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
+  .logo-drop { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; }
+  .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+  .topbar-right { flex: 1; display: flex; align-items: center; padding-right: 18px; }
+  .collapse-btn { width: 40px; height: 53px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,.9); }
+  .top-tabs { display: flex; align-items: center; gap: 6px; height: 100%; }
+  .top-tab { padding: 7px 22px; border-radius: 18px; cursor: pointer; color: rgba(255,255,255,.92); font-size: 14.5px; white-space: nowrap; transition: background .2s; }
+  .top-tab:hover { background: rgba(255,255,255,.14); }
+  .top-tab.active { background: rgba(255,255,255,.28); font-weight: 600; }
+  .top-user { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .top-user .tenant { font-size: 14px; color: #fff; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,.65); background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; padding-bottom: 16px; }
+  .side-caption { padding: 14px 16px 6px; font-size: 12px; color: #9aa3af; }
+  .menu-group-title { display: flex; align-items: center; gap: 8px; margin: 4px 10px; padding: 10px 12px; background: #eaf3fe; color: #2a7de1; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
+  .menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px 10px 26px; margin: 2px 10px; color: #4b5563; cursor: pointer; border-radius: 6px; text-decoration: none; font-size: 13.5px; }
+  .menu-item:hover { background: #f2f7fd; color: #2a7de1; }
+  .menu-item.active { background: #eaf3fe; color: #2a7de1; font-weight: 600; }
+  .main { position: fixed; top: 53px; left: 204px; right: 0; bottom: 0; display: flex; flex-direction: column; }
+  .subtabs { flex: 0 0 44px; background: #fff; border-bottom: 1px solid #eef0f3; display: flex; align-items: center; padding: 0 8px; gap: 2px; }
+  .subtab-list { display: flex; align-items: center; flex: 1; overflow: hidden; }
+  .subtab { padding: 0 26px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #4b5563; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; text-decoration: none; }
+  .subtab:hover { color: #2a7de1; }
+  .subtab.active { color: #2a7de1; border-bottom-color: #2a7de1; font-weight: 600; }
+  .content { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
+  .footer { flex: 0 0 29px; background: #fff; border-top: 1px solid #eef0f3; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 12px; color: #9aa3af; }
+  .filter-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 18px 24px 16px; margin-bottom: 14px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 28px; }
+  .filter-item { display: flex; align-items: center; }
+  .filter-label { flex: 0 0 72px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; white-space: nowrap; }
+  .filter-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .filter-input.placeholder { color: #b6bdc9; }
+  .filter-input:hover { border-color: #3b9dff; }
+  .filter-input .caret { color: #b6bdc9; font-size: 11px; }
+  .filter-input .clock { color: #b6bdc9; font-size: 12px; margin-right: 6px; }
+  input.filter-input { cursor: text; }
+  input.filter-input::placeholder { color: #b6bdc9; }
+  .btn-bar { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; justify-content: flex-end; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 16px; border: none; border-radius: 4px; background: #3b9dff; color: #fff; font-size: 13.5px; cursor: pointer; box-shadow: 0 1px 3px rgba(59,157,255,.3); }
+  .btn:hover { background: #2a8ef0; }
+  .btn.plain { background: #fff; color: #4b5563; border: 1px solid #dcdfe6; box-shadow: none; }
+  .btn.plain:hover { border-color: #3b9dff; color: #2a7de1; }
+  .table-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); overflow: hidden; }
+  .table-scroll { overflow-x: auto; }
+  table.data-table { border-collapse: collapse; min-width: 100%; }
+  .data-table th, .data-table td { padding: 11px 14px; font-size: 13px; white-space: nowrap; border-bottom: 1px solid #eef0f3; text-align: left; }
+  .data-table thead th { background: #fff; font-weight: 600; color: #374151; font-size: 13.5px; }
+  .data-table tbody td { color: #4b5563; }
+  .empty-tip { text-align: center; color: #9aa3af; padding: 80px 0; font-size: 14px; }
+  .hint-tip { padding: 10px 14px; color: #3b9dff; font-size: 13px; border-bottom: 1px solid #eef0f3; }
+  .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 16px 12px; font-size: 13px; color: #6b7280; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4b5563; }
+  .page-btn.disabled { color: #c8cdd5; cursor: default; }
+  .page-btn.cur { background: #3b9dff; color: #fff; }
+  .page-total { margin: 0 10px; }
+  .page-size { height: 30px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 10px; display: inline-flex; align-items: center; gap: 14px; color: #4b5563; cursor: pointer; background: #fff; }
+  .toast { position: fixed; top: 76px; right: 24px; z-index: 300; min-width: 300px; background: #fdf6e3; border: 1px solid #f5dab1; color: #b88230; border-radius: 6px; padding: 12px 16px; display: none; align-items: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .toast.show { display: flex; animation: slideIn .25s ease; }
+  .toast .t-close { margin-left: auto; cursor: pointer; color: #d3b17c; }
+  .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .dlg-mask { position: fixed; inset: 0; z-index: 200; background: rgba(15,23,42,.42); display: none; align-items: flex-start; justify-content: center; }
+  .dlg-mask.show { display: flex; }
+  .dlg { margin-top: 90px; width: 820px; max-width: 92vw; background: #fff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.22); animation: slideIn .22s ease; }
+  .dlg-head { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eef0f3; font-size: 16px; font-weight: 600; color: #212121; }
+  .dlg-close { margin-left: auto; cursor: pointer; color: #9aa3af; font-size: 16px; }
+  .dlg-body { padding: 22px 24px 8px; }
+  .dlg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 28px; }
+  .dlg-item { display: flex; align-items: center; }
+  .dlg-item label { flex: 0 0 92px; text-align: right; font-size: 13.5px; color: #4b5563; margin-right: 10px; }
+  .dlg-item label .req { color: #f56c6c; margin-right: 3px; }
+  .dlg-foot { display: flex; justify-content: center; gap: 12px; padding: 14px 20px 20px; }
+  .split { display: flex; gap: 14px; align-items: stretch; }
+  .tree-card { flex: 0 0 300px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 14px; overflow: auto; }
+  .tree-search { width: 100%; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13px; margin-bottom: 12px; color: #374151; }
+  .tree-search::placeholder { color: #b6bdc9; }
+  .tree-node { display: flex; align-items: center; gap: 6px; padding: 7px 6px; border-radius: 5px; cursor: pointer; font-size: 13.5px; color: #4b5563; }
+  .tree-node:hover { background: #f2f7fd; color: #2a7de1; }
+  .tree-node.active { background: #eaf3fe; color: #2a7de1; }
+  .tree-node.child { padding-left: 30px; }
+  .tree-node .arrow { color: #b6bdc9; font-size: 10px; width: 12px; }
+  .grow-card { flex: 1; min-width: 0; }
+  .row-link { color: #3b9dff; cursor: pointer; margin-right: 10px; }
+  .data-table th.col-check, .data-table td.col-check { width: 42px; text-align: center; position: sticky; left: 0; background: #fff; z-index: 2; }
+  .data-table th.col-check input[type="checkbox"], .data-table td.col-check input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #3b9dff; }
+  .data-table th.col-op, .data-table td.col-op { width: 100px; text-align: center; position: sticky; right: 0; background: #fff; z-index: 2; }
+  .data-table thead th.col-check, .data-table thead th.col-op { z-index: 3; }
+  .act-btn { color: #3b9dff; cursor: pointer; font-size: 13px; margin: 0 6px; }
+  .act-btn:hover { text-decoration: underline; }
+  .confirm-mask { position: fixed; inset: 0; z-index: 300; background: rgba(15,23,42,.42); display: none; align-items: center; justify-content: center; }
+  .confirm-mask.show { display: flex; }
+  .confirm-box { width: 420px; background: #fff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.22); animation: slideIn .22s ease; }
+  .confirm-head { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid #eef0f3; font-size: 16px; font-weight: 600; color: #212121; }
+  .confirm-close { margin-left: auto; cursor: pointer; color: #9aa3af; font-size: 16px; }
+  .confirm-body { padding: 24px 20px; font-size: 14px; color: #4b5563; line-height: 1.6; }
+  .confirm-body .warn-icon { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; background: #fdf6e3; color: #e6a23c; align-items: center; justify-content: center; margin-right: 10px; font-weight: bold; }
+  .confirm-foot { display: flex; justify-content: center; gap: 12px; padding: 0 20px 18px; }
+
+  /* 下拉菜单 */
+  .dropdown { position: relative; flex: 1; }
+  .dropdown-input { height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .dropdown-input.placeholder { color: #b6bdc9; }
+  .dropdown-input:hover { border-color: #3b9dff; }
+  .dropdown-input .caret { color: #b6bdc9; font-size: 11px; transition: transform .2s; }
+  .dropdown.open .dropdown-input { border-color: #3b9dff; }
+  .dropdown.open .dropdown-input .caret { transform: rotate(180deg); }
+  .dropdown-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.1); z-index: 100; display: none; max-height: 220px; overflow-y: auto; padding: 4px 0; }
+  .dropdown.open .dropdown-menu { display: block; }
+  .dropdown-option { padding: 8px 14px; font-size: 13.5px; color: #606266; cursor: pointer; }
+  .dropdown-option:hover { background: #f5f7fa; color: #3b9dff; }
+  .dropdown-option.selected { background: #ecf5ff; color: #3b9dff; font-weight: 500; }
+
+  /* 表具照片预览区 */
+  .meter-photo-section { margin-top: 18px; padding-top: 16px; border-top: 1px solid #eef0f3; }
+  .meter-photo-title { font-size: 14px; font-weight: 600; color: #212121; margin-bottom: 14px; padding-left: 10px; border-left: 3px solid #3b9dff; line-height: 1; }
+  .meter-photo-area { display: flex; align-items: flex-start; gap: 16px; }
+  .meter-photo-stack { position: relative; width: 100px; height: 100px; flex-shrink: 0; cursor: zoom-in; }
+  .meter-photo-stack.empty { cursor: default; }
+  .stack-card { position: absolute; width: 100%; height: 100%; background: #fff; border: 1px solid #e4e7ed; border-radius: 6px; display: flex; align-items: center; justify-content: center; padding: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .stack-card svg { width: 100%; height: 100%; }
+  .stack-card:nth-child(3) { transform: translate(5px, 5px) rotate(3deg); z-index: 1; opacity: .5; }
+  .stack-card:nth-child(2) { transform: translate(2.5px, 2.5px) rotate(1.5deg); z-index: 2; opacity: .75; }
+  .stack-card:nth-child(1) { transform: translate(0, 0) rotate(0deg); z-index: 3; }
+  .photo-count-badge { position: absolute; bottom: -4px; right: -4px; background: #3b9dff; color: #fff; font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: 600; z-index: 5; }
+  .meter-photo-empty { width: 100px; height: 100px; border: 1px dashed #dcdfe6; border-radius: 6px; background: #fafbfc; display: flex; align-items: center; justify-content: center; color: #c0c4cc; font-size: 12px; text-align: center; line-height: 1.5; flex-shrink: 0; }
+  .meter-photo-info { flex: 1; padding-top: 4px; font-size: 13px; color: #606266; line-height: 1.8; }
+  .meter-photo-info .tip { color: #909399; font-size: 12.5px; }
+  .meter-photo-info .type-name { color: #3b9dff; font-weight: 500; font-size: 14px; }
+
+  /* 图片放大灯箱 */
+  .img-lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 999; display: none; align-items: center; justify-content: center; cursor: default; }
+  .img-lightbox.show { display: flex; animation: fadeIn .2s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .lightbox-content { background: #fff; border-radius: 12px; padding: 24px; max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.3); position: relative; }
+  .lightbox-img-wrapper { position: relative; width: 360px; height: 360px; display: flex; align-items: center; justify-content: center; }
+  .lightbox-img { width: 320px; height: 320px; display: flex; align-items: center; justify-content: center; transition: opacity .2s; }
+  .lightbox-img svg { width: 100%; height: 100%; }
+  .lightbox-title { font-size: 15px; font-weight: 600; color: #303133; }
+  .lightbox-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 24px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,.15); transition: background .2s; z-index: 10; }
+  .lightbox-close:hover { background: rgba(255,255,255,.25); }
+  .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.9); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #606266; box-shadow: 0 2px 8px rgba(0,0,0,.15); transition: all .2s; user-select: none; z-index: 5; }
+  .lightbox-nav:hover { background: #fff; color: #3b9dff; transform: translateY(-50%) scale(1.08); }
+  .lightbox-nav.prev { left: -22px; }
+  .lightbox-nav.next { right: -22px; }
+  .lightbox-nav.disabled { opacity: .4; cursor: default; }
+  .lightbox-nav.disabled:hover { transform: translateY(-50%); background: rgba(255,255,255,.9); color: #606266; }
+  .lightbox-dots { display: flex; gap: 8px; align-items: center; }
+  .lightbox-dot { width: 8px; height: 8px; border-radius: 50%; background: #dcdfe6; cursor: pointer; transition: all .2s; }
+  .lightbox-dot:hover { background: #909399; }
+  .lightbox-dot.active { background: #3b9dff; width: 20px; border-radius: 4px; }
+  .lightbox-counter { font-size: 13px; color: #909399; margin-left: 4px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-drop"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z" fill="#fff"/><path d="M9.2 14.5C9.2 16.4 10.4 17.8 12 18.1" stroke="#2a7de1" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+    <div class="brand">智慧水务</div>
+  </div>
+  <div class="topbar-right">
+    <div class="collapse-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <nav class="top-tabs">
+      <div class="top-tab" onclick="window.location.href='../户表管理/智慧水务-用户开户-高保真.html'">户表管理</div>
+      <div class="top-tab" onclick="window.location.href='../收费管理/智慧水务-综合缴费-高保真.html'">收费管理</div>
+      <div class="top-tab" onclick="window.location.href='../抄表管理/智慧水务-4GNB抄表-高保真.html'">物联网</div>
+      <div class="top-tab" onclick="window.location.href='../报表分析/智慧水务-换表记录表-高保真.html'">报表分析</div>
+      <div class="top-tab active">档案管理</div>
+      <div class="top-tab" onclick="window.location.href='../功能配置/智慧水务-功能配置-微信配置+表具类型.html'">功能配置</div>
+    </nav>
+    <div class="top-user">
+      <span class="tenant">涌恒供水</span>
+      <div class="avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.4" fill="#fff" opacity=".95"/><path d="M4.8 19.5C5.6 15.6 8.5 13.8 12 13.8C15.5 13.8 18.4 15.6 19.2 19.5" fill="#fff" opacity=".95"/></svg></div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar"><div class="side-caption">档案管理</div>
+<div class="menu-group-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg>基础管理<span class="chev">︿</span></div>
+<a class="menu-item" href="智慧水务-地址档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>地址档案</a>
+<a class="menu-item" href="智慧水务-用户档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>用户档案</a>
+<a class="menu-item active" href="智慧水务-表具档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#2a7de1" stroke-width="2" stroke-linecap="round"/></svg>表具档案</a>
+<a class="menu-item" href="智慧水务-职员档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>职员档案</a>
+<div class="menu-group-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg>价格结算<span class="chev">︿</span></div>
+<a class="menu-item" href="智慧水务-价格类型-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>价格类型</a>
+<a class="menu-item" href="智慧水务-结算类型-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>结算类型</a>
+</aside>
+
+<div class="main">
+
+  <div class="content">
+    <div class="filter-card">
+      <div class="filter-grid">
+      <div class="filter-item"><span class="filter-label">组织机构：</span><div class="filter-input placeholder"><span>请选择组织机构</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">表具类型：</span><div class="filter-input placeholder"><span>请选择表具类型</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">表身码：</span><input class="filter-input q" placeholder="请输入表身码"></div>
+      <div class="filter-item"><span class="filter-label">口径：</span><div class="filter-input placeholder"><span>请选择口径</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">运营商：</span><div class="filter-input placeholder"><span>请选择运营商</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">imei卡号：</span><input class="filter-input q" placeholder="请输入imei卡号"></div>
+      <div class="filter-item"><span class="filter-label">是否校验：</span><div class="filter-input placeholder"><span>请选择是否校验</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">开户状态：</span><div class="filter-input placeholder"><span>请选择开户状态</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">用户地址：</span><div class="filter-input placeholder"><span>请选择用户地址</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">安装类型：</span><div class="filter-input placeholder"><span>请选择安装类型</span><span class="caret">&#9662;</span></div></div>
+      </div>
+      <div class="btn-bar">
+        <button class="btn" onclick="showToast('查询成功','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>查询</button>
+        <button class="btn" onclick="doReset()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 12 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4V12H12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 16 8)"/></svg>重置</button>
+        <button class="btn" onclick="openDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>新增</button>
+        <button class="btn" onclick="confirmDelete()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 7H18M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7M8 7V19C8 20.1 8.9 21 10 21H14C15.1 21 16 20.1 16 19V7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>删除</button>
+        <button class="btn plain" onclick="showToast('导入功能演示','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>导入</button>
+        <button class="btn" onclick="showToast('导出任务已提交，请稍后下载','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 15V3M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>导出</button>
+      </div>
+    </div>
+
+    <div class="table-card"><div class="table-scroll"><table class="data-table"><thead><tr><th class="col-check"><input type="checkbox" onclick="toggleAll(this)"></th><th>表身码</th><th>表具类型</th><th>表具大类</th><th>口径</th><th>运营商</th><th>imei</th><th>sim</th><th>ispid</th><th>校验状态</th><th>开户状态</th><th>地址</th><th>安装类型</th><th>强检日期</th><th>对接标识</th><th>创建人</th><th>创建时间</th><th class="col-op">操作</th></tr></thead><tbody><tr><td class="col-check"><input type="checkbox"></td><td>260626116289</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td>移动ONENET</td><td>869944071800105</td><td>898608321123D0846376</td><td>2471024166</td><td>已校验</td><td>已开户</td><td>河口县公共区域-公共公共-未提供</td><td></td><td>2032-09-03 00:00:00</td><td></td><td>涌恒供水</td><td>2026-09-03 14:49:18</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>00002624000053</td><td>WPG远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>已校验</td><td>已开户</td><td>河口县公共区域-人民路门市-1212</td><td></td><td>2032-09-03 00:00:00</td><td></td><td>涌恒供水</td><td>2026-09-03 14:26:59</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>00002624000083</td><td>WPG远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>已校验</td><td>已开户</td><td>河口县公共区域-人民路门市-123</td><td></td><td>2032-09-03 00:00:00</td><td></td><td>涌恒供水</td><td>2026-09-03 14:18:46</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2624000058</td><td>WPG远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>已校验</td><td>未开户</td><td></td><td></td><td>2026-08-20 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-20 15:22:39</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2624000053</td><td>WPG远传阀控水表</td><td>水表</td><td>DN15</td><td></td><td></td><td></td><td></td><td>已校验</td><td>未开户</td><td></td><td></td><td>2026-08-20 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-20 15:21:30</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2617000041</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>未校验</td><td>未开户</td><td></td><td></td><td>2026-08-20 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-20 15:16:01</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>260626116356</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td>移动ONENET</td><td>869944071813959</td><td></td><td>2471021255</td><td>已校验</td><td>已开户</td><td>河口一中宏建小区-3栋-301</td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:33:57</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>260626116404</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td>移动ONENET</td><td>860726088485478</td><td></td><td>2471021857</td><td>已校验</td><td>已开户</td><td>河口一中宏建小区-1栋-260626116404</td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:33:22</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2606000182</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>未校验</td><td>未开户</td><td></td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:32:45</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2606000188</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>未校验</td><td>未开户</td><td></td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:32:03</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr></tbody></table></div><div class="pagination"><span class="page-btn disabled">&laquo;</span><span class="page-btn disabled">&lsaquo;</span><span class="page-btn cur">1</span><span class="page-btn disabled">&rsaquo;</span><span class="page-btn disabled">&raquo;</span><span class="page-total">共 [ 23 ] 页，共 [ 222 ] 条</span><span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">&#9662;</span></span></div></div>
+  </div>
+
+  <footer class="footer">
+    <span>当前用户：涌恒供水</span>
+    <span>2012-2025@版权所有智慧水务研发中心</span>
+  </footer>
+</div>
+
+<div class="dlg-mask" id="dlgMask" onclick="if(event.target===this)closeDlg()">
+  <div class="dlg">
+    <div class="dlg-head"><span id="dlgTitle">新增表具档案</span><span class="dlg-close" onclick="closeDlg()">&#10005;</span></div>
+    <div class="dlg-body">
+      <div class="dlg-grid">
+        <div class="dlg-item"><label>组织机构：</label><div class="filter-input placeholder" id="fOrg"><span>请选择组织机构</span><span class="caret">&#9662;</span></div></div>
+        <div class="dlg-item req-item" data-name="表具大类"><label><span class="req">*</span>表具大类：</label><div class="filter-input placeholder" id="fCategory"><span>请选择表具大类</span><span class="caret">&#9662;</span></div></div>
+        <div class="dlg-item req-item" data-name="表具类型">
+          <label><span class="req">*</span>表具类型：</label>
+          <div class="dropdown" id="meterTypeDropdown" onclick="event.stopPropagation()">
+            <div class="dropdown-input placeholder" id="meterTypeInput" onclick="toggleMeterTypeDropdown()">
+              <span id="meterTypeText">请选择表具类型</span>
+              <span class="caret">&#9662;</span>
+            </div>
+            <div class="dropdown-menu" id="meterTypeMenu">
+              <div class="dropdown-option" data-value="wmi" data-name="WMI/WMI-V" onclick="selectMeterType('wmi','WMI/WMI-V')">WMI/WMI-V</div>
+              <div class="dropdown-option" data-value="wmg" data-name="WMG/WMS" onclick="selectMeterType('wmg','WMG/WMS')">WMG/WMS</div>
+              <div class="dropdown-option" data-value="bosten" data-name="BOSTEN网联超声水表" onclick="selectMeterType('bosten','BOSTEN网联超声水表')">BOSTEN网联超声水表</div>
+              <div class="dropdown-option" data-value="wmiw" data-name="WMI-W" onclick="selectMeterType('wmiw','WMI-W')">WMI-W</div>
+            </div>
+          </div>
+        </div>
+        <div class="dlg-item req-item" data-name="表身码"><label><span class="req">*</span>表身码：</label><input class="filter-input" id="fMeterNo" placeholder="请输入表身码"></div>
+        <div class="dlg-item"><label>表底数：</label><input class="filter-input" id="fBaseNum" placeholder="请输入表底数"></div>
+        <div class="dlg-item req-item" data-name="口径"><label><span class="req">*</span>口径：</label><div class="filter-input placeholder" id="fCaliber"><span>请选择口径</span><span class="caret">&#9662;</span></div></div>
+        <div class="dlg-item req-item" data-name="运营商"><label><span class="req">*</span>运营商：</label><div class="filter-input placeholder" id="fOperator"><span>请选择运营商</span><span class="caret">&#9662;</span></div></div>
+        <div class="dlg-item req-item" data-name="imei"><label><span class="req">*</span>imei：</label><input class="filter-input" id="fImei" placeholder="请输入imei"></div>
+        <div class="dlg-item"><label>强检日期：</label><input class="filter-input" id="fCheckDate" placeholder="请输入强检日期"></div>
+        <div class="dlg-item"><label>对接标识：</label><input class="filter-input" id="fLinkId" placeholder="请输入对接标识"></div>
+      </div>
+
+      <!-- 表具照片区域 -->
+      <div class="meter-photo-section">
+        <div class="meter-photo-title">表具照片</div>
+        <div class="meter-photo-area">
+          <div class="meter-photo-empty" id="photoEmpty">请先选择<br>表具类型</div>
+          <div class="meter-photo-stack" id="photoStack" style="display:none" onclick="openMeterLightbox()">
+            <div class="stack-card" id="stackCard1"></div>
+            <div class="stack-card" id="stackCard2"></div>
+            <div class="stack-card" id="stackCard3"></div>
+            <span class="photo-count-badge">3</span>
+          </div>
+          <div class="meter-photo-info" id="photoInfo" style="display:none">
+            <div>表具类型：<span class="type-name" id="photoTypeName">-</span></div>
+            <div class="tip">共 3 张照片，点击可放大查看，支持左右切换</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn plain" onclick="closeDlg()">取消</button>
+      <button class="btn" onclick="confirmDlg()">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 图片放大灯箱 -->
+<div class="img-lightbox" id="meterLightbox" onclick="closeMeterLightbox()">
+  <span class="lightbox-close">&#10005;</span>
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <div class="lightbox-img-wrapper">
+      <span class="lightbox-nav prev" onclick="event.stopPropagation();prevPhoto()">&#8249;</span>
+      <div class="lightbox-img" id="lightboxImg"></div>
+      <span class="lightbox-nav next" onclick="event.stopPropagation();nextPhoto()">&#8250;</span>
+    </div>
+    <div class="lightbox-title" id="lightboxTitle">-</div>
+    <div class="lightbox-dots" id="lightboxDots"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">&#9888;</span><span id="toastText"></span>
+  <span class="t-close" onclick="hideToast()">&#10005;</span>
+</div>
+
+<div class="confirm-mask" id="confirmMask" onclick="if(event.target===this)closeConfirm()">
+  <div class="confirm-box">
+    <div class="confirm-head">删除确认<span class="confirm-close" onclick="closeConfirm()">&#10005;</span></div>
+    <div class="confirm-body" id="confirmBody"><span class="warn-icon">!</span>确定要删除选中的表具记录吗？删除后将无法恢复。</div>
+    <div class="confirm-foot">
+      <button class="btn plain" onclick="closeConfirm()">取消</button>
+      <button class="btn" onclick="doDelete()">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var toastTimer = null;
+  function showToast(text, type) {
+    var t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    document.getElementById('toastIcon').textContent = type === 'success' ? '\u2714' : '\u26a0';
+    t.className = 'toast show' + (type === 'success' ? ' success' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 3200);
+  }
+  function hideToast() { document.getElementById('toast').classList.remove('show'); }
+  function doReset() {
+    document.querySelectorAll('.filter-grid input').forEach(function (i) { i.value = ''; });
+    showToast('筛选条件已重置', 'success');
+  }
+  function openDlg() {
+    // 设置标题
+    document.getElementById('dlgTitle').textContent = '新增表具档案';
+    // 清空所有输入框
+    document.querySelectorAll('#dlgMask input.filter-input').forEach(function (i) { i.value = ''; });
+    // 重置所有下拉样式
+    ['fOrg', 'fCaliber', 'fOperator'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('placeholder');
+    });
+    // 表具大类默认：水表
+    var catEl = document.getElementById('fCategory');
+    if (catEl) {
+      catEl.classList.remove('placeholder');
+      catEl.querySelector('span').textContent = '水表';
+    }
+    // 重置表具类型和照片
+    currentMeterType = null;
+    currentMeterTypeName = '';
+    var inputEl = document.getElementById('meterTypeInput');
+    var textEl = document.getElementById('meterTypeText');
+    if (inputEl) inputEl.classList.add('placeholder');
+    if (textEl) textEl.textContent = '请选择表具类型';
+    document.querySelectorAll('#meterTypeMenu .dropdown-option').forEach(function (opt) {
+      opt.classList.remove('selected');
+    });
+    var emptyEl = document.getElementById('photoEmpty');
+    var stackEl = document.getElementById('photoStack');
+    var infoEl = document.getElementById('photoInfo');
+    if (emptyEl) emptyEl.style.display = 'flex';
+    if (stackEl) stackEl.style.display = 'none';
+    if (infoEl) infoEl.style.display = 'none';
+    document.getElementById('dlgMask').classList.add('show');
+  }
+
+  // 表具类型名称映射（表格中的名称 → 下拉的key）
+  var meterTypeMap = {
+    'NB远传阀控水表': { key: 'wmi', name: 'WMI/WMI-V' },
+    'WPG远传阀控水表': { key: 'wmg', name: 'WMG/WMS' },
+    'BOSTEN网联超声水表': { key: 'bosten', name: 'BOSTEN网联超声水表' },
+    'WMI-W': { key: 'wmiw', name: 'WMI-W' },
+    'WMI/WMI-V': { key: 'wmi', name: 'WMI/WMI-V' },
+    'WMG/WMS': { key: 'wmg', name: 'WMG/WMS' }
+  };
+
+  // 辅助：设置下拉框的值
+  function setSelectValue(id, value) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (value && value.trim()) {
+      el.classList.remove('placeholder');
+      el.querySelector('span').textContent = value;
+    } else {
+      el.classList.add('placeholder');
+    }
+  }
+
+  // 编辑弹窗
+  function openEditDlg(btn) {
+    var tr = btn.closest('tr');
+    var c = tr.cells;
+    // 设置标题
+    document.getElementById('dlgTitle').textContent = '编辑表具档案';
+
+    // 填充数据
+    // 表身码
+    document.getElementById('fMeterNo').value = c[1].textContent.trim();
+    // 表具类型（映射后设置）
+    var typeText = c[3].textContent.trim();
+    var mapped = meterTypeMap[typeText];
+    if (mapped) {
+      selectMeterType(mapped.key, mapped.name);
+    } else {
+      // 没有匹配，直接显示文本
+      currentMeterType = null;
+      currentMeterTypeName = typeText;
+      var inputEl = document.getElementById('meterTypeInput');
+      var textEl = document.getElementById('meterTypeText');
+      inputEl.classList.remove('placeholder');
+      textEl.textContent = typeText || '请选择表具类型';
+      document.querySelectorAll('#meterTypeMenu .dropdown-option').forEach(function (opt) {
+        opt.classList.remove('selected');
+      });
+      // 显示空照片
+      document.getElementById('photoEmpty').style.display = 'flex';
+      document.getElementById('photoStack').style.display = 'none';
+      document.getElementById('photoInfo').style.display = 'none';
+    }
+    // 表具大类
+    setSelectValue('fCategory', c[4].textContent.trim());
+    // 口径
+    setSelectValue('fCaliber', c[5].textContent.trim());
+    // 运营商
+    setSelectValue('fOperator', c[6].textContent.trim());
+    // imei
+    document.getElementById('fImei').value = c[7].textContent.trim();
+    // 强检日期
+    document.getElementById('fCheckDate').value = c[14].textContent.trim();
+    // 对接标识
+    document.getElementById('fLinkId').value = c[15].textContent.trim();
+    // 表底数（表格没有，留空）
+    document.getElementById('fBaseNum').value = '';
+    // 组织机构（表格没有，留空）
+    var orgEl = document.getElementById('fOrg');
+    if (orgEl) orgEl.classList.add('placeholder');
+
+    document.getElementById('dlgMask').classList.add('show');
+  }
+  function closeDlg() { document.getElementById('dlgMask').classList.remove('show'); }
+  function confirmDlg() {
+    var reqItems = document.querySelectorAll('#dlgMask .req-item');
+    for (var i = 0; i < reqItems.length; i++) {
+      var name = reqItems[i].getAttribute('data-name');
+      var input = reqItems[i].querySelector('input.filter-input');
+      var div = reqItems[i].querySelector('div.filter-input');
+      var ddInput = reqItems[i].querySelector('div.dropdown-input');
+      var empty = false;
+      if (input && !input.value.trim()) empty = true;
+      if (div && div.classList.contains('placeholder')) empty = true;
+      if (ddInput && ddInput.classList.contains('placeholder')) empty = true;
+      if (empty) {
+        showToast('请填写' + name);
+        return;
+      }
+    }
+    closeDlg();
+    showToast('保存成功', 'success');
+  }
+  function needSelect(name) { showToast('请先勾选要' + name + '的记录', 'warn'); }
+  function toggleAll(el) {
+    document.querySelectorAll('.data-table tbody input[type="checkbox"]').forEach(function (c) { c.checked = el.checked; });
+  }
+  function confirmDelete() {
+    var checked = document.querySelectorAll('.data-table tbody input[type="checkbox"]:checked');
+    if (checked.length === 0) {
+      showToast('请先勾选要删除的记录', 'warn');
+      return;
+    }
+    var body = document.getElementById('confirmBody');
+    body.innerHTML = '<span class="warn-icon">!</span>当前共选中 <b style="color:#f56c6c">' + checked.length + '</b> 条表具记录，确定要删除吗？删除后将无法恢复。';
+    document.getElementById('confirmMask').classList.add('show');
+  }
+  function closeConfirm() { document.getElementById('confirmMask').classList.remove('show'); }
+  function doDelete() {
+    closeConfirm();
+    showToast('删除成功', 'success');
+  }
+  function pickTree(el) {
+    document.querySelectorAll('.tree-node').forEach(function (n) { n.classList.remove('active'); });
+    el.classList.add('active');
+  }
+
+  // ===== 表具图片数据（每种类型3张：正面、侧面、细节）=====
+  var meterImages = {
+    wmi: [
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="65" rx="40" ry="28" fill="#ecf5ff" stroke="#3b9dff" stroke-width="2"/><ellipse cx="60" cy="58" rx="28" ry="18" fill="#fff" stroke="#3b9dff" stroke-width="1.5"/><rect x="40" y="48" width="40" height="16" rx="2" fill="#3b9dff" opacity=".1" stroke="#3b9dff" stroke-width="1"/><text x="60" y="59" text-anchor="middle" font-size="11" fill="#3b9dff" font-weight="bold">WMI</text><rect x="35" y="75" width="50" height="8" rx="2" fill="#3b9dff" opacity=".2" stroke="#3b9dff" stroke-width="1"/><rect x="20" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="85" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="52" y="28" width="16" height="20" rx="2" fill="#3b9dff" opacity=".25" stroke="#3b9dff" stroke-width="1"/><circle cx="60" cy="26" r="5" fill="#67c23a" stroke="#4b8f35" stroke-width="1"/><text x="60" y="29" text-anchor="middle" font-size="6" fill="#fff" font-weight="bold">V</text></svg>',
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="38" y="38" width="44" height="56" rx="6" fill="#ecf5ff" stroke="#3b9dff" stroke-width="2"/><rect x="44" y="46" width="32" height="14" rx="2" fill="#fff" stroke="#3b9dff" stroke-width="1"/><text x="60" y="56" text-anchor="middle" font-size="8" fill="#3b9dff" font-weight="bold">WMI</text><rect x="44" y="66" width="32" height="8" rx="2" fill="#3b9dff" opacity=".2" stroke="#3b9dff" stroke-width="1"/><rect x="20" y="62" width="18" height="8" rx="2" fill="#909399"/><rect x="82" y="62" width="18" height="8" rx="2" fill="#909399"/><rect x="50" y="22" width="20" height="16" rx="3" fill="#3b9dff" opacity=".3" stroke="#3b9dff" stroke-width="1"/><circle cx="60" cy="20" r="4" fill="#67c23a" stroke="#4b8f35" stroke-width="1"/><text x="60" y="23" text-anchor="middle" font-size="5" fill="#fff" font-weight="bold">V</text></svg>',
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="30" width="80" height="60" rx="6" fill="#fff" stroke="#3b9dff" stroke-width="2"/><rect x="28" y="38" width="64" height="20" rx="2" fill="#3b9dff" opacity=".12" stroke="#3b9dff" stroke-width="1"/><text x="60" y="52" text-anchor="middle" font-size="12" fill="#3b9dff" font-weight="bold">WMI/V 型</text><line x1="28" y1="64" x2="92" y2="64" stroke="#e4e7ed" stroke-width="1"/><text x="30" y="75" font-size="9" fill="#606266">公称口径: DN20</text><text x="30" y="85" font-size="9" fill="#606266">精度等级: 2级</text><text x="30" y="58" font-size="8" fill="#909399">No. 260626116289</text></svg>'
+    ],
+    wmg: [
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="65" rx="40" ry="28" fill="#f0f9eb" stroke="#67c23a" stroke-width="2"/><ellipse cx="60" cy="58" rx="28" ry="18" fill="#fff" stroke="#67c23a" stroke-width="1.5"/><circle cx="60" cy="58" r="14" fill="none" stroke="#67c23a" stroke-width="1.5"/><line x1="60" y1="58" x2="60" y2="46" stroke="#67c23a" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="58" x2="69" y2="60" stroke="#f56c6c" stroke-width="1.2" stroke-linecap="round"/><text x="60" y="72" text-anchor="middle" font-size="7" fill="#67c23a" font-weight="bold">WMG</text><rect x="35" y="75" width="50" height="8" rx="2" fill="#67c23a" opacity=".2" stroke="#67c23a" stroke-width="1"/><rect x="20" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="85" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="54" y="30" width="12" height="22" rx="2" fill="#909399"/><ellipse cx="60" cy="30" rx="6" ry="3" fill="#67c23a" stroke="#4b8f35" stroke-width="1"/></svg>',
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="40" width="40" height="52" rx="6" fill="#f0f9eb" stroke="#67c23a" stroke-width="2"/><circle cx="60" cy="58" r="12" fill="#fff" stroke="#67c23a" stroke-width="1.5"/><line x1="60" y1="58" x2="60" y2="48" stroke="#67c23a" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="58" x2="67" y2="59" stroke="#f56c6c" stroke-width="1" stroke-linecap="round"/><rect x="20" y="62" width="20" height="8" rx="2" fill="#909399"/><rect x="80" y="62" width="20" height="8" rx="2" fill="#909399"/><rect x="52" y="24" width="16" height="16" rx="2" fill="#909399"/><ellipse cx="60" cy="24" rx="5" ry="2.5" fill="#67c23a" stroke="#4b8f35" stroke-width="1"/><text x="60" y="76" text-anchor="middle" font-size="7" fill="#67c23a" font-weight="bold">WMG</text></svg>',
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="48" fill="#fff" stroke="#67c23a" stroke-width="3"/><circle cx="60" cy="60" r="40" fill="#f0f9eb" stroke="#67c23a" stroke-width="1"/><circle cx="60" cy="60" r="6" fill="#67c23a"/><line x1="60" y1="60" x2="60" y2="26" stroke="#67c23a" stroke-width="2.5" stroke-linecap="round"/><line x1="60" y1="60" x2="78" y2="64" stroke="#f56c6c" stroke-width="1.5" stroke-linecap="round"/><text x="60" y="18" text-anchor="middle" font-size="9" fill="#67c23a" font-weight="bold">m³</text><text x="60" y="92" text-anchor="middle" font-size="7" fill="#606266">00000.000</text></svg>'
+    ],
+    bosten: [
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="65" rx="42" ry="30" fill="#e8edf2" stroke="#909399" stroke-width="2"/><ellipse cx="60" cy="58" rx="30" ry="20" fill="#fff" stroke="#606266" stroke-width="1.5"/><rect x="36" y="46" width="48" height="22" rx="4" fill="#1e88e5" stroke="#1565c0" stroke-width="1.5"/><text x="60" y="56" text-anchor="middle" font-size="8" fill="#fff" font-weight="bold">BOSTEN</text><text x="60" y="66" text-anchor="middle" font-size="6" fill="#bbdefb">超声波流量计</text><rect x="32" y="75" width="56" height="8" rx="2" fill="#909399" stroke="#606266" stroke-width="1"/><rect x="16" y="77" width="16" height="6" rx="2" fill="#606266"/><rect x="88" y="77" width="16" height="6" rx="2" fill="#606266"/><rect x="50" y="26" width="20" height="18" rx="3" fill="#1e88e5" opacity=".3" stroke="#1e88e5" stroke-width="1"/><circle cx="55" cy="35" r="3" fill="#67c23a"/><circle cx="65" cy="35" r="3" fill="#f56c6c"/><path d="M42 55 L38 50 L38 60 Z" fill="#1e88e5" opacity=".6"/><path d="M78 55 L82 50 L82 60 Z" fill="#1e88e5" opacity=".6"/></svg>',
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="36" y="38" width="48" height="56" rx="8" fill="#e8edf2" stroke="#606266" stroke-width="2"/><rect x="42" y="46" width="36" height="20" rx="3" fill="#1e88e5" stroke="#1565c0" stroke-width="1"/><text x="60" y="56" text-anchor="middle" font-size="8" fill="#fff" font-weight="bold">BOSTEN</text><text x="60" y="65" text-anchor="middle" font-size="6" fill="#bbdefb">超声</text><rect x="16" y="62" width="20" height="8" rx="2" fill="#606266"/><rect x="84" y="62" width="20" height="8" rx="2" fill="#606266"/><rect x="48" y="24" width="24" height="14" rx="2" fill="#1e88e5" opacity=".3" stroke="#1e88e5" stroke-width="1"/><circle cx="54" cy="31" r="2.5" fill="#67c23a"/><circle cx="66" cy="31" r="2.5" fill="#f56c6c"/><rect x="42" y="74" width="36" height="6" rx="2" fill="#909399" stroke="#606266" stroke-width="1"/></svg>',
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="16" y="24" width="88" height="72" rx="6" fill="#1e88e5" stroke="#1565c0" stroke-width="2"/><rect x="24" y="32" width="72" height="36" rx="4" fill="#0d47a1"/><text x="60" y="52" text-anchor="middle" font-size="16" fill="#4fc3f7" font-weight="bold" font-family="monospace">0128.56</text><text x="60" y="64" text-anchor="middle" font-size="9" fill="#90caf9">m³</text><circle cx="34" cy="82" r="4" fill="#67c23a"/><circle cx="50" cy="82" r="4" fill="#ffc107"/><circle cx="66" cy="82" r="4" fill="#f56c6c"/><text x="80" y="86" font-size="9" fill="#bbdefb">BOSTEN</text></svg>'
+    ],
+    wmiw: [
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="65" rx="40" ry="28" fill="#fef0f0" stroke="#f56c6c" stroke-width="2"/><ellipse cx="60" cy="58" rx="28" ry="18" fill="#fff" stroke="#f56c6c" stroke-width="1.5"/><rect x="40" y="48" width="40" height="16" rx="2" fill="#f56c6c" opacity=".1" stroke="#f56c6c" stroke-width="1"/><text x="60" y="59" text-anchor="middle" font-size="11" fill="#f56c6c" font-weight="bold">WMI-W</text><rect x="35" y="75" width="50" height="8" rx="2" fill="#f56c6c" opacity=".2" stroke="#f56c6c" stroke-width="1"/><rect x="20" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="85" y="77" width="15" height="6" rx="2" fill="#909399"/><rect x="48" y="28" width="24" height="22" rx="2" fill="#f56c6c" opacity=".25" stroke="#f56c6c" stroke-width="1"/><path d="M54 34 L54 44 L60 40 L66 44 L66 34" stroke="#f56c6c" stroke-width="1.5" fill="none" stroke-linejoin="round"/><circle cx="60" cy="26" r="4" fill="#f56c6c"/></svg>',
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="40" width="40" height="52" rx="6" fill="#fef0f0" stroke="#f56c6c" stroke-width="2"/><rect x="46" y="50" width="28" height="14" rx="2" fill="#fff" stroke="#f56c6c" stroke-width="1"/><text x="60" y="60" text-anchor="middle" font-size="8" fill="#f56c6c" font-weight="bold">WMI-W</text><rect x="20" y="62" width="20" height="8" rx="2" fill="#909399"/><rect x="80" y="62" width="20" height="8" rx="2" fill="#909399"/><rect x="48" y="22" width="24" height="18" rx="2" fill="#f56c6c" opacity=".25" stroke="#f56c6c" stroke-width="1"/><path d="M54 28 L54 36 L60 32 L66 36 L66 28" stroke="#f56c6c" stroke-width="1.5" fill="none" stroke-linejoin="round"/><circle cx="60" cy="20" r="3.5" fill="#f56c6c"/><rect x="44" y="76" width="32" height="8" rx="2" fill="#f56c6c" opacity=".2" stroke="#f56c6c" stroke-width="1"/></svg>',
+      '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="26" y="28" width="68" height="64" rx="8" fill="#fef0f0" stroke="#f56c6c" stroke-width="2"/><rect x="36" y="38" width="48" height="20" rx="3" fill="#fff" stroke="#f56c6c" stroke-width="1"/><text x="60" y="52" text-anchor="middle" font-size="11" fill="#f56c6c" font-weight="bold">WMI-W</text><rect x="36" y="64" width="48" height="20" rx="3" fill="#fff" stroke="#f56c6c" stroke-width="1"/><text x="60" y="77" text-anchor="middle" font-size="10" fill="#606266" font-family="monospace">00:15:8D:3F</text><path d="M50 24 Q55 18 60 24 Q65 18 70 24" stroke="#f56c6c" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M54 20 Q60 12 66 20" stroke="#f56c6c" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="60" cy="16" r="3" fill="#f56c6c"/></svg>'
+    ]
+  };
+
+  // 当前选中的表具类型
+  var currentMeterType = null;
+  var currentMeterTypeName = '';
+
+  // 表具类型下拉
+  function toggleMeterTypeDropdown() {
+    var dd = document.getElementById('meterTypeDropdown');
+    dd.classList.toggle('open');
+  }
+
+  function selectMeterType(key, name) {
+    currentMeterType = key;
+    currentMeterTypeName = name;
+    var inputEl = document.getElementById('meterTypeInput');
+    var textEl = document.getElementById('meterTypeText');
+    inputEl.classList.remove('placeholder');
+    textEl.textContent = name;
+    document.getElementById('meterTypeDropdown').classList.remove('open');
+
+    // 更新选中状态
+    document.querySelectorAll('#meterTypeMenu .dropdown-option').forEach(function (opt) {
+      opt.classList.toggle('selected', opt.getAttribute('data-value') === key);
+    });
+
+    // 显示照片
+    renderMeterPhotos(key, name);
+  }
+
+  // 渲染堆叠照片
+  function renderMeterPhotos(key, name) {
+    var photos = meterImages[key];
+    if (!photos) return;
+
+    document.getElementById('photoEmpty').style.display = 'none';
+    document.getElementById('photoStack').style.display = 'block';
+    document.getElementById('photoInfo').style.display = 'block';
+    document.getElementById('photoTypeName').textContent = name;
+
+    // 只取前3张用于堆叠展示（第1张在最上面）
+    document.getElementById('stackCard1').innerHTML = photos[0];
+    document.getElementById('stackCard2').innerHTML = photos[1] || photos[0];
+    document.getElementById('stackCard3').innerHTML = photos[2] || photos[0];
+  }
+
+  // 点击其他地方关闭下拉
+  document.addEventListener('click', function () {
+    document.getElementById('meterTypeDropdown').classList.remove('open');
+  });
+
+  // ===== 灯箱（多图切换）=====
+  var lightboxState = { photos: [], currentIndex: 0, title: '' };
+
+  function renderDots(total, active) {
+    var dotsEl = document.getElementById('lightboxDots');
+    dotsEl.innerHTML = '';
+    for (var i = 0; i < total; i++) {
+      var dot = document.createElement('span');
+      dot.className = 'lightbox-dot' + (i === active ? ' active' : '');
+      dot.setAttribute('data-index', i);
+      dot.onclick = function (e) {
+        e.stopPropagation();
+        goToPhoto(parseInt(this.getAttribute('data-index')));
+      };
+      dotsEl.appendChild(dot);
+    }
+    var counter = document.createElement('span');
+    counter.className = 'lightbox-counter';
+    counter.textContent = (active + 1) + ' / ' + total;
+    dotsEl.appendChild(counter);
+  }
+
+  function updateNavBtns() {
+    var prev = document.querySelector('.lightbox-nav.prev');
+    var next = document.querySelector('.lightbox-nav.next');
+    if (lightboxState.currentIndex === 0) {
+      prev.classList.add('disabled');
+    } else {
+      prev.classList.remove('disabled');
+    }
+    if (lightboxState.currentIndex === lightboxState.photos.length - 1) {
+      next.classList.add('disabled');
+    } else {
+      next.classList.remove('disabled');
+    }
+  }
+
+  function showCurrentPhoto() {
+    var imgEl = document.getElementById('lightboxImg');
+    imgEl.style.opacity = '0';
+    setTimeout(function () {
+      imgEl.innerHTML = lightboxState.photos[lightboxState.currentIndex];
+      imgEl.style.opacity = '1';
+    }, 100);
+    renderDots(lightboxState.photos.length, lightboxState.currentIndex);
+    updateNavBtns();
+  }
+
+  function openMeterLightbox() {
+    if (!currentMeterType) return;
+    lightboxState.photos = meterImages[currentMeterType];
+    lightboxState.currentIndex = 0;
+    lightboxState.title = currentMeterTypeName;
+    document.getElementById('lightboxImg').innerHTML = lightboxState.photos[0];
+    document.getElementById('lightboxTitle').textContent = lightboxState.title;
+    renderDots(lightboxState.photos.length, 0);
+    updateNavBtns();
+    document.getElementById('meterLightbox').classList.add('show');
+  }
+
+  function closeMeterLightbox() {
+    document.getElementById('meterLightbox').classList.remove('show');
+  }
+
+  function prevPhoto() {
+    if (lightboxState.currentIndex > 0) {
+      lightboxState.currentIndex--;
+      showCurrentPhoto();
+    }
+  }
+  function nextPhoto() {
+    if (lightboxState.currentIndex < lightboxState.photos.length - 1) {
+      lightboxState.currentIndex++;
+      showCurrentPhoto();
+    }
+  }
+  function goToPhoto(idx) {
+    if (idx >= 0 && idx < lightboxState.photos.length && idx !== lightboxState.currentIndex) {
+      lightboxState.currentIndex = idx;
+      showCurrentPhoto();
+    }
+  }
+
+  // 键盘操作
+  document.addEventListener('keydown', function (e) {
+    var lb = document.getElementById('meterLightbox');
+    if (!lb.classList.contains('show')) return;
+    if (e.key === 'Escape') {
+      closeMeterLightbox();
+    } else if (e.key === 'ArrowLeft') {
+      prevPhoto();
+    } else if (e.key === 'ArrowRight') {
+      nextPhoto();
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务 - 异常抄表数据</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f7f7f7; color: #212121; overflow: hidden; font-size: 14px; }
+
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
+  .topbar-left { width: 204px; flex: 0 0 204px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
+  .logo-drop { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; }
+  .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+  .topbar-right { flex: 1; display: flex; align-items: center; padding-right: 18px; }
+  .collapse-btn { width: 40px; height: 53px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,.9); }
+  .top-tabs { display: flex; align-items: center; gap: 6px; height: 100%; }
+  .top-tab { padding: 7px 22px; border-radius: 18px; cursor: pointer; color: rgba(255,255,255,.92); font-size: 14.5px; white-space: nowrap; transition: background .2s; }
+  .top-tab:hover { background: rgba(255,255,255,.14); }
+  .top-tab.active { background: rgba(255,255,255,.28); font-weight: 600; }
+  .top-user { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .top-user .tenant { font-size: 14px; color: #fff; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,.65); background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; }
+  .side-caption { padding: 14px 16px 6px; font-size: 12px; color: #9aa3af; }
+  .menu-group-title { display: flex; align-items: center; gap: 8px; margin: 4px 10px; padding: 10px 12px; background: #eaf3fe; color: #2a7de1; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
+  .menu-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px 11px 26px; margin: 2px 10px; color: #4b5563; cursor: pointer; border-radius: 6px; text-decoration: none; }
+  .menu-item:hover { background: #f2f7fd; color: #2a7de1; }
+  .menu-item.active { background: #eaf3fe; color: #2a7de1; font-weight: 600; }
+
+  .main { position: fixed; top: 53px; left: 204px; right: 0; bottom: 0; display: flex; flex-direction: column; }
+  .subtabs { flex: 0 0 44px; background: #fff; border-bottom: 1px solid #eef0f3; display: flex; align-items: center; padding: 0 8px; gap: 2px; }
+  .subtab-list { display: flex; align-items: center; flex: 1; overflow: hidden; }
+  .subtab { padding: 0 26px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #4b5563; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; text-decoration: none; }
+  .subtab:hover { color: #2a7de1; }
+  .subtab.active { color: #2a7de1; border-bottom-color: #2a7de1; font-weight: 600; }
+
+  .content { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
+  .footer { flex: 0 0 29px; background: #fff; border-top: 1px solid #eef0f3; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 12px; color: #9aa3af; }
+
+  .filter-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 18px 24px 16px; margin-bottom: 14px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 28px; }
+  .filter-item { display: flex; align-items: center; }
+  .filter-label { flex: 0 0 72px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; white-space: nowrap; }
+  .filter-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .filter-input.placeholder { color: #b6bdc9; }
+  .filter-input:hover { border-color: #3b9dff; }
+  .filter-input .caret { color: #b6bdc9; font-size: 11px; }
+  .filter-input .clock { color: #b6bdc9; font-size: 12px; margin-right: 6px; }
+  input.filter-input { cursor: text; }
+  input.filter-input::placeholder { color: #b6bdc9; }
+
+  /* 异常类型下拉 */
+  .filter-item { position: relative; }
+  .exc-drop { position: absolute; top: 38px; left: 86px; right: 0; background: #fff; border: 1px solid #e4e7ed; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.12); z-index: 120; display: none; padding: 5px 0; }
+  .exc-drop.show { display: block; }
+  .exc-drop .exc-opt { padding: 8px 14px; font-size: 13.5px; color: #4b5563; cursor: pointer; }
+  .exc-drop .exc-opt:hover { background: #ecf5ff; color: #3b9dff; }
+
+  .btn-bar { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 16px; border: none; border-radius: 4px; background: #3b9dff; color: #fff; font-size: 13.5px; cursor: pointer; box-shadow: 0 1px 3px rgba(59,157,255,.3); }
+  .btn:hover { background: #2a8ef0; }
+
+  .table-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); overflow: hidden; }
+  .table-scroll { overflow-x: auto; }
+  table.data-table { border-collapse: collapse; min-width: 100%; }
+  .data-table th, .data-table td { padding: 11px 14px; font-size: 13px; white-space: nowrap; border-bottom: 1px solid #eef0f3; text-align: left; }
+  .data-table thead th { background: #fff; font-weight: 600; color: #374151; font-size: 13.5px; }
+  .data-table tbody td { color: #4b5563; }
+  .sort-ico { color: #c0c6cf; font-size: 10px; margin-left: 2px; }
+  .empty-tip { text-align: center; color: #9aa3af; padding: 80px 0; font-size: 14px; }
+  .row-btn { height: 26px; padding: 0 10px; border: none; border-radius: 4px; background: #3b9dff; color: #fff; font-size: 12.5px; cursor: pointer; white-space: nowrap; }
+  .row-btn:hover { background: #2a8ef0; }
+
+  /* 48点位数据详情弹窗 */
+  .modal-mask { position: fixed; inset: 0; background: rgba(15,25,45,.45); z-index: 200; display: none; align-items: flex-start; justify-content: center; }
+  .modal-mask.show { display: flex; }
+  .modal { background: #fff; border-radius: 8px; margin-top: 80px; width: 960px; max-width: 94vw; max-height: calc(100vh - 110px); display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; border-bottom: 1px solid #f1f3f6; }
+  .modal-title { font-size: 16px; font-weight: 700; color: #1f2937; display: flex; align-items: center; gap: 12px; }
+  .el-button--small { height: 28px; padding: 0 12px; border-radius: 4px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; transition: all .2s; }
+  .el-button--small:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; }
+  .el-button--primary--sm { background: #409eff; border-color: #409eff; color: #fff; }
+  .el-button--primary--sm:hover { background: #66b1ff; border-color: #66b1ff; color: #fff; }
+  .modal-close { cursor: pointer; color: #9aa3af; font-size: 16px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { color: #4b5563; }
+  .modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
+  .point-info { display: flex; flex-wrap: wrap; gap: 8px 26px; font-size: 13.5px; color: #4b5563; margin-bottom: 14px; }
+  .point-info b { color: #1f2937; font-weight: 600; }
+  .point-tip { width: 100%; color: #9aa3af; font-size: 12.5px; }
+
+  /* Element Plus 风格分页 */
+  .el-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 16px 4px 4px; font-size: 13px; color: #606266; white-space: nowrap; }
+  .el-pagination__total { margin-right: 10px; color: #606266; }
+  .el-pagination__sizes { margin-right: 10px; }
+  .el-pagination__sizes .el-select { position: relative; display: inline-block; }
+  .el-pagination__sizes .el-input { width: 100px; height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; display: inline-flex; align-items: center; justify-content: space-between; padding: 0 10px; cursor: pointer; background: #fff; font-size: 13px; color: #606266; }
+  .el-pagination__sizes .el-input:hover { border-color: #c0c4cc; }
+  .el-pagination__sizes .el-input .el-input__suffix { color: #c0c4cc; font-size: 10px; }
+  .el-pagination__sizes .el-select-dropdown { position: absolute; top: 32px; left: 0; right: 0; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.1); z-index: 210; display: none; padding: 4px 0; }
+  .el-pagination__sizes .el-select-dropdown.show { display: block; }
+  .el-pagination__sizes .el-select-dropdown__item { padding: 6px 14px; font-size: 13px; color: #606266; cursor: pointer; }
+  .el-pagination__sizes .el-select-dropdown__item:hover { background: #f5f7fa; }
+  .el-pagination__sizes .el-select-dropdown__item.selected { color: #409eff; font-weight: 600; }
+  .el-pager { display: flex; align-items: center; gap: 4px; margin: 0; padding: 0; list-style: none; }
+  .el-pager li { min-width: 28px; height: 28px; padding: 0 6px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #606266; background: transparent; font-size: 13px; transition: color .2s; user-select: none; }
+  .el-pager li:hover { color: #409eff; }
+  .el-pager li.is-active { color: #409eff; cursor: default; font-weight: 600; }
+  .el-pager li.is-active:hover { color: #409eff; }
+  .btn-prev, .btn-next { min-width: 28px; height: 28px; padding: 0 4px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #606266; font-size: 13px; }
+  .btn-prev:hover, .btn-next:hover { color: #409eff; }
+  .btn-prev.disabled, .btn-next.disabled { color: #c0c4cc; cursor: not-allowed; }
+  .btn-prev.disabled:hover, .btn-next.disabled:hover { color: #c0c4cc; }
+  .el-pagination__jump { margin-left: 10px; display: flex; align-items: center; gap: 6px; color: #606266; }
+  .el-pagination__jump .el-input__inner { width: 50px; height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 8px; text-align: center; font-size: 13px; color: #606266; outline: none; }
+  .el-pagination__jump .el-input__inner:focus { border-color: #409eff; }
+  .el-pagination__rightarrow { font-size: 12px; }
+
+  .toast { position: fixed; top: 76px; right: 24px; z-index: 300; min-width: 300px; background: #fdf6e3; border: 1px solid #f5dab1; color: #b88230; border-radius: 6px; padding: 12px 16px; display: none; align-items: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .toast.show { display: flex; animation: slideIn .25s ease; }
+  .toast .t-close { margin-left: auto; cursor: pointer; color: #d3b17c; }
+  .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-drop">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z" fill="#fff"/><path d="M9.2 14.5C9.2 16.4 10.4 17.8 12 18.1" stroke="#2a7de1" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <div class="brand">智慧水务</div>
+  </div>
+  <div class="topbar-right">
+    <div class="collapse-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <nav class="top-tabs">
+      <div class="top-tab" onclick="window.location.href='../户表管理/智慧水务-用户开户-高保真.html'">户表管理</div>
+      <div class="top-tab" onclick="window.location.href='../收费管理/智慧水务-综合缴费-高保真.html'">收费管理</div>
+      <div class="top-tab active">物联网</div>
+      <div class="top-tab" onclick="window.location.href='../报表分析/智慧水务-换表记录表-高保真.html'">报表分析</div>
+      <div class="top-tab" onclick="window.location.href='../档案管理/智慧水务-地址档案-高保真.html'">档案管理</div>
+      <div class="top-tab" onclick="window.location.href='../功能配置/智慧水务-功能配置-微信配置+表具类型.html'">功能配置</div>
+    </nav>
+    <div class="top-user">
+      <span class="tenant">涌恒供水</span>
+      <div class="avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.4" fill="#fff" opacity=".95"/><path d="M4.8 19.5C5.6 15.6 8.5 13.8 12 13.8C15.5 13.8 18.4 15.6 19.2 19.5" fill="#fff" opacity=".95"/></svg></div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar">
+  <div class="side-caption">物联网</div>
+  <div class="menu-group-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg>
+    抄表管理
+    <span class="chev">︿</span>
+  </div>
+  <a class="menu-item" href="智慧水务-4GNB抄表-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    4GNB抄表
+  </a>
+  <a class="menu-item active" href="智慧水务-异常抄表数据-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#2a7de1" stroke-width="2" stroke-linecap="round"/></svg>
+    异常抄表数据
+  </a>
+  <a class="menu-item" href="智慧水务-异常命令数据-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    异常命令数据
+  </a>
+  <a class="menu-item" href="智慧水务-4G远传抄表-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    4G远传抄表
+  </a>
+</aside>
+
+<div class="main">
+  <div class="subtabs">
+    <div class="subtab-list" style="margin-left:12px">
+      <a class="subtab" href="智慧水务-4GNB抄表-高保真.html">4GNB抄表</a>
+      <a class="subtab active" href="智慧水务-异常抄表数据-高保真.html">异常抄表数据</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="filter-card">
+      <div class="filter-grid">
+        <div class="filter-item"><span class="filter-label">组织机构：</span><div class="filter-input"><span>063 涌恒供水</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">分级地址：</span><div class="filter-input placeholder"><span>请选择分级地址</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">用户编号：</span><input class="filter-input q" placeholder="请输入用户编号"></div>
+        <div class="filter-item"><span class="filter-label">用户名称：</span><input class="filter-input q" placeholder="请输入用户名称"></div>
+        <div class="filter-item"><span class="filter-label">表身码：</span><input class="filter-input q" placeholder="请输入表身码"></div>
+        <div class="filter-item"><span class="filter-label">异常类型：</span><div class="filter-input placeholder" id="excTypeInput" onclick="toggleExcType(event)"><span id="excTypeText">请选择异常类型</span><span class="caret">▾</span></div><div class="exc-drop" id="excDrop"><div class="exc-opt" onclick="pickExcType(event,'大读数')">大读数</div><div class="exc-opt" onclick="pickExcType(event,'读数回退')">读数回退</div><div class="exc-opt" onclick="pickExcType(event,'开阀失败')">开阀失败</div><div class="exc-opt" onclick="pickExcType(event,'关阀失败')">关阀失败</div></div></div>
+        <div class="filter-item"><span class="filter-label">上报下限：</span><input class="filter-input q" placeholder="请输入上报下限"></div>
+        <div class="filter-item"><span class="filter-label">开始时间：</span><div class="filter-input" style="justify-content:flex-start;gap:8px"><span class="clock">🕐</span><span>2026-09-22 00:00:00</span></div></div>
+        <div class="filter-item"><span class="filter-label">结束时间：</span><div class="filter-input" style="justify-content:flex-start;gap:8px"><span class="clock">🕐</span><span>2026-09-22 23:59:59</span></div></div>
+      </div>
+      <div class="btn-bar">
+        <button class="btn" onclick="showToast('查询成功','success')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          查询
+        </button>
+        <button class="btn" onclick="doReset()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 12 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4V12H12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 16 8)"/></svg>
+          重置
+        </button>
+        <button class="btn" onclick="showToast('导出任务已提交，请稍后下载','success')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 15V3M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          导出
+        </button>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>异常类型</th><th>用户编号</th><th>用户名称</th><th>用户地址</th><th>表身码</th><th>上次抄表时间</th><th>上次读数</th><th>本次抄表时间</th><th>本次读数<span class="sort-ico">⇅</span></th><th>操作</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>大读数</td><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>260626116289</td><td>2026-09-21 00:00:00</td><td>23.35</td><td>2026-09-22 00:00:00</td><td>158.62</td><td><button class="row-btn" onclick="openPointDetail(this)">48点位数据详情</button></td></tr>
+            <tr><td>读数回退</td><td>063000336</td><td>人民路建行对面意尔康楼上</td><td>河口县公共区域-人民路门市-1212</td><td>00002624000053</td><td>2026-09-21 00:00:00</td><td>89.52</td><td>2026-09-22 00:00:00</td><td>12.08</td><td><button class="row-btn" onclick="openPointDetail(this)">48点位数据详情</button></td></tr>
+            <tr><td>开阀失败</td><td>063000322</td><td>260626116356</td><td>河口一中宏建小区-3栋-301</td><td>260626116356</td><td>2026-09-20 00:00:00</td><td>45.00</td><td>2026-09-22 00:00:00</td><td>45.00</td><td><button class="row-btn" onclick="openPointDetail(this)">48点位数据详情</button></td></tr>
+            <tr><td>关阀失败</td><td>063000211</td><td>邹格军</td><td>河口一中宏建小区-1栋-物业用房卫生间</td><td>260626116309</td><td>2026-09-21 00:00:00</td><td>27.91</td><td>2026-09-22 00:00:00</td><td>96.34</td><td><button class="row-btn" onclick="openPointDetail(this)">48点位数据详情</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span><span class="page-btn">1</span><span class="page-btn disabled">›</span><span class="page-btn disabled">»</span>
+        <span class="page-total">共 [ 1 ] 页，共 [ 4 ] 条</span>
+        <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>当前用户：涌恒供水</span>
+    <span>2012-2025@版权所有智慧水务研发中心</span>
+  </footer>
+</div>
+
+<div class="modal-mask" id="dlgPoint">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">
+        48点位数据详情
+        <button class="el-button--small" onclick="exportPointData()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L8 11M12 15L16 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 21H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          导出
+        </button>
+      </div>
+      <span class="modal-close" onclick="closeModal('dlgPoint')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="point-info">
+        <span>用户编号：<b id="pdUser"></b></span>
+        <span>用户名称：<b id="pdName"></b></span>
+        <span>表身码：<b id="pdMeter"></b></span>
+        <span>数据日期：<b id="pdDate"></b></span>
+        <span class="point-tip">该水表 1 天上数 48 次，每半小时上数一次，以下为当日逐次上数明细。</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>序号</th><th>时间点</th><th>本次读数</th><th>时段水量（吨）</th><th>阀门状态</th><th>信号强度</th><th>异常标记</th></tr></thead>
+        <tbody id="pdBody"></tbody>
+      </table>
+      <div class="el-pagination" id="pdPagination">
+        <span class="el-pagination__total" id="pdTotal">共 48 条</span>
+        <span class="el-pagination__sizes">
+          <div class="el-select" onclick="togglePageSize(event)">
+            <div class="el-input">
+              <span id="pdPageSizeText">10条/页</span>
+              <span class="el-input__suffix">▼</span>
+            </div>
+            <div class="el-select-dropdown" id="pdSizeDrop">
+              <div class="el-select-dropdown__item selected" onclick="changePageSize(10)">10条/页</div>
+              <div class="el-select-dropdown__item" onclick="changePageSize(20)">20条/页</div>
+              <div class="el-select-dropdown__item" onclick="changePageSize(30)">30条/页</div>
+              <div class="el-select-dropdown__item" onclick="changePageSize(50)">50条/页</div>
+            </div>
+          </div>
+        </span>
+        <button type="button" class="btn-prev" id="pdPrevBtn" onclick="prevPage()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <ul class="el-pager" id="pdPager"></ul>
+        <button type="button" class="btn-next" id="pdNextBtn" onclick="nextPage()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <span class="el-pagination__jump">
+          前往
+          <div class="el-input"><input type="number" class="el-input__inner" id="pdJumpInput" min="1" onkeydown="jumpPageKey(event)"/></div>
+          页<span class="el-pagination__rightarrow">→</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">⚠</span><span id="toastText"></span>
+  <span class="t-close" onclick="hideToast()">✕</span>
+</div>
+
+<script>
+  var toastTimer = null;
+  function showToast(text, type) {
+    var t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    document.getElementById('toastIcon').textContent = type === 'success' ? '✔' : '⚠';
+    t.className = 'toast show' + (type === 'success' ? ' success' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 3200);
+  }
+  function hideToast() { document.getElementById('toast').classList.remove('show'); }
+  function doReset() {
+    document.querySelectorAll('.filter-grid input').forEach(function (i) { i.value = ''; });
+    var it = document.getElementById('excTypeInput');
+    if (it) { it.classList.add('placeholder'); document.getElementById('excTypeText').textContent = '请选择异常类型'; }
+    showToast('筛选条件已重置', 'success');
+  }
+
+  // 异常类型下拉
+  function toggleExcType(e) {
+    e.stopPropagation();
+    document.getElementById('excDrop').classList.toggle('show');
+  }
+  function pickExcType(e, t) {
+    e.stopPropagation();
+    document.getElementById('excTypeText').textContent = t;
+    document.getElementById('excTypeInput').classList.remove('placeholder');
+    document.getElementById('excDrop').classList.remove('show');
+  }
+  document.addEventListener('click', function () {
+    var d = document.getElementById('excDrop');
+    if (d) d.classList.remove('show');
+  });
+
+  function openModal(id) { document.getElementById(id).classList.add('show'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+  // ========== 48点位数据详情 - 分页相关 ==========
+  var pdAllData = [];       // 全部48条数据
+  var pdCurrentPage = 1;    // 当前页
+  var pdPageSize = 10;      // 每页条数
+
+  // 48点位数据详情：生成49个读数点（00:00~次日00:00），48行数据对应前48个时间点
+  // 时段水量 = 下一时间点读数 - 当前时间点读数
+  function openPointDetail(btn) {
+    var tds = btn.closest('tr').querySelectorAll('td');
+    var excType = tds[0].textContent || '';
+    var prevRead = parseFloat(tds[6].textContent) || 0;
+    var currRead = parseFloat(tds[8].textContent) || 0;
+    var date = (tds[7].textContent || '').split(' ')[0];
+    document.getElementById('pdUser').textContent = tds[1].textContent;
+    document.getElementById('pdName').textContent = tds[2].textContent;
+    document.getElementById('pdMeter').textContent = tds[4].textContent;
+    document.getElementById('pdDate').textContent = date;
+
+    // 第一步：生成49个读数（索引0~48，对应00:00 ~ 次日00:00）
+    var readings = [];
+    for (var k = 0; k <= 48; k++) {
+      readings.push(base48(prevRead, currRead, k));
+    }
+
+    // 异常点位处理（基于48个时段的索引0~47）
+    var excIdx = [];
+    if (excType.indexOf('大读数') !== -1) { excIdx.push(24, 25, 26); }
+    else if (excType.indexOf('读数回退') !== -1) { excIdx.push(17, 18); }
+    else if (excType.indexOf('开阀失败') !== -1) { excIdx.push(9, 10, 11); }
+    else if (excType.indexOf('关阀失败') !== -1) { excIdx.push(29, 30, 31); }
+    else { excIdx.push(19, 20); }
+
+    // 读数回退异常：在异常时段的结束位置让读数下降
+    if (excType.indexOf('读数回退') !== -1) {
+      for (var e = 0; e < excIdx.length; e++) {
+        var ei = excIdx[e];
+        var drop = (readings[ei + 1] - readings[ei]) * 1.6;
+        readings[ei + 1] = readings[ei] - drop;
+        // 后续读数整体平移，保证最后一个读数不变
+        var shift = readings[48] - readings[ei + 1] - (currRead - readings[ei + 1]);
+        for (var r = ei + 2; r <= 48; r++) {
+          readings[r] -= drop;
+        }
+        // 修正最后一个读数，确保终点不变
+        readings[48] = currRead;
+      }
+    }
+
+    // 大读数异常：在异常时段用水量突增
+    if (excType.indexOf('大读数') !== -1) {
+      var extraPer = (currRead - prevRead) * 0.08;
+      for (var f = 0; f < excIdx.length; f++) {
+        var fi = excIdx[f];
+        readings[fi + 1] += extraPer;
+      }
+      // 修正最后一个读数
+      readings[48] = currRead;
+    }
+
+    // 第二步：生成48行数据（索引0~47，对应时间点 00:00 ~ 23:30）
+    pdAllData = [];
+    for (var i = 0; i < 48; i++) {
+      var mins = i * 30;
+      var hh = ('0' + Math.floor(mins / 60)).slice(-2), mm = ('0' + (mins % 60)).slice(-2);
+      var timePoint = date + ' ' + hh + ':' + mm + ':00';
+      var currReadVal = readings[i];
+      var nextReadVal = readings[i + 1];
+      var periodWater = (nextReadVal - currReadVal).toFixed(2);
+
+      // 阀门状态
+      var valveStatus = '开';
+      if (excType.indexOf('开阀失败') !== -1 && excIdx.indexOf(i) !== -1) valveStatus = '关';
+      if (excType.indexOf('关阀失败') !== -1 && excIdx.indexOf(i) !== -1) valveStatus = '开';
+
+      // 信号强度
+      var signal = -60 - Math.floor(Math.random() * 30);
+      var signalStr = signal + 'dBm';
+      if (excIdx.indexOf(i) !== -1 && excType.indexOf('大读数') === -1 && excType.indexOf('读数回退') === -1) {
+        signal = -105 - Math.floor(Math.random() * 10);
+        signalStr = signal + 'dBm';
+      }
+
+      // 异常标记
+      var isExc = excIdx.indexOf(i) !== -1;
+
+      pdAllData.push({
+        idx: i + 1,
+        timePoint: timePoint,
+        currRead: currReadVal.toFixed(2),
+        periodWater: periodWater,
+        valveStatus: valveStatus,
+        signalStr: signalStr,
+        isExc: isExc
+      });
+    }
+    pdCurrentPage = 1;
+    renderPdTable();
+    renderPdPager();
+    openModal('dlgPoint');
+  }
+
+  // 渲染当前页表格数据
+  function renderPdTable() {
+    var start = (pdCurrentPage - 1) * pdPageSize;
+    var end = start + pdPageSize;
+    var pageData = pdAllData.slice(start, end);
+    var rows = '';
+    for (var i = 0; i < pageData.length; i++) {
+      var d = pageData[i];
+      var excTag = d.isExc
+        ? '<span style="display:inline-block;padding:2px 8px;border-radius:4px;background:#fef2f2;color:#dc2626;font-size:12px;">异常</span>'
+        : '<span style="display:inline-block;padding:2px 8px;border-radius:4px;background:#f0fdf4;color:#16a34a;font-size:12px;">正常</span>';
+      rows += '<tr><td>' + d.idx + '</td><td>' + d.timePoint + '</td><td>' + d.currRead + '</td><td>' + d.periodWater + '</td><td>' + d.valveStatus + '</td><td>' + d.signalStr + '</td><td>' + excTag + '</td></tr>';
+    }
+    document.getElementById('pdBody').innerHTML = rows;
+    document.getElementById('pdTotal').textContent = '共 ' + pdAllData.length + ' 条';
+  }
+
+  // 渲染分页器页码
+  function renderPdPager() {
+    var totalPages = Math.ceil(pdAllData.length / pdPageSize);
+    var pager = document.getElementById('pdPager');
+    var html = '';
+
+    if (totalPages <= 7) {
+      for (var i = 1; i <= totalPages; i++) {
+        html += '<li class="' + (i === pdCurrentPage ? 'is-active' : '') + '" onclick="goToPage(' + i + ')">' + i + '</li>';
+      }
+    } else {
+      // 总是显示第1页
+      html += '<li class="' + (1 === pdCurrentPage ? 'is-active' : '') + '" onclick="goToPage(1)">1</li>';
+      if (pdCurrentPage > 4) {
+        html += '<li style="cursor:default;">···</li>';
+      }
+      // 中间页码
+      var start = Math.max(2, pdCurrentPage - 2);
+      var end = Math.min(totalPages - 1, pdCurrentPage + 2);
+      if (pdCurrentPage <= 4) end = 5;
+      if (pdCurrentPage >= totalPages - 3) start = totalPages - 4;
+      for (var j = start; j <= end; j++) {
+        html += '<li class="' + (j === pdCurrentPage ? 'is-active' : '') + '" onclick="goToPage(' + j + ')">' + j + '</li>';
+      }
+      if (pdCurrentPage < totalPages - 3) {
+        html += '<li style="cursor:default;">···</li>';
+      }
+      // 最后一页
+      html += '<li class="' + (totalPages === pdCurrentPage ? 'is-active' : '') + '" onclick="goToPage(' + totalPages + ')">' + totalPages + '</li>';
+    }
+    pager.innerHTML = html;
+
+    // 上下页按钮状态
+    var prevBtn = document.getElementById('pdPrevBtn');
+    var nextBtn = document.getElementById('pdNextBtn');
+    if (pdCurrentPage === 1) prevBtn.classList.add('disabled'); else prevBtn.classList.remove('disabled');
+    if (pdCurrentPage === totalPages) nextBtn.classList.add('disabled'); else nextBtn.classList.remove('disabled');
+  }
+
+  function goToPage(p) {
+    var totalPages = Math.ceil(pdAllData.length / pdPageSize);
+    if (p < 1 || p > totalPages || p === pdCurrentPage) return;
+    pdCurrentPage = p;
+    renderPdTable();
+    renderPdPager();
+    document.getElementById('pdJumpInput').value = '';
+  }
+  function prevPage() { goToPage(pdCurrentPage - 1); }
+  function nextPage() { goToPage(pdCurrentPage + 1); }
+
+  function jumpPageKey(e) {
+    if (e.key === 'Enter') {
+      var val = parseInt(e.target.value);
+      if (!isNaN(val)) goToPage(val);
+    }
+  }
+
+  // 每页条数下拉
+  function togglePageSize(e) {
+    e.stopPropagation();
+    document.getElementById('pdSizeDrop').classList.toggle('show');
+  }
+  function changePageSize(size) {
+    pdPageSize = size;
+    document.getElementById('pdPageSizeText').textContent = size + '条/页';
+    // 更新下拉选中样式
+    document.querySelectorAll('#pdSizeDrop .el-select-dropdown__item').forEach(function (item) {
+      item.classList.remove('selected');
+      if (item.textContent.indexOf(size + '条/页') !== -1) item.classList.add('selected');
+    });
+    document.getElementById('pdSizeDrop').classList.remove('show');
+    // 切换页数后回到第1页
+    pdCurrentPage = 1;
+    renderPdTable();
+    renderPdPager();
+  }
+  document.addEventListener('click', function () {
+    var d = document.getElementById('pdSizeDrop');
+    if (d) d.classList.remove('show');
+  });
+
+  // 导出48点位数据为CSV文件
+  function exportPointData() {
+    if (!pdAllData || pdAllData.length === 0) {
+      showToast('暂无数据可导出', 'warn');
+      return;
+    }
+    var userNo = document.getElementById('pdUser').textContent || '';
+    var date = document.getElementById('pdDate').textContent || '';
+    var meter = document.getElementById('pdMeter').textContent || '';
+
+    // CSV 表头（带BOM，确保Excel正确识别中文）
+    var headers = ['序号', '时间点', '本次读数（吨）', '时段水量（吨）', '阀门状态', '信号强度', '异常标记'];
+    var rows = [headers];
+
+    for (var i = 0; i < pdAllData.length; i++) {
+      var d = pdAllData[i];
+      var excText = d.isExc ? '异常' : '正常';
+      rows.push([
+        d.idx,
+        d.timePoint,
+        d.currRead,
+        d.periodWater,
+        d.valveStatus,
+        d.signalStr,
+        excText
+      ]);
+    }
+
+    // 转CSV格式
+    var csvContent = '\uFEFF'; // UTF-8 BOM
+    for (var r = 0; r < rows.length; r++) {
+      var line = [];
+      for (var c = 0; c < rows[r].length; c++) {
+        var val = String(rows[r][c]);
+        // 包含逗号、换行、双引号的字段需要加引号
+        if (val.indexOf(',') !== -1 || val.indexOf('\n') !== -1 || val.indexOf('"') !== -1) {
+          val = '"' + val.replace(/"/g, '""') + '"';
+        }
+        line.push(val);
+      }
+      csvContent += line.join(',') + '\r\n';
+    }
+
+    // 生成文件名
+    var fileName = '48点位数据_' + (userNo || '水表') + '_' + (date || '').replace(/-/g, '') + '.csv';
+
+    // 创建下载
+    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    var link = document.createElement('a');
+    var url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', fileName);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showToast('导出成功：' + fileName, 'success');
+  }
+
+  // 均匀分摊 + 小幅波动，最后一次严格落在本次读数上
+  // 生成 0~48 共49个均匀分摊+小幅波动的读数，i=0 返回起点，i=48 返回终点
+  function base48(from, to, i) {
+    if (i === 0) return from;
+    if (i === 48) return to;
+    var step = (to - from) / 48;
+    return from + step * i + Math.sin(i * 1.7) * step * 0.35;
+  }
+  document.querySelectorAll('.modal-mask').forEach(function (m) {
+    m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('show'); });
+  });
+</script>
+</body>
+</html>

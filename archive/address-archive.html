@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务 - 地址档案</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f7f7f7; color: #212121; overflow: hidden; font-size: 14px; }
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
+  .topbar-left { width: 204px; flex: 0 0 204px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
+  .logo-drop { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; }
+  .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+  .topbar-right { flex: 1; display: flex; align-items: center; padding-right: 18px; }
+  .collapse-btn { width: 40px; height: 53px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,.9); }
+  .top-tabs { display: flex; align-items: center; gap: 6px; height: 100%; }
+  .top-tab { padding: 7px 22px; border-radius: 18px; cursor: pointer; color: rgba(255,255,255,.92); font-size: 14.5px; white-space: nowrap; transition: background .2s; }
+  .top-tab:hover { background: rgba(255,255,255,.14); }
+  .top-tab.active { background: rgba(255,255,255,.28); font-weight: 600; }
+  .top-user { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .top-user .tenant { font-size: 14px; color: #fff; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,.65); background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; padding-bottom: 16px; }
+  .side-caption { padding: 14px 16px 6px; font-size: 12px; color: #9aa3af; }
+  .menu-group-title { display: flex; align-items: center; gap: 8px; margin: 4px 10px; padding: 10px 12px; background: #eaf3fe; color: #2a7de1; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
+  .menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px 10px 26px; margin: 2px 10px; color: #4b5563; cursor: pointer; border-radius: 6px; text-decoration: none; font-size: 13.5px; }
+  .menu-item:hover { background: #f2f7fd; color: #2a7de1; }
+  .menu-item.active { background: #eaf3fe; color: #2a7de1; font-weight: 600; }
+  .main { position: fixed; top: 53px; left: 204px; right: 0; bottom: 0; display: flex; flex-direction: column; }
+  .subtabs { flex: 0 0 44px; background: #fff; border-bottom: 1px solid #eef0f3; display: flex; align-items: center; padding: 0 8px; gap: 2px; }
+  .subtab-list { display: flex; align-items: center; flex: 1; overflow: hidden; }
+  .subtab { padding: 0 26px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #4b5563; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; text-decoration: none; }
+  .subtab:hover { color: #2a7de1; }
+  .subtab.active { color: #2a7de1; border-bottom-color: #2a7de1; font-weight: 600; }
+  .content { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
+  .footer { flex: 0 0 29px; background: #fff; border-top: 1px solid #eef0f3; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 12px; color: #9aa3af; }
+  .filter-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 18px 24px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px 20px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 28px; flex: 1; min-width: 0; }
+  .filter-item { display: flex; align-items: center; }
+  .filter-label { flex: 0 0 72px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; white-space: nowrap; }
+  .filter-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .filter-input.placeholder { color: #b6bdc9; }
+  .filter-input:hover { border-color: #3b9dff; }
+  .filter-input .caret { color: #b6bdc9; font-size: 11px; }
+  .filter-input .clock { color: #b6bdc9; font-size: 12px; margin-right: 6px; }
+  input.filter-input { cursor: text; }
+  input.filter-input::placeholder { color: #b6bdc9; }
+  .btn-bar { display: flex; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 16px; border: none; border-radius: 4px; background: #3b9dff; color: #fff; font-size: 13.5px; cursor: pointer; box-shadow: 0 1px 3px rgba(59,157,255,.3); }
+  .btn:hover { background: #2a8ef0; }
+  .btn.plain { background: #fff; color: #4b5563; border: 1px solid #dcdfe6; box-shadow: none; }
+  .btn.plain:hover { border-color: #3b9dff; color: #2a7de1; }
+  .table-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); overflow: hidden; }
+  .table-scroll { overflow-x: auto; }
+  table.data-table { border-collapse: collapse; min-width: 100%; }
+  .data-table th, .data-table td { padding: 11px 14px; font-size: 13px; white-space: nowrap; border-bottom: 1px solid #eef0f3; text-align: left; }
+  .data-table thead th { background: #fff; font-weight: 600; color: #374151; font-size: 13.5px; }
+  .data-table tbody td { color: #4b5563; }
+  .empty-tip { text-align: center; color: #9aa3af; padding: 80px 0; font-size: 14px; }
+  .hint-tip { padding: 10px 14px; color: #3b9dff; font-size: 13px; border-bottom: 1px solid #eef0f3; }
+  .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 16px 12px; font-size: 13px; color: #6b7280; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4b5563; }
+  .page-btn.disabled { color: #c8cdd5; cursor: default; }
+  .page-btn.cur { background: #3b9dff; color: #fff; }
+  .page-total { margin: 0 10px; }
+  .page-size { height: 30px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 10px; display: inline-flex; align-items: center; gap: 14px; color: #4b5563; cursor: pointer; background: #fff; }
+  .toast { position: fixed; top: 76px; right: 24px; z-index: 300; min-width: 300px; background: #fdf6e3; border: 1px solid #f5dab1; color: #b88230; border-radius: 6px; padding: 12px 16px; display: none; align-items: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .toast.show { display: flex; animation: slideIn .25s ease; }
+  .toast .t-close { margin-left: auto; cursor: pointer; color: #d3b17c; }
+  .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .dlg-mask { position: fixed; inset: 0; z-index: 200; background: rgba(15,23,42,.42); display: none; align-items: flex-start; justify-content: center; }
+  .dlg-mask.show { display: flex; }
+  .dlg { margin-top: 90px; width: 720px; max-width: 92vw; background: #fff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.22); animation: slideIn .22s ease; }
+  .dlg-head { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eef0f3; font-size: 16px; font-weight: 600; color: #212121; }
+  .dlg-close { margin-left: auto; cursor: pointer; color: #9aa3af; font-size: 16px; }
+  .dlg-body { padding: 22px 24px 8px; }
+  .dlg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 28px; }
+  .dlg-item { display: flex; align-items: center; min-width: 0; }
+  .dlg-item label { flex: 0 0 80px; text-align: right; font-size: 13.5px; color: #4b5563; margin-right: 8px; flex-shrink: 0; }
+  .dlg-item label .req { color: #f56c6c; margin-right: 3px; }
+  .dlg-foot { display: flex; justify-content: center; gap: 12px; padding: 14px 20px 20px; }
+  .split { display: flex; gap: 14px; align-items: stretch; }
+  .tree-card { flex: 0 0 300px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 14px; overflow: auto; }
+  .tree-search { width: 100%; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13px; margin-bottom: 12px; color: #374151; }
+  .tree-search::placeholder { color: #b6bdc9; }
+  .tree-node { display: flex; align-items: center; gap: 6px; padding: 7px 6px; border-radius: 5px; cursor: pointer; font-size: 13.5px; color: #4b5563; }
+  .tree-node:hover { background: #f2f7fd; color: #2a7de1; }
+  .tree-node.active { background: #eaf3fe; color: #2a7de1; }
+  .tree-node.child { padding-left: 30px; }
+  .tree-node .arrow { color: #b6bdc9; font-size: 10px; width: 12px; }
+  .grow-card { flex: 1; min-width: 0; }
+  .tree-toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
+  .tree-toolbar .tt-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 32px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #4b5563; font-size: 13px; cursor: pointer; transition: all .2s; }
+  .tree-toolbar .tt-btn:hover { border-color: #3b9dff; color: #2a7de1; background: #f2f7fd; }
+  .row-link { color: #3b9dff; cursor: pointer; margin-right: 10px; }
+  .data-table th.col-check, .data-table td.col-check { width: 42px; text-align: center; }
+  .data-table td.col-check input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #3b9dff; }
+  .dlg-item.readonly .filter-input { background: #f5f7fa; color: #606266; cursor: default; border-color: #e4e7ed; }
+  .dlg-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 24px; }
+  .dlg-item.hidden { display: none; }
+  .select-dropdown { position: relative; flex: 1; min-width: 0; }
+  .select-dropdown .filter-input { user-select: none; }
+  .select-dropdown .options { position: absolute; top: 36px; left: 0; right: 0; background: #fff; border: 1px solid #dcdfe6; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.1); z-index: 10; display: none; max-height: 200px; overflow-y: auto; }
+  .select-dropdown .options.show { display: block; }
+  .select-dropdown .option { padding: 8px 12px; font-size: 13.5px; color: #4b5563; cursor: pointer; }
+  .select-dropdown .option:hover { background: #f2f7fd; color: #2a7de1; }
+  .select-dropdown .option.selected { background: #eaf3fe; color: #2a7de1; font-weight: 600; }
+  .dlg-item .filter-input { width: 100%; flex: 1; min-width: 0; box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dlg-item input.filter-input { width: 100%; flex: 1; min-width: 0; box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-drop"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z" fill="#fff"/><path d="M9.2 14.5C9.2 16.4 10.4 17.8 12 18.1" stroke="#2a7de1" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+    <div class="brand">智慧水务</div>
+  </div>
+  <div class="topbar-right">
+    <div class="collapse-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <nav class="top-tabs">
+      <div class="top-tab" onclick="window.location.href='../户表管理/智慧水务-用户开户-高保真.html'">户表管理</div>
+      <div class="top-tab" onclick="window.location.href='../收费管理/智慧水务-综合缴费-高保真.html'">收费管理</div>
+      <div class="top-tab" onclick="window.location.href='../抄表管理/智慧水务-4GNB抄表-高保真.html'">物联网</div>
+      <div class="top-tab" onclick="window.location.href='../报表分析/智慧水务-换表记录表-高保真.html'">报表分析</div>
+      <div class="top-tab active">档案管理</div>
+      <div class="top-tab" onclick="window.location.href='../功能配置/智慧水务-功能配置-微信配置+表具类型.html'">功能配置</div>
+    </nav>
+    <div class="top-user">
+      <span class="tenant">涌恒供水</span>
+      <div class="avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.4" fill="#fff" opacity=".95"/><path d="M4.8 19.5C5.6 15.6 8.5 13.8 12 13.8C15.5 13.8 18.4 15.6 19.2 19.5" fill="#fff" opacity=".95"/></svg></div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar"><div class="side-caption">档案管理</div>
+<div class="menu-group-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg>基础管理<span class="chev">︿</span></div>
+<a class="menu-item active" href="智慧水务-地址档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#2a7de1" stroke-width="2" stroke-linecap="round"/></svg>地址档案</a>
+<a class="menu-item" href="智慧水务-用户档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>用户档案</a>
+<a class="menu-item" href="智慧水务-表具档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>表具档案</a>
+<a class="menu-item" href="智慧水务-职员档案-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>职员档案</a>
+<div class="menu-group-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg>价格结算<span class="chev">︿</span></div>
+<a class="menu-item" href="智慧水务-价格类型-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>价格类型</a>
+<a class="menu-item" href="智慧水务-结算类型-高保真.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>结算类型</a>
+</aside>
+
+<div class="main">
+
+  <div class="content">
+    <div class="filter-card">
+      <div class="filter-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="filter-item" style="grid-column:span 2"><span class="filter-label">组织机构：</span><div class="filter-input placeholder"><span>请选择组织机构</span><span class="caret">&#9662;</span></div></div>
+      </div>
+      <div class="btn-bar">
+        <button class="btn plain" onclick="showToast('下载模板功能演示','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>下载模板</button>
+        <button class="btn plain" onclick="showToast('导入功能演示','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>导入</button>
+      </div>
+    </div>
+    <div class="split">
+      <div class="tree-card">
+        <input class="tree-search" placeholder="快速过滤地址机构">
+        <div class="tree-toolbar">
+          <button class="tt-btn" onclick="openDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>地址新增</button>
+          <button class="tt-btn" onclick="openEditDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 20L8 19L19 8C19.6 7.4 19.6 6.5 19 5.9C18.4 5.3 17.5 5.3 16.9 5.9L6 17L5 20.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>地址维护</button>
+        </div>
+        <div style="font-size:13px;color:#9aa3af;margin-bottom:8px">地址结构</div>
+        <div class="tree-node" data-code="0.9" data-level="1" onclick="pickTree(this)"><span class="arrow">▾</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg><span>涌恒供水</span></div><div class="tree-node child" data-code="0.9.1" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>海仑家园住楼车库</span></div><div class="tree-node child" data-code="0.9.2" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>地址</span></div><div class="tree-node child" data-code="0.9.3" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>河口计委小区</span></div><div class="tree-node child" data-code="0.9.4" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>河口一中宏建小区</span></div><div class="tree-node child" data-code="0.9.5" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>大围山管理所老楼</span></div><div class="tree-node child" data-code="0.9.6" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>大围山管理所新楼</span></div><div class="tree-node child" data-code="0.9.7" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>河口县公共区域</span></div><div class="tree-node child" data-code="0.9.8" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>未分配</span></div><div class="tree-node child" data-code="0.9.9" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>北山中段信合发电公司</span></div>
+      </div>
+      <div class="grow-card">
+        <div class="table-card">
+          <div style="display:flex;gap:10px;padding:14px 16px;border-bottom:1px solid #eef0f3;align-items:center">
+            <input class="filter-input" style="max-width:220px" placeholder="请输入详细地址">
+            <button class="btn" onclick="showToast('查询成功','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>查询</button>
+            <button class="btn" onclick="doReset()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 12 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4V12H12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 16 8)"/></svg>重置</button>
+            <button class="btn" onclick="openRecordDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 20L8 19L19 8C19.6 7.4 19.6 6.5 19 5.9C18.4 5.3 17.5 5.3 16.9 5.9L6 17L5 20.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>档案修改</button>
+            <button class="btn" onclick="needSelect('删除')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 7H18M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7M8 7V19C8 20.1 8.9 21 10 21H14C15.1 21 16 20.1 16 19V7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>删除</button>
+          </div>
+          <div class="hint-tip">请选择地址结构</div>
+          <div class="table-scroll"><table class="data-table">
+            <thead><tr><th class="col-check"><input type="checkbox" onclick="toggleAll(this)"></th><th>用户地址</th><th>详细地址</th><th>户型</th><th>楼层</th><th>套内面积</th><th>排序</th><th>创建时间</th><th>创建人</th><th>修改时间</th><th>修改人</th></tr></thead>
+            <tbody><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-101</td><td>河口县人民路118号101室</td><td>一室一厅</td><td>1层</td><td>68.5</td><td>1</td><td>2026-09-03 14:49:18</td><td>涌恒供水</td><td>2026-09-05 10:22:31</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-102</td><td>河口县人民路120号102室</td><td>两室一厅</td><td>1层</td><td>85.2</td><td>2</td><td>2026-09-03 14:44:24</td><td>涌恒供水</td><td>2026-09-04 16:10:05</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-201</td><td>河口县人民路120号201室</td><td>两室两厅</td><td>2层</td><td>98.6</td><td>3</td><td>2026-09-03 14:26:58</td><td>涌恒供水</td><td>2026-09-06 09:15:42</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-123</td><td>河口县人民路120号123室</td><td>一室一厅</td><td>1层</td><td>62.0</td><td>4</td><td>2026-09-03 14:18:46</td><td>涌恒供水</td><td></td><td></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-1212</td><td>河口县人民路120号1212室</td><td>三室两厅</td><td>12层</td><td>125.8</td><td>5</td><td>2026-09-03 12:34:12</td><td>涌恒供水</td><td>2026-09-07 14:30:18</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-101</td><td>河口县人民路120号101室</td><td>一室一厅</td><td>1层</td><td>65.3</td><td>6</td><td>2026-09-03 12:31:19</td><td>涌恒供水</td><td></td><td></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-202</td><td>河口县人民路120号202室</td><td>两室一厅</td><td>2层</td><td>88.7</td><td>7</td><td>2026-09-03 12:30:03</td><td>涌恒供水</td><td>2026-09-05 11:08:27</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-2617000041</td><td>河口县公共区域26栋1单元1701室</td><td>三室两厅</td><td>17层</td><td>142.6</td><td>8</td><td>2026-09-01 09:58:32</td><td>涌恒供水</td><td></td><td></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-101</td><td>河口县公共区域1栋101室</td><td>一室一厅</td><td>1层</td><td>55.4</td><td>9</td><td>2026-08-31 09:26:39</td><td>涌恒供水</td><td>2026-09-02 15:45:10</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-2617000041</td><td>河口县公共区域26栋2单元1701室</td><td>三室两厅</td><td>17层</td><td>142.6</td><td>10</td><td>2026-08-20 15:25:30</td><td>涌恒供水</td><td></td><td></td></tr></tbody>
+          </table>
+          <div class="pagination"><span class="page-btn disabled">&laquo;</span><span class="page-btn disabled">&lsaquo;</span><span class="page-btn cur">1</span><span class="page-btn">2</span><span class="page-btn">3</span><span class="page-btn">&rsaquo;</span><span class="page-btn">&raquo;</span><span class="page-total">共 [ 3 ] 页，共 [ 28 ] 条</span><span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">&#9662;</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>当前用户：涌恒供水</span>
+    <span>2012-2025@版权所有智慧水务研发中心</span>
+  </footer>
+</div>
+
+<div class="dlg-mask" id="dlgMask" onclick="if(event.target===this)closeDlg()">
+  <div class="dlg" style="width:760px">
+    <div class="dlg-head">新增地址<span class="dlg-close" onclick="closeDlg()">&#10005;</span></div>
+    <div class="dlg-body">
+      <div class="dlg-form">
+        <div class="dlg-item readonly"><label>上级地址：</label><input class="filter-input" id="parentName" readonly></div>
+        <div class="dlg-item readonly"><label>上级编码：</label><input class="filter-input" id="parentCode" readonly></div>
+        <div class="dlg-item readonly"><label>本级级别：</label><input class="filter-input" id="curLevel" readonly></div>
+        <div class="dlg-item readonly"><label>本级编码：</label><input class="filter-input" id="curCode" readonly></div>
+        <div class="dlg-item"><label><span class="req">*</span>地址类型：</label>
+          <div class="select-dropdown">
+            <div class="filter-input placeholder" id="addrTypeInput" onclick="toggleAddrType('add')"><span id="addrTypeText">请选择地址类型</span><span class="caret">&#9662;</span></div>
+            <div class="options" id="addrTypeOptions">
+              <div class="option" data-val="地址结构" onclick="selectAddrType(this, 'add')">地址结构</div>
+              <div class="option" data-val="非地址结构" onclick="selectAddrType(this, 'add')">非地址结构</div>
+            </div>
+          </div>
+        </div>
+        <div class="dlg-item"><label><span class="req">*</span>地址名称：</label><input class="filter-input" id="addrName" placeholder="请输入地址名称"></div>
+        <div class="dlg-item hidden" id="areaField"><label>套内面积：</label><input class="filter-input" placeholder="请输入套内面积"></div>
+        <div class="dlg-item hidden" id="houseTypeField"><label>户型：</label><input class="filter-input" placeholder="请输入户型"></div>
+        <div class="dlg-item hidden" id="floorField"><label>楼层：</label><input class="filter-input" placeholder="请输入楼层"></div>
+      </div>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn plain" onclick="closeDlg()">取消</button>
+      <button class="btn" onclick="confirmDlg()">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="dlg-mask" id="editDlgMask" onclick="if(event.target===this)closeEditDlg()">
+  <div class="dlg" style="width:760px">
+    <div class="dlg-head">地址维护<span class="dlg-close" onclick="closeEditDlg()">&#10005;</span></div>
+    <div class="dlg-body">
+      <div class="dlg-form">
+        <div class="dlg-item readonly"><label>上级地址：</label><input class="filter-input" id="editParentName" readonly></div>
+        <div class="dlg-item readonly"><label>上级编码：</label><input class="filter-input" id="editParentCode" readonly></div>
+        <div class="dlg-item readonly"><label>本级级别：</label><input class="filter-input" id="editCurLevel" readonly></div>
+        <div class="dlg-item"><label>本级编码：</label><input class="filter-input" id="editCurCode"></div>
+        <div class="dlg-item"><label><span class="req">*</span>地址类型：</label>
+          <div class="select-dropdown">
+            <div class="filter-input placeholder" id="editAddrTypeInput" onclick="toggleAddrType('edit')"><span id="editAddrTypeText">请选择地址类型</span><span class="caret">&#9662;</span></div>
+            <div class="options" id="editAddrTypeOptions">
+              <div class="option" data-val="地址结构" onclick="selectAddrType(this, 'edit')">地址结构</div>
+              <div class="option" data-val="非地址结构" onclick="selectAddrType(this, 'edit')">非地址结构</div>
+            </div>
+          </div>
+        </div>
+        <div class="dlg-item"><label><span class="req">*</span>地址名称：</label><input class="filter-input" id="editAddrName" placeholder="请输入地址名称"></div>
+        <div class="dlg-item hidden" id="editAreaField"><label>套内面积：</label><input class="filter-input" id="editArea" placeholder="请输入套内面积"></div>
+        <div class="dlg-item hidden" id="editHouseTypeField"><label>户型：</label><input class="filter-input" id="editHouseType" placeholder="请输入户型"></div>
+        <div class="dlg-item hidden" id="editFloorField"><label>楼层：</label><input class="filter-input" id="editFloor" placeholder="请输入楼层"></div>
+      </div>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn plain" onclick="closeEditDlg()">取消</button>
+      <button class="btn" onclick="confirmEditDlg()">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="dlg-mask" id="recordDlgMask" onclick="if(event.target===this)closeRecordDlg()">
+  <div class="dlg" style="width:760px">
+    <div class="dlg-head">档案修改<span class="dlg-close" onclick="closeRecordDlg()">&#10005;</span></div>
+    <div class="dlg-body">
+      <div class="dlg-form">
+        <div class="dlg-item"><label>用户地址：</label><input class="filter-input" id="recUserAddr" readonly style="background:#f5f7fa;border-color:#e4e7ed;color:#606266"></div>
+        <div class="dlg-item"><label><span class="req">*</span>详细地址：</label><input class="filter-input" id="recDetailAddr" placeholder="请输入详细地址"></div>
+        <div class="dlg-item"><label>户型：</label><input class="filter-input" id="recHouseType" placeholder="请输入户型"></div>
+        <div class="dlg-item"><label>楼层：</label><input class="filter-input" id="recFloor" placeholder="请输入楼层"></div>
+        <div class="dlg-item"><label>套内面积：</label><input class="filter-input" id="recArea" placeholder="请输入套内面积"></div>
+        <div class="dlg-item"><label>排序：</label><input class="filter-input" id="recSort" placeholder="请输入排序"></div>
+      </div>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn plain" onclick="closeRecordDlg()">取消</button>
+      <button class="btn" onclick="confirmRecordDlg()">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">&#9888;</span><span id="toastText"></span>
+  <span class="t-close" onclick="hideToast()">&#10005;</span>
+</div>
+
+<script>
+  var toastTimer = null;
+  var selectedTreeNode = null;
+  var selectedAddrType = '';
+  var editAddrType = '';
+  function showToast(text, type) {
+    var t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    document.getElementById('toastIcon').textContent = type === 'success' ? '\u2714' : '\u26a0';
+    t.className = 'toast show' + (type === 'success' ? ' success' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 3200);
+  }
+  function hideToast() { document.getElementById('toast').classList.remove('show'); }
+  function doReset() {
+    document.querySelectorAll('.filter-grid input').forEach(function (i) { i.value = ''; });
+    showToast('筛选条件已重置', 'success');
+  }
+  function getParentName() {
+    if (!selectedTreeNode) return '';
+    var nameSpan = selectedTreeNode.querySelector('span:last-child');
+    return nameSpan ? nameSpan.textContent : '';
+  }
+  function openDlg() {
+    if (!selectedTreeNode) {
+      showToast('请先选择上级地址', 'warn');
+      return;
+    }
+    var parentCode = selectedTreeNode.getAttribute('data-code') || '';
+    var parentLevel = parseInt(selectedTreeNode.getAttribute('data-level') || '1', 10);
+    var curLevel = parentLevel + 1;
+    var childCount = 0;
+    var next = selectedTreeNode.nextElementSibling;
+    while (next && next.classList.contains('child')) { childCount++; next = next.nextElementSibling; }
+    var curCode = parentCode + '.' + (childCount + 1);
+    document.getElementById('parentName').value = getParentName();
+    document.getElementById('parentCode').value = parentCode;
+    document.getElementById('curLevel').value = curLevel;
+    document.getElementById('curCode').value = curCode;
+    selectedAddrType = '';
+    document.getElementById('addrTypeText').textContent = '请选择地址类型';
+    document.getElementById('addrTypeInput').classList.add('placeholder');
+    document.querySelectorAll('#addrTypeOptions .option').forEach(function (o) { o.classList.remove('selected'); });
+    document.getElementById('addrName').value = '';
+    toggleExtraFields(false, 'add');
+    document.getElementById('dlgMask').classList.add('show');
+  }
+  function closeDlg() {
+    document.getElementById('dlgMask').classList.remove('show');
+    hideAddrTypeOptions('add');
+  }
+  function confirmDlg() {
+    if (!selectedAddrType) {
+      showToast('请选择地址类型', 'warn');
+      return;
+    }
+    if (!document.getElementById('addrName').value.trim()) {
+      showToast('请输入地址名称', 'warn');
+      return;
+    }
+    closeDlg();
+    showToast('保存成功', 'success');
+  }
+  function openEditDlg() {
+    if (!selectedTreeNode) {
+      showToast('请先选择要维护的地址', 'warn');
+      return;
+    }
+    var code = selectedTreeNode.getAttribute('data-code') || '';
+    var level = parseInt(selectedTreeNode.getAttribute('data-level') || '1', 10);
+    var parentCode = '';
+    var parentName = '';
+    if (level > 1) {
+      var parts = code.split('.');
+      parts.pop();
+      parentCode = parts.join('.');
+      // 查找上级节点名称
+      var allNodes = document.querySelectorAll('.tree-node');
+      for (var i = 0; i < allNodes.length; i++) {
+        if (allNodes[i].getAttribute('data-code') === parentCode) {
+          var ns = allNodes[i].querySelector('span:last-child');
+          parentName = ns ? ns.textContent : '';
+          break;
+        }
+      }
+    }
+    document.getElementById('editParentName').value = parentName || '—';
+    document.getElementById('editParentCode').value = parentCode || '—';
+    document.getElementById('editCurLevel').value = level;
+    document.getElementById('editCurCode').value = code;
+    // 默认地址结构（根据树节点类型模拟）
+    var defaultType = '地址结构';
+    editAddrType = defaultType;
+    document.getElementById('editAddrTypeText').textContent = defaultType;
+    document.getElementById('editAddrTypeInput').classList.remove('placeholder');
+    document.querySelectorAll('#editAddrTypeOptions .option').forEach(function (o) {
+      o.classList.remove('selected');
+      if (o.getAttribute('data-val') === defaultType) o.classList.add('selected');
+    });
+    document.getElementById('editAddrName').value = getParentName();
+    document.getElementById('editArea').value = '';
+    document.getElementById('editHouseType').value = '';
+    document.getElementById('editFloor').value = '';
+    toggleExtraFields(false, 'edit');
+    document.getElementById('editDlgMask').classList.add('show');
+  }
+  function closeEditDlg() {
+    document.getElementById('editDlgMask').classList.remove('show');
+    hideAddrTypeOptions('edit');
+  }
+  function confirmEditDlg() {
+    if (!editAddrType) {
+      showToast('请选择地址类型', 'warn');
+      return;
+    }
+    if (!document.getElementById('editAddrName').value.trim()) {
+      showToast('请输入地址名称', 'warn');
+      return;
+    }
+    closeEditDlg();
+    showToast('保存成功', 'success');
+  }
+  function openRecordDlg() {
+    var checked = document.querySelector('.data-table tbody input[type="checkbox"]:checked');
+    if (!checked) {
+      showToast('请先勾选要档案修改的记录', 'warn');
+      return;
+    }
+    var tr = checked.closest('tr');
+    var tds = tr.querySelectorAll('td');
+    document.getElementById('recUserAddr').value = tds[1] ? tds[1].textContent : '';
+    document.getElementById('recDetailAddr').value = tds[2] ? tds[2].textContent : '';
+    document.getElementById('recHouseType').value = tds[3] ? tds[3].textContent : '';
+    document.getElementById('recFloor').value = tds[4] ? tds[4].textContent : '';
+    document.getElementById('recArea').value = tds[5] ? tds[5].textContent : '';
+    document.getElementById('recSort').value = tds[6] ? tds[6].textContent : '';
+    document.getElementById('recordDlgMask').classList.add('show');
+  }
+  function closeRecordDlg() {
+    document.getElementById('recordDlgMask').classList.remove('show');
+  }
+  function confirmRecordDlg() {
+    if (!document.getElementById('recDetailAddr').value.trim()) {
+      showToast('请输入详细地址', 'warn');
+      return;
+    }
+    closeRecordDlg();
+    showToast('保存成功', 'success');
+  }
+  function needSelect(name) { showToast('请先勾选要' + name + '的记录', 'warn'); }
+  function singleSelect(el) {
+    document.querySelectorAll('.data-table tbody input[type="checkbox"]').forEach(function (c) {
+      if (c !== el) c.checked = false;
+    });
+    var head = document.querySelector('.data-table th.col-check input[type="checkbox"]');
+    if (head) head.checked = false;
+  }
+  function toggleAll(el) {
+    if (el.checked) {
+      document.querySelectorAll('.data-table tbody input[type="checkbox"]').forEach(function (c) { c.checked = true; });
+    } else {
+      document.querySelectorAll('.data-table tbody input[type="checkbox"]').forEach(function (c) { c.checked = false; });
+    }
+  }
+  function pickTree(el) {
+    document.querySelectorAll('.tree-node').forEach(function (n) { n.classList.remove('active'); });
+    el.classList.add('active');
+    selectedTreeNode = el;
+    var name = el.querySelector('span:last-child') ? el.querySelector('span:last-child').textContent : '';
+    var code = el.getAttribute('data-code') || '';
+    var tip = document.querySelector('.hint-tip');
+    if (tip) tip.textContent = '上级地址：' + name + '（编码：' + code + '）';
+  }
+  function toggleAddrType(mode) {
+    var optsId = mode === 'edit' ? 'editAddrTypeOptions' : 'addrTypeOptions';
+    document.getElementById(optsId).classList.toggle('show');
+  }
+  function hideAddrTypeOptions(mode) {
+    if (mode === 'edit') {
+      document.getElementById('editAddrTypeOptions').classList.remove('show');
+    } else if (mode === 'add') {
+      document.getElementById('addrTypeOptions').classList.remove('show');
+    } else {
+      document.getElementById('addrTypeOptions').classList.remove('show');
+      document.getElementById('editAddrTypeOptions').classList.remove('show');
+    }
+  }
+  function selectAddrType(el, mode) {
+    var val = el.getAttribute('data-val');
+    if (mode === 'edit') {
+      editAddrType = val;
+      document.getElementById('editAddrTypeText').textContent = val;
+      document.getElementById('editAddrTypeInput').classList.remove('placeholder');
+      document.querySelectorAll('#editAddrTypeOptions .option').forEach(function (o) { o.classList.remove('selected'); });
+      el.classList.add('selected');
+    } else {
+      selectedAddrType = val;
+      document.getElementById('addrTypeText').textContent = val;
+      document.getElementById('addrTypeInput').classList.remove('placeholder');
+      document.querySelectorAll('#addrTypeOptions .option').forEach(function (o) { o.classList.remove('selected'); });
+      el.classList.add('selected');
+    }
+    hideAddrTypeOptions(mode);
+    var showExtra = val === '非地址结构';
+    toggleExtraFields(showExtra, mode);
+  }
+  function toggleExtraFields(show, mode) {
+    var prefix = mode === 'edit' ? 'edit' : '';
+    var ids = [prefix + (prefix ? 'AreaField' : 'areaField'), prefix + (prefix ? 'HouseTypeField' : 'houseTypeField'), prefix + (prefix ? 'FloorField' : 'floorField')];
+    ids.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) {
+        if (show) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      }
+    });
+  }
+  // 点击外部关闭下拉
+  document.addEventListener('click', function (e) {
+    var dds = document.querySelectorAll('.select-dropdown');
+    var clickedInside = false;
+    for (var i = 0; i < dds.length; i++) {
+      if (dds[i].contains(e.target)) { clickedInside = true; break; }
+    }
+    if (!clickedInside) {
+      hideAddrTypeOptions('all');
+    }
+  });
+</script>
+</body>
+</html>

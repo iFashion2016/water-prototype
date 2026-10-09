@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧水务 - 纠正异常</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f7f7f7; color: #212121; overflow: hidden; font-size: 14px; }
+
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
+  .topbar-left { width: 204px; flex: 0 0 204px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
+  .logo-drop { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; }
+  .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+  .topbar-right { flex: 1; display: flex; align-items: center; padding-right: 18px; }
+  .collapse-btn { width: 40px; height: 53px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,.9); }
+  .top-tabs { display: flex; align-items: center; gap: 6px; height: 100%; }
+  .top-tab { padding: 7px 22px; border-radius: 18px; cursor: pointer; color: rgba(255,255,255,.92); font-size: 14.5px; white-space: nowrap; transition: background .2s; }
+  .top-tab:hover { background: rgba(255,255,255,.14); }
+  .top-tab.active { background: rgba(255,255,255,.28); font-weight: 600; }
+  .top-user { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .top-user .tenant { font-size: 14px; color: #fff; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,.65); background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; }
+  .side-caption { padding: 14px 16px 6px; font-size: 12px; color: #9aa3af; }
+  .menu-group-title { display: flex; align-items: center; gap: 8px; margin: 4px 10px; padding: 10px 12px; background: #eaf3fe; color: #2a7de1; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
+  .menu-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px 11px 26px; margin: 2px 10px; color: #4b5563; cursor: pointer; border-radius: 6px; text-decoration: none; }
+  .menu-item:hover { background: #f2f7fd; color: #2a7de1; }
+  .menu-item.active { background: #eaf3fe; color: #2a7de1; font-weight: 600; }
+
+  .main { position: fixed; top: 53px; left: 204px; right: 0; bottom: 0; display: flex; flex-direction: column; }
+  .subtabs { flex: 0 0 44px; background: #fff; border-bottom: 1px solid #eef0f3; display: flex; align-items: center; padding: 0 8px; gap: 2px; }
+  .subtab-list { display: flex; align-items: center; flex: 1; overflow: hidden; }
+  .subtab { padding: 0 26px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #4b5563; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; text-decoration: none; }
+  .subtab:hover { color: #2a7de1; }
+  .subtab.active { color: #2a7de1; border-bottom-color: #2a7de1; font-weight: 600; }
+
+  .content { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
+  .footer { flex: 0 0 29px; background: #fff; border-top: 1px solid #eef0f3; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 12px; color: #9aa3af; }
+
+  .filter-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); padding: 18px 24px 16px; margin-bottom: 14px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 28px; }
+  .filter-item { display: flex; align-items: center; }
+  .filter-label { flex: 0 0 72px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; white-space: nowrap; }
+  .filter-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .filter-input.placeholder { color: #b6bdc9; }
+  .filter-input:hover { border-color: #3b9dff; }
+  .filter-input .caret { color: #b6bdc9; font-size: 11px; }
+  .filter-input .clock { color: #b6bdc9; font-size: 12px; margin-right: 6px; }
+  input.filter-input { cursor: text; }
+  input.filter-input::placeholder { color: #b6bdc9; }
+
+  .btn-bar { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 15px; border: 1px solid #409eff; border-radius: 4px; background: #409eff; color: #fff; font-size: 13px; cursor: pointer; transition: all .15s; }
+  .btn:hover { background: #79bbff; border-color: #79bbff; }
+  .btn:active { background: #337ecc; border-color: #337ecc; }
+  .btn-plain { background: #fff; color: #606266; border: 1px solid #dcdfe6; }
+  .btn-plain:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; }
+  .chk { width: 15px; height: 15px; accent-color: #409eff; cursor: pointer; vertical-align: middle; }
+  .chk-cell { width: 40px; text-align: center !important; }
+  .data-table tbody tr:hover { background: #f7fafe; }
+  /* 操作列冻结 + 平铺小按钮 */
+  #mainTable th:last-child, #mainTable td:last-child { position: sticky; right: 0; width: 96px; min-width: 96px; background: #fff; box-shadow: -6px 0 8px -6px rgba(0,0,0,.15); z-index: 1; text-align: center; }
+  #mainTable thead th:last-child { z-index: 3; }
+  #mainTable tbody tr:hover td:last-child { background: #f7fafe; }
+  .op-btn { height: 24px; padding: 0 9px; border: 1px solid #409eff; border-radius: 4px; background: #409eff; color: #fff; font-size: 12px; cursor: pointer; transition: all .15s; white-space: nowrap; }
+  .op-btn:hover { background: #79bbff; border-color: #79bbff; }
+
+  .table-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); overflow: hidden; }
+  .table-scroll { overflow-x: auto; }
+  table.data-table { border-collapse: collapse; min-width: 100%; }
+  .data-table th, .data-table td { padding: 11px 14px; font-size: 13px; white-space: nowrap; border-bottom: 1px solid #eef0f3; text-align: left; }
+  .data-table thead th { background: #fff; font-weight: 600; color: #374151; font-size: 13.5px; }
+  .data-table tbody td { color: #4b5563; }
+  .empty-tip { text-align: center; color: #9aa3af; padding: 60px 0; font-size: 14px; }
+
+  .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 16px 12px; font-size: 13px; color: #6b7280; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4b5563; }
+  .page-btn:hover { color: #2a7de1; }
+  .page-btn.active { background: #3b9dff; color: #fff; }
+  .page-btn.disabled { color: #c8cdd5; cursor: default; }
+  .page-total { margin: 0 10px; }
+  .page-size { height: 30px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 10px; display: inline-flex; align-items: center; gap: 14px; color: #4b5563; cursor: pointer; background: #fff; }
+
+  .modal-mask { position: fixed; inset: 0; background: rgba(15,25,45,.45); z-index: 200; display: none; align-items: flex-start; justify-content: center; }
+  .modal-mask.show { display: flex; }
+  .modal { background: #fff; border-radius: 8px; margin-top: 40px; width: 1050px; max-width: 96vw; max-height: calc(100vh - 70px); display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; border-bottom: 1px solid #f1f3f6; }
+  .modal-title { font-size: 16px; font-weight: 700; color: #1f2937; }
+  .modal-close { cursor: pointer; color: #9aa3af; font-size: 16px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { color: #4b5563; }
+  .modal-body { padding: 20px 26px; overflow-y: auto; flex: 1; }
+  .modal-foot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #f1f3f6; }
+
+  .dlg-filter { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 20px; }
+  .dlg-filter .filter-label { flex: 0 0 70px; }
+  .user-table { margin-top: 16px; border: 1px solid #eef0f3; border-radius: 6px; overflow: hidden; }
+  .user-table tbody tr { cursor: pointer; }
+  .user-table tbody tr:hover { background: #f7fafe; }
+  .user-table tbody tr.selected { background: #eaf3fe; }
+  .user-table tbody tr.selected td { color: #2a7de1; }
+
+  .reg-form { margin-top: 18px; border-top: 1px solid #f1f3f6; padding-top: 18px; display: none; }
+  .reg-form.show { display: block; }
+  .reg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 22px; }
+  .reg-item { display: flex; align-items: center; }
+  .reg-item.span3 { grid-column: span 3; }
+  .reg-label { flex: 0 0 84px; text-align: right; font-size: 14px; color: #4b5563; margin-right: 10px; }
+  .reg-label .req { color: #f56c6c; margin-right: 2px; }
+  .reg-input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; }
+  .reg-input.disabled { background: #f5f7fa; color: #6b7280; }
+  input.reg-input { cursor: text; }
+  .upload-row { display: flex; gap: 10px; align-items: center; }
+  .upload-area { flex: 1; height: 52px; border: 1px dashed #dcdfe6; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #b6bdc9; font-size: 13px; }
+  .up-btn { height: 30px; padding: 0 12px; border-radius: 4px; border: none; background: #3b9dff; color: #fff; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  .up-btn.plain { background: #fff; color: #4b5563; border: 1px solid #dcdfe6; }
+
+  .toast { position: fixed; top: 76px; right: 24px; z-index: 300; min-width: 300px; background: #fdf6e3; border: 1px solid #f5dab1; color: #b88230; border-radius: 6px; padding: 12px 16px; display: none; align-items: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .toast.show { display: flex; animation: slideIn .25s ease; }
+  .toast .t-close { margin-left: auto; cursor: pointer; color: #d3b17c; }
+  .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-drop">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2.5C12 2.5 5.5 9.8 5.5 14.2C5.5 18 8.4 21 12 21C15.6 21 18.5 18 18.5 14.2C18.5 9.8 12 2.5 12 2.5Z" fill="#fff"/><path d="M9.2 14.5C9.2 16.4 10.4 17.8 12 18.1" stroke="#2a7de1" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <div class="brand">智慧水务</div>
+  </div>
+  <div class="topbar-right">
+    <div class="collapse-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <nav class="top-tabs">
+      <div class="top-tab" onclick="window.location.href='../户表管理/智慧水务-用户开户-高保真.html'">户表管理</div>
+      <div class="top-tab active">收费管理</div>
+      <div class="top-tab" onclick="window.location.href='../抄表管理/智慧水务-4GNB抄表-高保真.html'">物联网</div>
+      <div class="top-tab" onclick="window.location.href='../报表分析/智慧水务-换表记录表-高保真.html'">报表分析</div>
+      <div class="top-tab" onclick="window.location.href='../档案管理/智慧水务-地址档案-高保真.html'">档案管理</div>
+      <div class="top-tab" onclick="window.location.href='../功能配置/智慧水务-功能配置-微信配置+表具类型.html'">功能配置</div>
+    </nav>
+    <div class="top-user">
+      <span class="tenant">涌恒供水</span>
+      <div class="avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.4" fill="#fff" opacity=".95"/><path d="M4.8 19.5C5.6 15.6 8.5 13.8 12 13.8C15.5 13.8 18.4 15.6 19.2 19.5" fill="#fff" opacity=".95"/></svg></div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar">
+  <div class="side-caption">收费管理</div>
+  <div class="menu-group-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="14" rx="2" stroke="#2a7de1" stroke-width="1.8"/><path d="M3 11H21" stroke="#2a7de1" stroke-width="1.8"/><path d="M7 16H11" stroke="#2a7de1" stroke-width="1.8" stroke-linecap="round"/></svg>
+    柜台缴费
+    <span class="chev">︿</span>
+  </div>
+  <a class="menu-item" href="智慧水务-综合缴费-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    综合缴费
+  </a>
+  <a class="menu-item" href="智慧水务-缴费记录-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"/></svg>
+    缴费记录
+  </a>
+  <a class="menu-item active" href="智慧水务-纠正异常-高保真.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6H20M4 12H20M4 18H14" stroke="#2a7de1" stroke-width="2" stroke-linecap="round"/></svg>
+    纠正异常
+  </a>
+</aside>
+
+<div class="main">
+  <div class="subtabs">
+    <div class="subtab-list" style="margin-left:12px">
+      <a class="subtab" href="智慧水务-综合缴费-高保真.html">综合缴费</a>
+      <a class="subtab" href="智慧水务-缴费记录-高保真.html">缴费记录</a>
+      <a class="subtab active" href="智慧水务-纠正异常-高保真.html">纠正异常</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="filter-card">
+      <div class="filter-grid">
+        <div class="filter-item"><span class="filter-label">用户地址：</span><div class="filter-input placeholder"><span>请选择用户地址</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">用户编号：</span><input class="filter-input q" placeholder="请输入用户编号"></div>
+        <div class="filter-item"><span class="filter-label">用户名称：</span><input class="filter-input q" placeholder="请输入用户名称"></div>
+        <div class="filter-item"><span class="filter-label">表身码：</span><input class="filter-input q" placeholder="请输入表身码"></div>
+        <div class="filter-item"><span class="filter-label">表具类型：</span><div class="filter-input placeholder"><span>请选择表具类型</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">审核状态：</span><div class="filter-input placeholder"><span>请选择审核状态</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">开始时间：</span><div class="filter-input" style="justify-content:flex-start;gap:8px"><span class="clock">🕐</span><span>2026-09-22 00:00:00</span></div></div>
+        <div class="filter-item"><span class="filter-label">结束时间：</span><div class="filter-input" style="justify-content:flex-start;gap:8px"><span class="clock">🕐</span><span>2026-09-22 23:59:59</span></div></div>
+      </div>
+      <div class="btn-bar">
+        <button class="btn" onclick="showToast('查询成功','success')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          查询
+        </button>
+        <button class="btn" onclick="doReset()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 12 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4V12H12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 16 8)"/></svg>
+          重置
+        </button>
+        <button class="btn" onclick="openReg(false)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+          新增登记
+        </button>
+        <button class="btn" onclick="batchAudit()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="2.2"/><path d="M8.5 12.5L11 15L15.5 9.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          审核登记
+        </button>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="data-table" id="mainTable">
+          <thead>
+            <tr><th class="chk-cell"><input type="checkbox" class="chk" id="chkAll"></th><th>用户编号</th><th>用户名称</th><th>用户地址</th><th>表身码</th><th>本次读数</th><th>本次抄表时间</th><th>上次读数</th><th>上次抄表时间</th><th>审核状态</th><th>审核人</th><th>审核时间</th><th>审核意见</th><th>创建人</th><th>创建时间</th><th>操作</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000002</td><td>陈川汇</td><td>河口计委小区-1单元-1/1</td><td>260725036581</td><td>152.36</td><td>2026-09-22 08:10:05</td><td>148.18</td><td>2026-09-22 05:05:48</td><td>待审核</td><td></td><td></td><td></td><td>涌恒供水</td><td>2026-09-22 08:11:20</td><td><button class="op-btn" onclick="openReg(true)">纠正处理</button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000004</td><td>张武洲</td><td>河口计委小区-1单元-1～2</td><td>260725036570</td><td>98.40</td><td>2026-09-21 17:02:44</td><td>97.90</td><td>2026-09-21 05:12:30</td><td>待审核</td><td></td><td></td><td></td><td>涌恒供水</td><td>2026-09-21 17:03:52</td><td><button class="op-btn" onclick="openReg(true)">纠正处理</button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000210</td><td>田如燕</td><td>河口一中宏建小区-1栋-201</td><td>260626116287</td><td>35.12</td><td>2026-09-20 09:31:02</td><td>34.88</td><td>2026-09-20 05:02:11</td><td>审核通过</td><td>管理员</td><td>2026-09-20 10:01:33</td><td>读数核实无误</td><td>涌恒供水</td><td>2026-09-20 09:32:10</td><td><button class="op-btn" onclick="openReg(true)">纠正处理</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span><span class="page-btn disabled">›</span><span class="page-btn disabled">»</span>
+        <span class="page-total">共 [ 1 ] 页，共 [ 3 ] 条</span>
+        <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>当前用户：涌恒供水</span>
+    <span>2012-2025@版权所有智慧水务研发中心</span>
+  </footer>
+</div>
+
+<!-- ============ 弹窗：新增纠正异常登记 ============ -->
+<div class="modal-mask" id="dlgReg">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title" id="regTitle">新增纠正异常登记</div><span class="modal-close" onclick="closeModal('dlgReg')">✕</span></div>
+    <div class="modal-body">
+      <div class="dlg-filter">
+        <div class="filter-item"><span class="filter-label">用户地址：</span><div class="filter-input placeholder"><span>&nbsp;</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">用户编号：</span><input class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">用户名称：</span><input class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">表身码：</span><input class="filter-input"></div>
+      </div>
+      <div class="btn-bar" style="margin-top:14px">
+        <button class="btn" onclick="showToast('查询成功','success')">查询</button>
+        <button class="btn" onclick="showToast('筛选条件已重置','success')">重置</button>
+      </div>
+
+      <div class="user-table">
+        <div class="table-scroll">
+          <table class="data-table" id="userTable">
+            <thead><tr><th>用户编号</th><th>用户名称</th><th>用户地址</th><th>表身码</th><th>表具类别</th></tr></thead>
+            <tbody>
+              <tr data-un="063000002" data-name="陈川汇" data-meter="260725036581"><td>063000002</td><td>陈川汇</td><td>河口计委小区-1单元-1/1</td><td>260725036581</td><td>NB远传阀控水表</td></tr>
+              <tr data-un="063000004" data-name="张武洲" data-meter="260725036570"><td>063000004</td><td>张武洲</td><td>河口计委小区-1单元-1～2</td><td>260725036570</td><td>NB远传阀控水表</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" style="padding:10px 12px">
+          <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span>
+          <span class="page-btn active">1</span><span class="page-btn">2</span><span class="page-btn">3</span><span class="page-btn">4</span><span class="page-btn">5</span>
+          <span class="page-btn">›</span><span class="page-btn">»</span>
+          <span class="page-total">共 [ 107 ] 页，共 [ 214 ] 条</span>
+          <span class="page-size">2 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+        </div>
+      </div>
+
+      <div class="reg-form" id="regForm">
+        <div class="reg-grid">
+          <div class="reg-item"><span class="reg-label">用户编号：</span><div class="reg-input disabled" id="fUn">063000002</div></div>
+          <div class="reg-item"><span class="reg-label">用户名称：</span><div class="reg-input disabled" id="fName">陈川汇</div></div>
+          <div class="reg-item"><span class="reg-label">上次时间：</span><div class="reg-input disabled">2026-09-22 05:05:48</div></div>
+          <div class="reg-item"><span class="reg-label">上次读数：</span><div class="reg-input disabled">148.18</div></div>
+          <div class="reg-item"><span class="reg-label">表身码：</span><div class="reg-input disabled" id="fMeter">260725036581</div></div>
+          <div class="reg-item"><span class="reg-label"><span class="req">*</span>本次读数：</span><input class="reg-input"></div>
+          <div class="reg-item span3"><span class="reg-label">图片地址：</span><input class="reg-input"></div>
+          <div class="reg-item span3">
+            <span class="reg-label"><span class="req">*</span>上传图片：</span>
+            <div class="upload-row">
+              <button class="up-btn">＋ 选择</button>
+              <button class="up-btn plain">⇪ 上传</button>
+              <button class="up-btn plain">✕ 重新选择</button>
+              <div class="upload-area">点击选择或拖拽图片到此处</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgReg')">✕&nbsp;取消</button>
+      <button class="btn" onclick="closeModal('dlgReg');showToast('登记成功，待审核','success')">✓&nbsp;保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">⚠</span><span id="toastText"></span>
+  <span class="t-close" onclick="hideToast()">✕</span>
+</div>
+
+<script>
+  function openModal(id) { document.getElementById(id).classList.add('show'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+  // 新增登记 / 纠正处理共用弹窗，标题随入口切换
+  function openReg(isCorrect) {
+    document.getElementById('regTitle').textContent = isCorrect ? '纠正处理' : '新增纠正异常登记';
+    openModal('dlgReg');
+  }
+
+  // 勾选驱动批量审核
+  var chkAll = document.getElementById('chkAll');
+  function getCheckedRows() {
+    return Array.prototype.filter.call(document.querySelectorAll('#mainTable tbody tr'), function (tr) { return tr.querySelector('.row-chk').checked; });
+  }
+  function syncAll() {
+    var rows = document.querySelectorAll('#mainTable tbody tr');
+    chkAll.checked = rows.length > 0 && Array.prototype.every.call(rows, function (r) { return r.querySelector('.row-chk').checked; });
+  }
+  document.querySelectorAll('#mainTable tbody .row-chk').forEach(function (c) {
+    c.addEventListener('click', function (e) { e.stopPropagation(); syncAll(); });
+  });
+  chkAll.addEventListener('change', function () {
+    var on = chkAll.checked;
+    document.querySelectorAll('#mainTable tbody tr').forEach(function (tr) { tr.querySelector('.row-chk').checked = on; });
+  });
+  function batchAudit() {
+    var rows = getCheckedRows();
+    if (!rows.length) { showToast('请先勾选需要审核的登记记录'); return; }
+    var pending = rows.filter(function (tr) { return tr.cells[9].textContent.trim() === '待审核'; });
+    if (!pending.length) { showToast('勾选的记录均已审核，无需重复审核'); return; }
+    showToast('已对 ' + pending.length + ' 条登记记录完成审核', 'success');
+  }
+
+  var toastTimer = null;
+  function showToast(text, type) {
+    var t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    document.getElementById('toastIcon').textContent = type === 'success' ? '✔' : '⚠';
+    t.className = 'toast show' + (type === 'success' ? ' success' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 3200);
+  }
+  function hideToast() { document.getElementById('toast').classList.remove('show'); }
+
+  function doReset() {
+    document.querySelectorAll('.filter-card .filter-grid input').forEach(function (i) { i.value = ''; });
+    showToast('筛选条件已重置', 'success');
+  }
+
+  // 选中用户行 -> 下方出现登记表单（线上实测行为）
+  document.querySelectorAll('#userTable tbody tr').forEach(function (tr) {
+    tr.addEventListener('click', function () {
+      document.querySelectorAll('#userTable tbody tr').forEach(function (r) { r.classList.remove('selected'); });
+      tr.classList.add('selected');
+      document.getElementById('fUn').textContent = tr.dataset.un;
+      document.getElementById('fName').textContent = tr.dataset.name;
+      document.getElementById('fMeter').textContent = tr.dataset.meter;
+      document.getElementById('regForm').classList.add('show');
+    });
+  });
+  document.querySelectorAll('.modal-mask').forEach(function (m) {
+    m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('show'); });
+  });
+</script>
+</body>
+</html>
