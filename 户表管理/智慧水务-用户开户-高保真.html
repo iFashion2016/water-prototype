@@ -189,6 +189,13 @@
   .preview-stack .stack-card:nth-child(2) { transform: translate(2px, 2px) rotate(1.5deg); z-index: 2; opacity: .8; }
   .preview-stack .stack-card:nth-child(1) { transform: translate(0, 0) rotate(0deg); z-index: 3; }
   .photo-count-badge { position: absolute; bottom: -2px; right: -4px; background: #409eff; color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 10px; font-weight: 600; z-index: 5; }
+  /* 表具照片切换动画 */
+  .meter-preview-img { transition: opacity .25s ease, transform .25s ease; }
+  .meter-preview-img.switching { opacity: 0; transform: scale(.85); }
+  .meter-preview-name { transition: opacity .25s ease; }
+  .meter-preview-name.switching { opacity: 0; }
+  .preview-stack .stack-card { transition: transform .3s ease, opacity .3s ease; }
+  .preview-stack .stack-card.switching { transform: scale(.8) rotate(0deg) !important; opacity: 0 !important; }
 
   /* 表具照片区块（整行展示）*/
   .meter-photo-section { margin-top: 16px; padding: 16px 20px; background: #f8fafc; border: 1px solid #ebeef5; border-radius: 8px; display: flex; align-items: center; gap: 20px; }
@@ -814,6 +821,18 @@
       card.innerHTML = photos[i];
       stackEl.appendChild(card);
     }
+    // 触发堆叠卡片的入场动画
+    var cards = stackEl.querySelectorAll('.stack-card');
+    for (var j = 0; j < cards.length; j++) {
+      cards[j].style.opacity = '0';
+      cards[j].style.transform = 'scale(.8)';
+      (function (card, idx) {
+        setTimeout(function () {
+          card.style.opacity = '';
+          card.style.transform = '';
+        }, 80 + idx * 60);
+      })(cards[j], j);
+    }
   }
 
   function updateMeterPreview(typeKey, typeName) {
@@ -843,14 +862,27 @@
   }
 
   function selectMeterType(name, key) {
+    currentMeterKey.quick = key;
     var textEl = document.getElementById('quickMeterTypeText');
     textEl.textContent = name;
     textEl.style.color = '#606266';
     document.getElementById('meterTypeDropdown').classList.remove('show');
-    document.getElementById('quickMeterImg').style.display = 'flex';
-    document.getElementById('quickMeterName').style.display = 'block';
     document.getElementById('quickMeterEmpty').style.display = 'none';
-    updateMeterPreview(key, name);
+    // 切换动画
+    var imgEl = document.getElementById('quickMeterImg');
+    var nameEl2 = document.getElementById('quickMeterName');
+    imgEl.classList.add('switching');
+    nameEl2.classList.add('switching');
+    setTimeout(function () {
+      imgEl.style.display = 'flex';
+      nameEl2.style.display = 'block';
+      nameEl2.textContent = name;
+      updateMeterPreview(key, name);
+      requestAnimationFrame(function () {
+        imgEl.classList.remove('switching');
+        nameEl2.classList.remove('switching');
+      });
+    }, 200);
   }
 
   // 点击其他地方关闭下拉
@@ -883,9 +915,21 @@
   }
 
   function selectEditMeterType(name, key) {
+    currentMeterKey.edit = key;
     document.getElementById('editMeterType').textContent = name;
     document.getElementById('editMeterTypeDropdown').classList.remove('show');
-    updateEditMeterPreview(key, name);
+    // 切换动画
+    var stackEl = document.getElementById('editPhotoStack');
+    if (stackEl) {
+      var cards = stackEl.querySelectorAll('.stack-big');
+      cards.forEach(function(c) { c.style.transition = 'opacity .2s ease, transform .2s ease'; c.style.opacity = '0'; c.style.transform = 'scale(.85)'; });
+      setTimeout(function () {
+        updateEditMeterPreview(key, name);
+        cards.forEach(function(c) { c.style.opacity = ''; c.style.transform = ''; });
+      }, 200);
+    } else {
+      updateEditMeterPreview(key, name);
+    }
   }
 
   function updateEditMeterPreview(typeKey, typeName) {
@@ -907,16 +951,6 @@
 
   // 当前显示的表具类型（用于灯箱）
   var currentMeterKey = { quick: null, edit: null };
-  var origSelectMeterType = selectMeterType;
-  function selectMeterType(name, key) {
-    currentMeterKey.quick = key;
-    origSelectMeterType(name, key);
-  }
-  var origSelectEditMeterType = selectEditMeterType;
-  function selectEditMeterType(name, key) {
-    currentMeterKey.edit = key;
-    origSelectEditMeterType(name, key);
-  }
 
   // ===== 图片灯箱（多图切换）=====
   function renderDots(total, active) {
