@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>页面清单 · 智慧水务高保真原型</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f0f4f9; min-height: 100vh; padding: 32px 20px; color: #333;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  .head {
+    background: linear-gradient(135deg, #0f4aa2 0%, #1686d9 100%);
+    border-radius: 14px; padding: 26px 30px; color: #fff; margin-bottom: 20px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+  }
+  .head h1 { font-size: 22px; font-weight: 600; letter-spacing: 1px; }
+  .head p { font-size: 13px; opacity: .85; margin-top: 6px; }
+  .head a.home {
+    background: rgba(255,255,255,.18); color: #fff; text-decoration: none;
+    padding: 9px 18px; border-radius: 22px; font-size: 13px; backdrop-filter: blur(8px);
+  }
+  .head a.home:hover { background: rgba(255,255,255,.3); }
+  .search {
+    width: 100%; padding: 12px 18px 12px 42px; border: 1px solid #dbe3ee; border-radius: 10px;
+    font-size: 14px; margin-bottom: 16px; outline: none; background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23999" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>') no-repeat 14px center;
+  }
+  .search:focus { border-color: #1686d9; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(15,60,120,.08); }
+  th {
+    background: #0f4aa2; color: #fff; font-size: 13px; font-weight: 600;
+    padding: 12px 16px; text-align: left;
+  }
+  td { padding: 10px 16px; font-size: 13px; border-top: 1px solid #eef2f8; vertical-align: middle; }
+  tr:hover td { background: #f5f9ff; }
+  tr.module-row td {
+    background: #eaf2fc; color: #0f4aa2; font-weight: 600; font-size: 13px;
+    padding: 8px 16px; letter-spacing: 1px;
+  }
+  td.mod { color: #888; white-space: nowrap; }
+  td.name { font-weight: 500; white-space: nowrap; }
+  td.url a { color: #0563c1; text-decoration: none; word-break: break-all; }
+  td.url a:hover { text-decoration: underline; }
+  .foot { text-align: center; color: #99a6b8; font-size: 12px; margin-top: 20px; line-height: 1.8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div>
+      <h1>📋 原型页面清单（34 页）</h1>
+      <p>智慧水务高保真原型 · 与站点导航实时一致 · 每次发布自动生成</p>
+    </div>
+    <a class="home" href="./index.html">🏠 返回原型导航</a>
+  </div>
+  <input class="search" id="q" placeholder="搜索页面名称或路径…" oninput="filter()">
+  <table id="tbl">
+    <thead><tr><th style="width:130px">模块</th><th style="width:180px">页面名称</th><th>链接</th></tr></thead>
+    <tbody>
+<tr class="module-row"><td colspan="3">登录注册</td></tr>
+<tr><td class="mod">登录注册</td><td class="name">登录页</td><td class="url"><a href="login/login.html" target="_blank">https://ifashion2016.github.io/water-prototype/login/login.html</a></td></tr>
+<tr class="module-row"><td colspan="3">工作台 / 首页</td></tr>
+<tr><td class="mod">工作台 / 首页</td><td class="name">Dashboard 首页</td><td class="url"><a href="dashboard.html" target="_blank">https://ifashion2016.github.io/water-prototype/dashboard.html</a></td></tr>
+<tr class="module-row"><td colspan="3">档案管理</td></tr>
+<tr><td class="mod">档案管理</td><td class="name">用户档案</td><td class="url"><a href="archive/user-archive.html" target="_blank">https://ifashion2016.github.io/water-prototype/archive/user-archive.html</a></td></tr>
+<tr><td class="mod">档案管理</td><td class="name">表具档案</td><td class="url"><a href="archive/meter-archive.html" target="_blank">https://ifashion2016.github.io/water-prototype/archive/meter-archive.html</a></td></tr>
+<tr><td class="mod">档案管理</td><td class="name">地址档案</td><td class="url"><a href="archive/address-archive.html" target="_blank">https://ifashion2016.github.io/water-prototype/archive/address-archive.html</a></td></tr>
+<tr><td class="mod">档案管理</td><td class="name">职员档案</td><td class="url"><a href="archive/staff-archive.html" target="_blank">https://ifashion2016.github.io/water-prototype/archive/staff-archive.html</a></td></tr>
+<tr><td class="mod">档案管理</td><td class="name">价格类型</td><td class="url"><a href="archive/price-type.html" target="_blank">https://ifashion2016.github.io/water-prototype/archive/price-type.html</a></td></tr>
+<tr><td class="mod">档案管理</td><td class="name">结算类型</td><td class="url"><a href="archive/settle-type.html" target="_blank">https://ifashion2016.github.io/water-prototype/archive/settle-type.html</a></td></tr>
+<tr class="module-row"><td colspan="3">户表管理</td></tr>
+<tr><td class="mod">户表管理</td><td class="name">用户开户</td><td class="url"><a href="meter/user-open.html" target="_blank">https://ifashion2016.github.io/water-prototype/meter/user-open.html</a></td></tr>
+<tr><td class="mod">户表管理</td><td class="name">用户换表</td><td class="url"><a href="meter/user-change.html" target="_blank">https://ifashion2016.github.io/water-prototype/meter/user-change.html</a></td></tr>
+<tr><td class="mod">户表管理</td><td class="name">用户销户</td><td class="url"><a href="meter/user-close.html" target="_blank">https://ifashion2016.github.io/water-prototype/meter/user-close.html</a></td></tr>
+<tr class="module-row"><td colspan="3">抄表管理</td></tr>
+<tr><td class="mod">抄表管理</td><td class="name">4G NB抄表</td><td class="url"><a href="reading/4g-nb.html" target="_blank">https://ifashion2016.github.io/water-prototype/reading/4g-nb.html</a></td></tr>
+<tr class="module-row"><td colspan="3">收费管理</td></tr>
+<tr><td class="mod">收费管理</td><td class="name">综合缴费</td><td class="url"><a href="payment/payment-main.html" target="_blank">https://ifashion2016.github.io/water-prototype/payment/payment-main.html</a></td></tr>
+<tr><td class="mod">收费管理</td><td class="name">缴费记录</td><td class="url"><a href="payment/payment-record.html" target="_blank">https://ifashion2016.github.io/water-prototype/payment/payment-record.html</a></td></tr>
+<tr><td class="mod">收费管理</td><td class="name">纠正异常</td><td class="url"><a href="payment/correct-abnormal.html" target="_blank">https://ifashion2016.github.io/water-prototype/payment/correct-abnormal.html</a></td></tr>
+<tr class="module-row"><td colspan="3">报表分析</td></tr>
+<tr><td class="mod">报表分析</td><td class="name">余额不足统计</td><td class="url"><a href="report/stat-balance.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-balance.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">周期账单表</td><td class="url"><a href="report/stat-bill-cycle.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-bill-cycle.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">关阀户表统计</td><td class="url"><a href="report/stat-valve-meter.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-valve-meter.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">价格计费统计</td><td class="url"><a href="report/stat-price.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-price.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">报停复开记录</td><td class="url"><a href="report/stat-stop-record.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-stop-record.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">关阀用水用户稽查</td><td class="url"><a href="report/stat-valve-user.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-valve-user.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">户内漏水预警稽查</td><td class="url"><a href="report/stat-leak.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-leak.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">未上报统计表</td><td class="url"><a href="report/stat-unreported.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-unreported.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">用户缴费汇总表</td><td class="url"><a href="report/stat-pay-summary.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-pay-summary.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">销户记录表</td><td class="url"><a href="report/stat-close-record.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-close-record.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">欠费用户查询</td><td class="url"><a href="report/stat-arrears.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-arrears.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">报停费用汇总</td><td class="url"><a href="report/stat-stop-fee.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-stop-fee.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">用户缴费明细表</td><td class="url"><a href="report/stat-pay-detail.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-pay-detail.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">抄表记录表</td><td class="url"><a href="report/stat-reading-record.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-reading-record.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">命令记录表</td><td class="url"><a href="report/stat-cmd-record.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-cmd-record.html</a></td></tr>
+<tr><td class="mod">报表分析</td><td class="name">换表记录表</td><td class="url"><a href="report/stat-change-record.html" target="_blank">https://ifashion2016.github.io/water-prototype/report/stat-change-record.html</a></td></tr>
+<tr class="module-row"><td colspan="3">功能配置</td></tr>
+<tr><td class="mod">功能配置</td><td class="name">微信配置 + 表具类型</td><td class="url"><a href="config/config-wechat-meter.html" target="_blank">https://ifashion2016.github.io/water-prototype/config/config-wechat-meter.html</a></td></tr>
+<tr class="module-row"><td colspan="3">网上营业厅</td></tr>
+<tr><td class="mod">网上营业厅</td><td class="name">移动缴费网厅（PC）</td><td class="url"><a href="online/online-pc.html" target="_blank">https://ifashion2016.github.io/water-prototype/online/online-pc.html</a></td></tr>
+<tr><td class="mod">网上营业厅</td><td class="name">移动缴费H5（移动端）</td><td class="url"><a href="online/online-h5.html" target="_blank">https://ifashion2016.github.io/water-prototype/online/online-h5.html</a></td></tr>
+    </tbody>
+  </table>
+  <div class="foot">
+    本清单由发布流程自动生成；已下线页面不在清单中。<br>
+    站点入口：https://ifashion2016.github.io/water-prototype/
+  </div>
+</div>
+<script>
+  function filter() {
+    var k = document.getElementById('q').value.toLowerCase();
+    var trs = document.querySelectorAll('#tbl tbody tr');
+    var show = {};
+    for (var i = trs.length - 1; i >= 0; i--) {
+      var tr = trs[i];
+      if (tr.className === 'module-row') {
+        tr.style.display = show[i] ? '' : 'none';
+        continue;
+      }
+      var hit = tr.textContent.toLowerCase().indexOf(k) >= 0;
+      tr.style.display = hit ? '' : 'none';
+      if (hit) {
+        for (var j = i - 1; j >= 0; j--) {
+          if (trs[j].className === 'module-row') { show[j] = true; break; }
+        }
+      }
+    }
+  }
+</script>
+</body>
+</html>
