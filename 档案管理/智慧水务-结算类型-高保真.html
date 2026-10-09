@@ -107,6 +107,14 @@
   .confirm-body { padding: 24px 20px; font-size: 14px; color: #4b5563; line-height: 1.6; }
   .confirm-body .warn-icon { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; background: #fdf6e3; color: #e6a23c; align-items: center; justify-content: center; margin-right: 10px; font-weight: bold; }
   .confirm-foot { display: flex; justify-content: center; gap: 12px; padding: 0 20px 18px; }
+  /* 弹窗内下拉框 */
+  .dlg-item { position: relative; }
+  .dlg-dropdown { position: absolute; top: 100%; left: 102px; right: 0; background: #fff; border: 1px solid #dcdfe6; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,.12); z-index: 20; display: none; max-height: 200px; overflow-y: auto; }
+  .dlg-dropdown.show { display: block; }
+  .dlg-dropdown .dd-option { padding: 8px 12px; font-size: 13.5px; color: #4b5563; cursor: pointer; }
+  .dlg-dropdown .dd-option:hover { background: #f2f7fd; color: #2a7de1; }
+  .filter-input.readonly { background: #f5f7fa; cursor: not-allowed; }
+  .filter-input.readonly .caret, .filter-input.readonly .clock { opacity: .4; }
 </style>
 </head>
 <body>
@@ -161,14 +169,14 @@
     </div>
 
     <div class="table-card"><div class="table-scroll"><table class="data-table"><thead><tr><th class="col-check"><input type="checkbox" onclick="toggleAll(this)"></th><th>结算编号</th><th>结算名称</th><th>结算方式</th><th>账单周期</th><th>开始日期</th><th>滞纳金设置</th><th>滞纳金设置值</th><th>滞纳金结算类型</th><th>起算滞纳金时间间隔(天)</th><th>创建人</th><th>创建时间</th><th>修改人</th><th>修改时间</th><th class="col-op">操作</th></tr></thead><tbody>
-<tr><td class="col-check"><input type="checkbox"></td><td>144</td><td>报停</td><td>预付费</td><td>1个月</td><td>2026-01-01 00:00:00</td><td>不设置</td><td>值</td><td>滞纳金结算类型</td><td>起算滞纳金时间间隔(天)</td><td>涌恒供水</td><td>2026-09-17 18:12:07</td><td>修改人</td><td>修改时间</td><td class="col-op"><span class="act-btn" onclick="openDlg()">编辑</span></td></tr>
-<tr><td class="col-check"><input type="checkbox"></td><td>134</td><td>预付结算</td><td>预付费</td><td>1个月</td><td>2026-07-01 00:00:00</td><td>不设置</td><td>值</td><td>滞纳金结算类型</td><td>起算滞纳金时间间隔(天)</td><td>管理员</td><td>2026-07-06 09:02:31</td><td>修改人</td><td>修改时间</td><td class="col-op"><span class="act-btn" onclick="openDlg()">编辑</span></td></tr>
-<tr><td class="col-check"><input type="checkbox"></td><td>124</td><td>按月结算</td><td>后付费</td><td>1个月</td><td>2026-01-01 00:00:00</td><td>按比例</td><td>0.5%</td><td>水费</td><td>30</td><td>管理员</td><td>2026-06-15 10:30:22</td><td>管理员</td><td>2026-08-10 14:22:15</td><td class="col-op"><span class="act-btn" onclick="openDlg()">编辑</span></td></tr>
-<tr><td class="col-check"><input type="checkbox"></td><td>114</td><td>按季度结算</td><td>后付费</td><td>3个月</td><td>2026-01-01 00:00:00</td><td>按比例</td><td>0.3%</td><td>水费+污水处理费</td><td>15</td><td>管理员</td><td>2026-05-20 09:15:48</td><td></td><td></td><td class="col-op"><span class="act-btn" onclick="openDlg()">编辑</span></td></tr>
-<tr><td class="col-check"><input type="checkbox"></td><td>104</td><td>按年结算</td><td>后付费</td><td>12个月</td><td>2026-01-01 00:00:00</td><td>固定金额</td><td>5元/天</td><td>水费</td><td>60</td><td>管理员</td><td>2026-04-10 16:05:33</td><td>管理员</td><td>2026-09-01 11:30:00</td><td class="col-op"><span class="act-btn" onclick="openDlg()">编辑</span></td></tr>
-<tr><td class="col-check"><input type="checkbox"></td><td>094</td><td>阶梯结算</td><td>预付费</td><td>2个月</td><td>2026-03-01 00:00:00</td><td>不设置</td><td>-</td><td>-</td><td>-</td><td>管理员</td><td>2026-03-12 11:20:10</td><td></td><td></td><td class="col-op"><span class="act-btn" onclick="openDlg()">编辑</span></td></tr>
-<tr><td class="col-check"><input type="checkbox"></td><td>084</td><td>商业结算</td><td>后付费</td><td>1个月</td><td>2026-02-01 00:00:00</td><td>按比例</td><td>1%</td><td>水费+水资源费</td><td>10</td><td>涌恒供水</td><td>2026-02-18 14:45:56</td><td>涌恒供水</td><td>2026-07-22 09:12:34</td><td class="col-op"><span class="act-btn" onclick="openDlg()">编辑</span></td></tr>
-<tr><td class="col-check"><input type="checkbox"></td><td>074</td><td>工业结算</td><td>后付费</td><td>1个月</td><td>2026-01-15 00:00:00</td><td>固定金额</td><td>10元/天</td><td>水费</td><td>7</td><td>涌恒供水</td><td>2026-01-25 10:08:15</td><td></td><td></td><td class="col-op"><span class="act-btn" onclick="openDlg()">编辑</span></td></tr>
+<tr><td class="col-check"><input type="checkbox"></td><td>144</td><td>报停</td><td>预付费</td><td>1个月</td><td>2026-01-01 00:00:00</td><td>不设置</td><td>值</td><td>滞纳金结算类型</td><td>起算滞纳金时间间隔(天)</td><td>涌恒供水</td><td>2026-09-17 18:12:07</td><td>修改人</td><td>修改时间</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr>
+<tr><td class="col-check"><input type="checkbox"></td><td>134</td><td>预付结算</td><td>预付费</td><td>1个月</td><td>2026-07-01 00:00:00</td><td>不设置</td><td>值</td><td>滞纳金结算类型</td><td>起算滞纳金时间间隔(天)</td><td>管理员</td><td>2026-07-06 09:02:31</td><td>修改人</td><td>修改时间</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr>
+<tr><td class="col-check"><input type="checkbox"></td><td>124</td><td>按月结算</td><td>后付费</td><td>1个月</td><td>2026-01-01 00:00:00</td><td>按比例</td><td>0.5%</td><td>水费</td><td>30</td><td>管理员</td><td>2026-06-15 10:30:22</td><td>管理员</td><td>2026-08-10 14:22:15</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr>
+<tr><td class="col-check"><input type="checkbox"></td><td>114</td><td>按季度结算</td><td>后付费</td><td>3个月</td><td>2026-01-01 00:00:00</td><td>按比例</td><td>0.3%</td><td>水费+污水处理费</td><td>15</td><td>管理员</td><td>2026-05-20 09:15:48</td><td></td><td></td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr>
+<tr><td class="col-check"><input type="checkbox"></td><td>104</td><td>按年结算</td><td>后付费</td><td>12个月</td><td>2026-01-01 00:00:00</td><td>固定金额</td><td>5元/天</td><td>水费</td><td>60</td><td>管理员</td><td>2026-04-10 16:05:33</td><td>管理员</td><td>2026-09-01 11:30:00</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr>
+<tr><td class="col-check"><input type="checkbox"></td><td>094</td><td>阶梯结算</td><td>预付费</td><td>2个月</td><td>2026-03-01 00:00:00</td><td>不设置</td><td>-</td><td>-</td><td>-</td><td>管理员</td><td>2026-03-12 11:20:10</td><td></td><td></td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr>
+<tr><td class="col-check"><input type="checkbox"></td><td>084</td><td>商业结算</td><td>后付费</td><td>1个月</td><td>2026-02-01 00:00:00</td><td>按比例</td><td>1%</td><td>水费+水资源费</td><td>10</td><td>涌恒供水</td><td>2026-02-18 14:45:56</td><td>涌恒供水</td><td>2026-07-22 09:12:34</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr>
+<tr><td class="col-check"><input type="checkbox"></td><td>074</td><td>工业结算</td><td>后付费</td><td>1个月</td><td>2026-01-15 00:00:00</td><td>固定金额</td><td>10元/天</td><td>水费</td><td>7</td><td>涌恒供水</td><td>2026-01-25 10:08:15</td><td></td><td></td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr>
 </tbody></table></div><div class="pagination"><span class="page-btn disabled">&laquo;</span><span class="page-btn disabled">&lsaquo;</span><span class="page-btn cur">1</span><span class="page-btn disabled">&rsaquo;</span><span class="page-btn disabled">&raquo;</span><span class="page-total">共 [ 1 ] 页，共 [ 8 ] 条</span><span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">&#9662;</span></span></div></div>
   </div>
 
@@ -180,8 +188,13 @@
 
 <div class="dlg-mask" id="dlgMask" onclick="if(event.target===this)closeDlg()">
   <div class="dlg">
-    <div class="dlg-head">新增结算类型<span class="dlg-close" onclick="closeDlg()">&#10005;</span></div>
-    <div class="dlg-body"><div class="dlg-grid"><div class="dlg-item"><label><span class="req">*</span>组织机构：</label><div class="filter-input placeholder"><span>请选择组织机构</span><span class="caret">&#9662;</span></div></div><div class="dlg-item"><label><span class="req">*</span>结算名称：</label><input class="filter-input" placeholder="请输入结算名称"></div><div class="dlg-item"><label><span class="req">*</span>结算方式：</label><div class="filter-input placeholder"><span>请选择结算方式</span><span class="caret">&#9662;</span></div></div><div class="dlg-item"><label><span class="req">*</span>账单周期：</label><div class="filter-input placeholder"><span>请选择账单周期</span><span class="caret">&#9662;</span></div></div><div class="dlg-item"><label><span class="req">*</span>开始日期：</label><input class="filter-input" placeholder="请输入开始日期"></div></div></div>
+    <div class="dlg-head"><span id="dlgTitle">新增结算类型</span><span class="dlg-close" onclick="closeDlg()">&#10005;</span></div>
+    <div class="dlg-body"><div class="dlg-grid">
+      <div class="dlg-item"><label><span class="req">*</span>结算名称：</label><input class="filter-input" id="dlgName" placeholder="请输入结算名称"></div>
+      <div class="dlg-item"><label><span class="req">*</span>结算方式：</label><div class="filter-input placeholder" id="dlgPayMethod" onclick="toggleDlgDropdown('ddPayMethod', this)"><span>请选择结算方式</span><span class="caret">&#9662;</span></div><div class="dlg-dropdown" id="ddPayMethod"><div class="dd-option" onclick="selectDlgOption('ddPayMethod','dlgPayMethod','预付费')">预付费</div><div class="dd-option" onclick="selectDlgOption('ddPayMethod','dlgPayMethod','后付费')">后付费</div></div></div>
+      <div class="dlg-item"><label><span class="req">*</span>账单周期：</label><div class="filter-input placeholder" id="dlgBillCycle" onclick="toggleDlgDropdown('ddBillCycle', this)"><span>请选择账单周期</span><span class="caret">&#9662;</span></div><div class="dlg-dropdown" id="ddBillCycle"><div class="dd-option" onclick="selectDlgOption('ddBillCycle','dlgBillCycle','1个月')">1个月</div><div class="dd-option" onclick="selectDlgOption('ddBillCycle','dlgBillCycle','2个月')">2个月</div><div class="dd-option" onclick="selectDlgOption('ddBillCycle','dlgBillCycle','3个月')">3个月</div><div class="dd-option" onclick="selectDlgOption('ddBillCycle','dlgBillCycle','6个月')">6个月</div><div class="dd-option" onclick="selectDlgOption('ddBillCycle','dlgBillCycle','一年')">一年</div></div></div>
+      <div class="dlg-item"><label><span class="req">*</span>开始日期：</label><div class="filter-input" id="dlgStartDate"><span style="color:#b6bdc9">请选择开始日期</span><span class="clock">&#128336;</span></div></div>
+    </div></div>
     <div class="dlg-foot">
       <button class="btn plain" onclick="closeDlg()">取消</button>
       <button class="btn" onclick="confirmDlg()">确认</button>
@@ -220,8 +233,93 @@
     document.querySelectorAll('.filter-grid input').forEach(function (i) { i.value = ''; });
     showToast('筛选条件已重置', 'success');
   }
-  function openDlg() { document.getElementById('dlgMask').classList.add('show'); }
-  function closeDlg() { document.getElementById('dlgMask').classList.remove('show'); }
+  function openDlg() {
+    document.getElementById('dlgTitle').textContent = '新增结算类型';
+    resetDlgForm();
+    setDlgReadonly(false);
+    document.getElementById('dlgMask').classList.add('show');
+  }
+  function openEditDlg(btn) {
+    document.getElementById('dlgTitle').textContent = '修改结算类型';
+    resetDlgForm();
+    setDlgReadonly(true);
+    // 从行数据带入
+    var tr = btn.closest('tr');
+    var tds = tr.querySelectorAll('td');
+    // 列: 2=结算名称, 3=结算方式, 4=账单周期, 5=开始日期
+    var name = tds[2].textContent;
+    var payMethod = tds[3].textContent;
+    var billCycle = tds[4].textContent;
+    var startDate = tds[5].textContent;
+    document.getElementById('dlgName').value = name;
+    setDlgSelect('dlgPayMethod', payMethod);
+    setDlgSelect('dlgBillCycle', billCycle);
+    var dateEl = document.getElementById('dlgStartDate');
+    dateEl.querySelector('span').textContent = startDate;
+    dateEl.querySelector('span').style.color = '#374151';
+    document.getElementById('dlgMask').classList.add('show');
+  }
+  function setDlgReadonly(readonly) {
+    var ids = ['dlgPayMethod', 'dlgBillCycle', 'dlgStartDate'];
+    ids.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (readonly) {
+        el.classList.add('readonly');
+        el.onclick = null;
+      } else {
+        el.classList.remove('readonly');
+        if (id === 'dlgPayMethod') el.onclick = function () { toggleDlgDropdown('ddPayMethod', this); };
+        if (id === 'dlgBillCycle') el.onclick = function () { toggleDlgDropdown('ddBillCycle', this); };
+      }
+    });
+  }
+  function resetDlgForm() {
+    document.getElementById('dlgName').value = '';
+    resetDlgSelect('dlgPayMethod', '请选择结算方式');
+    resetDlgSelect('dlgBillCycle', '请选择账单周期');
+    var dateEl = document.getElementById('dlgStartDate');
+    dateEl.querySelector('span').textContent = '请选择开始日期';
+    dateEl.querySelector('span').style.color = '#b6bdc9';
+  }
+  function setDlgSelect(inputId, value) {
+    var el = document.getElementById(inputId);
+    el.classList.remove('placeholder');
+    el.querySelector('span').textContent = value;
+  }
+  function resetDlgSelect(inputId, placeholder) {
+    var el = document.getElementById(inputId);
+    el.classList.add('placeholder');
+    el.querySelector('span').textContent = placeholder;
+  }
+  function closeDlg() {
+    document.getElementById('dlgMask').classList.remove('show');
+    closeAllDlgDropdowns();
+  }
+  // 弹窗下拉框
+  function toggleDlgDropdown(ddId, inputEl) {
+    var dd = document.getElementById(ddId);
+    var isOpen = dd.classList.contains('show');
+    closeAllDlgDropdowns();
+    if (!isOpen) dd.classList.add('show');
+  }
+  function closeAllDlgDropdowns() {
+    document.querySelectorAll('.dlg-dropdown').forEach(function (d) { d.classList.remove('show'); });
+  }
+  function selectDlgOption(ddId, inputId, value) {
+    var input = document.getElementById(inputId);
+    input.classList.remove('placeholder');
+    input.querySelector('span').textContent = value;
+    document.getElementById(ddId).classList.remove('show');
+  }
+  // 点击弹窗其他地方关闭下拉
+  document.addEventListener('click', function (e) {
+    document.querySelectorAll('.dlg-dropdown.show').forEach(function (dd) {
+      var parent = dd.parentElement;
+      if (!dd.contains(e.target) && !parent.querySelector('.filter-input').contains(e.target)) {
+        dd.classList.remove('show');
+      }
+    });
+  });
   function confirmDlg() { closeDlg(); showToast('保存成功', 'success'); }
   function needSelect(name) { showToast('请先勾选要' + name + '的记录', 'warn'); }
   function toggleAll(el) {
