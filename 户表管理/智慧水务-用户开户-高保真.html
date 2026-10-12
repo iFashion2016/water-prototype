@@ -127,6 +127,17 @@
   .dlg-input-search input { flex: 1; height: 34px; border: 1px solid #dcdfe6; border-right: none; border-radius: 4px 0 0 4px; padding: 0 12px; font-size: 13.5px; }
   .dlg-input-search .search-btn { width: 40px; height: 34px; border: 1px solid #dcdfe6; border-radius: 0 4px 4px 0; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #9aa3af; }
 
+  /* 迁移备注 textarea + 字数统计 */
+  .dlg-textarea-wrap { flex: 1; position: relative; }
+  .dlg-textarea-wrap textarea { width: 100%; min-height: 56px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 8px 12px; font-size: 13.5px; color: #374151; background: #fff; resize: vertical; font-family: inherit; box-sizing: border-box; }
+  .dlg-textarea-wrap textarea:hover { border-color: #c0c4cc; }
+  .dlg-textarea-wrap textarea:focus { outline: none; border-color: #409eff; }
+  .dlg-textarea-wrap textarea::placeholder { color: #b6bdc9; }
+  .char-count { position: absolute; right: 8px; bottom: 4px; font-size: 11px; color: #c0c4cc; pointer-events: none; }
+  /* 转结方式联动字段 */
+  .transfer-usage, .transfer-balance, .transfer-common { display: none; }
+  .transfer-usage.show, .transfer-balance.show, .transfer-common.show { display: flex; }
+
   /* 可输入可选择的组合框 */
   .dlg-combobox { flex: 1; position: relative; }
   .dlg-combobox input { width: 100%; height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 32px 0 12px; font-size: 13.5px; color: #374151; background: #fff; }
@@ -448,12 +459,12 @@
         <div class="dlg-item"><span class="dlg-label">强检日期：</span><div class="dlg-input"><span>2032-09-21</span><span class="cal">📅</span></div></div>
       </div>
       <div class="dlg-section">价格结算</div>
-      <div class="dlg-grid">
+      <div class="dlg-grid" id="priceSettleGrid">
         <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>结算类型：</span><div class="dlg-input placeholder"><span>请选择结算类型</span><span class="caret">▾</span></div></div>
         <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>价格类型：</span><div class="dlg-input"><span>按月</span><span class="caret">▾</span></div></div>
         <div class="dlg-item">
           <span class="dlg-label">转结方式：</span>
-          <div class="dlg-select" data-select>
+          <div class="dlg-select" data-select id="transferMethodSelect">
             <div class="select-display"><span class="select-value">不转结</span><span class="caret">▾</span></div>
             <div class="select-dropdown">
               <div class="select-option selected">不转结</div>
@@ -462,6 +473,10 @@
             </div>
           </div>
         </div>
+        <div class="dlg-item transfer-usage"><span class="dlg-label"><span class="req">*</span>周期已用水量：</span><input class="dlg-input" id="periodUsedWater" placeholder="请输入周期已用水量"></div>
+        <div class="dlg-item transfer-usage"><span class="dlg-label"><span class="req">*</span>转结水量：</span><input class="dlg-input" id="transferWater" value="1"></div>
+        <div class="dlg-item transfer-balance"><span class="dlg-label"><span class="req">*</span>转结余额：</span><input class="dlg-input" id="transferBalance" placeholder="请输入转结余额"></div>
+        <div class="dlg-item transfer-common"><span class="dlg-label">迁移备注：</span><input class="dlg-input" id="migrationRemark" placeholder="请输入迁移备注" maxlength="200"></div>
       </div>
       <div class="dlg-section">安装信息</div>
       <div class="dlg-grid">
@@ -769,9 +784,48 @@
         options.forEach(function (o) { o.classList.remove('selected'); });
         opt.classList.add('selected');
         dropdown.classList.remove('show');
+        // 转结方式切换时，显示/隐藏用量转结相关字段
+        if (sel.id === 'transferMethodSelect') {
+          toggleTransferFields(opt.textContent);
+        }
       });
     });
   });
+
+  // 切换转结方式联动字段显示
+  function toggleTransferFields(method) {
+    var usageEls = document.querySelectorAll('.transfer-usage');
+    var balanceEls = document.querySelectorAll('.transfer-balance');
+    var commonEls = document.querySelectorAll('.transfer-common');
+    // 先全部隐藏
+    usageEls.forEach(function (f) { f.classList.remove('show'); });
+    balanceEls.forEach(function (f) { f.classList.remove('show'); });
+    commonEls.forEach(function (f) { f.classList.remove('show'); });
+
+    if (method === '用量转结') {
+      usageEls.forEach(function (f) { f.classList.add('show'); });
+      commonEls.forEach(function (f) { f.classList.add('show'); });
+    } else if (method === '余额转结') {
+      balanceEls.forEach(function (f) { f.classList.add('show'); });
+      commonEls.forEach(function (f) { f.classList.add('show'); });
+    }
+
+    // 清空当前不显示字段的值
+    var puw = document.getElementById('periodUsedWater');
+    var tw = document.getElementById('transferWater');
+    var tb = document.getElementById('transferBalance');
+    var mr = document.getElementById('migrationRemark');
+    if (method !== '用量转结') {
+      if (puw) puw.value = '';
+      if (tw) tw.value = '1';
+    }
+    if (method !== '余额转结') {
+      if (tb) tb.value = '';
+    }
+    if (method !== '用量转结' && method !== '余额转结') {
+      if (mr) mr.value = '';
+    }
+  }
 
   // ===== 水表样例图片预览（每种表具3张：正面、侧面、铭牌） =====
   var meterImages = {
