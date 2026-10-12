@@ -334,7 +334,23 @@
         <div class="dlg-item"><span class="dlg-label">表内余额：</span><input class="dlg-input readonly" id="chBalance" value="0" readonly></div>
         <!-- 第四行 -->
         <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>旧表止码：</span><input class="dlg-input" placeholder="请输入数字(最多两位)"></div>
-        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>新表表号：</span><input class="dlg-input" placeholder=""></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>新表表号：</span>
+          <div class="ch-dropdown" id="newMeterNoDropdown" onclick="event.stopPropagation()">
+            <div class="ch-dropdown-input placeholder" id="newMeterNoInput" onclick="toggleNewMeterNoDropdown()">
+              <span id="newMeterNoText">请选择表号（已校验表具）</span>
+              <span class="caret">▾</span>
+            </div>
+            <div class="ch-dropdown-menu" id="newMeterNoMenu">
+              <div class="ch-dropdown-option" onclick="selectNewMeterNo('260626116289')">260626116289（NB远传阀控水表 DN20）</div>
+              <div class="ch-dropdown-option" onclick="selectNewMeterNo('00002624000053')">00002624000053（WPG远传阀控水表 DN20）</div>
+              <div class="ch-dropdown-option" onclick="selectNewMeterNo('00002624000083')">00002624000083（WPG远传阀控水表 DN20）</div>
+              <div class="ch-dropdown-option" onclick="selectNewMeterNo('2624000058')">2624000058（WPG远传阀控水表 DN20）</div>
+              <div class="ch-dropdown-option" onclick="selectNewMeterNo('2624000053')">2624000053（WPG远传阀控水表 DN15）</div>
+              <div class="ch-dropdown-option" onclick="selectNewMeterNo('260626116356')">260626116356（NB远传阀控水表 DN20）</div>
+              <div class="ch-dropdown-option" onclick="selectNewMeterNo('260626116404')">260626116404（NB远传阀控水表 DN20）</div>
+            </div>
+          </div>
+        </div>
         <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>新表类型：</span>
           <div class="ch-dropdown" id="newTypeDropdown" onclick="event.stopPropagation()">
             <div class="ch-dropdown-input placeholder" id="newTypeInput" onclick="toggleNewTypeDropdown()">
@@ -478,6 +494,7 @@
     document.getElementById('chBalance').value = tr.cells[6].textContent;
     // 重置新表类型和照片
     resetNewMeterType();
+    resetNewMeterNo();
     openModal('dlgChange');
   }
   document.querySelectorAll('.modal-mask').forEach(function (m) {
@@ -518,7 +535,32 @@
   }
   document.addEventListener('click', function () {
     document.getElementById('newTypeDropdown').classList.remove('open');
+    document.getElementById('newMeterNoDropdown').classList.remove('open');
   });
+
+  // 新表表号下拉（数据来源于表具档案中已校验的水表）
+  function toggleNewMeterNoDropdown() {
+    document.getElementById('newMeterNoDropdown').classList.toggle('open');
+  }
+  function selectNewMeterNo(meterNo) {
+    var inputEl = document.getElementById('newMeterNoInput');
+    var textEl = document.getElementById('newMeterNoText');
+    inputEl.classList.remove('placeholder');
+    textEl.textContent = meterNo;
+    document.getElementById('newMeterNoDropdown').classList.remove('open');
+    document.querySelectorAll('#newMeterNoMenu .ch-dropdown-option').forEach(function (opt) {
+      opt.classList.toggle('selected', opt.textContent.trim().indexOf(meterNo) === 0);
+    });
+  }
+  function resetNewMeterNo() {
+    var inputEl = document.getElementById('newMeterNoInput');
+    var textEl = document.getElementById('newMeterNoText');
+    inputEl.classList.add('placeholder');
+    textEl.textContent = '请选择表号（已校验表具）';
+    document.querySelectorAll('#newMeterNoMenu .ch-dropdown-option').forEach(function (opt) {
+      opt.classList.remove('selected');
+    });
+  }
 
   function resetNewMeterType() {
     currentNewMeterType = null;
