@@ -21,3 +21,9 @@ reading/abnormal-reading.html
 reading/abnormal-cmd.html
 档案管理/智慧水务-表具类型-高保真.html
 archive/meter-type.html
+登录/智慧水务-登录页-高保真-优化版.html
+login/login.html
+智慧水务-dashboard-高保真.html
+dashboard.html
+# PRD 类文档一律不进仓库
+PRD-*.md
