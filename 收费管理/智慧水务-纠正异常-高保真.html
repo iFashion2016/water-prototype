@@ -52,6 +52,11 @@
   .filter-input .clock { color: #b6bdc9; font-size: 12px; margin-right: 6px; }
   input.filter-input { cursor: text; }
   input.filter-input::placeholder { color: #b6bdc9; }
+  /* 查询条件下拉单选 */
+  .sel-popup { position: absolute; z-index: 9999; background: #fff; border: 1px solid #dcdfe6; border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.12); max-height: 260px; overflow-y: auto; }
+  .sel-item { padding: 8px 14px; font-size: 13px; color: #333; cursor: pointer; white-space: nowrap; }
+  .sel-item:hover { background: #f0f6ff; }
+  .sel-item.active { background: #e8f1ff; color: #1890ff; font-weight: 600; }
 
   .btn-bar { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
   .btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 15px; border: 1px solid #409eff; border-radius: 4px; background: #409eff; color: #fff; font-size: 13px; cursor: pointer; transition: all .15s; }
@@ -59,6 +64,10 @@
   .btn:active { background: #337ecc; border-color: #337ecc; }
   .btn-plain { background: #fff; color: #606266; border: 1px solid #dcdfe6; }
   .btn-plain:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; }
+  .btn-light { background: #ecf5ff; color: #409eff; border-color: #a3d0ff; }
+  .btn-light:hover { background: #d9ecff; border-color: #409eff; color: #409eff; }
+  .btn-text { background: transparent; border-color: transparent; color: #409eff; }
+  .btn-text:hover { background: transparent; border-color: transparent; color: #79bbff; }
   .chk { width: 15px; height: 15px; accent-color: #409eff; cursor: pointer; vertical-align: middle; }
   .chk-cell { width: 40px; text-align: center !important; }
   .data-table tbody tr:hover { background: #f7fafe; }
@@ -117,6 +126,24 @@
   .upload-area { flex: 1; height: 52px; border: 1px dashed #dcdfe6; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #b6bdc9; font-size: 13px; }
   .up-btn { height: 30px; padding: 0 12px; border-radius: 4px; border: none; background: #3b9dff; color: #fff; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
   .up-btn.plain { background: #fff; color: #4b5563; border: 1px solid #dcdfe6; }
+
+  /* 审核异常登记（单条审核） */
+  .audit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 24px; }
+  .audit-item { display: flex; align-items: center; }
+  .audit-label { flex: 0 0 auto; font-size: 14px; color: #4b5563; margin-right: 8px; white-space: nowrap; }
+  .audit-input { flex: 1; min-height: 34px; display: flex; align-items: center; padding: 0 12px; border: 1px solid #e4e7ed; border-radius: 4px; background: #fff; font-size: 13.5px; color: #a8abb2; }
+  .audit-item.span3 { align-items: flex-start; }
+  .audit-item.span3 .audit-label { line-height: 34px; }
+  .audit-textarea { flex: 1; min-height: 46px; border: 1px solid #e4e7ed; border-radius: 4px; padding: 7px 12px; font-size: 13.5px; color: #374151; font-family: inherit; resize: vertical; outline: none; }
+  .audit-textarea:focus { border-color: #409eff; }
+  .audit-img-box { margin-top: 16px; height: 300px; border: 1px solid #eef0f3; border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fafbfc; }
+  .audit-img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+  /* 批量审核确认框 */
+  .confirm-body { display: flex; align-items: flex-start; gap: 12px; }
+  .confirm-icon { flex: 0 0 34px; width: 34px; height: 34px; border-radius: 50%; background: #ecf5ff; color: #409eff; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; }
+  .confirm-text { font-size: 14px; color: #374151; line-height: 1.8; padding-top: 6px; }
+  .confirm-text b { color: #2a7de1; font-size: 16px; padding: 0 3px; }
 
   .toast { position: fixed; top: 76px; right: 24px; z-index: 300; min-width: 300px; background: #fdf6e3; border: 1px solid #f5dab1; color: #b88230; border-radius: 6px; padding: 12px 16px; display: none; align-items: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
   .toast.show { display: flex; animation: slideIn .25s ease; }
@@ -189,7 +216,7 @@
         <div class="filter-item"><span class="filter-label">用户名称：</span><input class="filter-input q" placeholder="请输入用户名称"></div>
         <div class="filter-item"><span class="filter-label">表身码：</span><input class="filter-input q" placeholder="请输入表身码"></div>
         <div class="filter-item"><span class="filter-label">表具类型：</span><div class="filter-input placeholder"><span>请选择表具类型</span><span class="caret">▾</span></div></div>
-        <div class="filter-item"><span class="filter-label">审核状态：</span><div class="filter-input placeholder"><span>请选择审核状态</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">审核状态：</span><div class="filter-input placeholder" data-select="auditStatus"><span>请选择审核状态</span><span class="caret">▾</span></div></div>
         <div class="filter-item"><span class="filter-label">开始时间：</span><div class="filter-input" style="justify-content:flex-start;gap:8px"><span class="clock">🕐</span><span>2026-09-22 00:00:00</span></div></div>
         <div class="filter-item"><span class="filter-label">结束时间：</span><div class="filter-input" style="justify-content:flex-start;gap:8px"><span class="clock">🕐</span><span>2026-09-22 23:59:59</span></div></div>
       </div>
@@ -220,8 +247,8 @@
             <tr><th class="chk-cell"><input type="checkbox" class="chk" id="chkAll"></th><th>用户编号</th><th>用户名称</th><th>用户地址</th><th>表身码</th><th>本次读数</th><th>本次抄表时间</th><th>上次读数</th><th>上次抄表时间</th><th>审核状态</th><th>审核人</th><th>审核时间</th><th>审核意见</th><th>创建人</th><th>创建时间</th><th>操作</th></tr>
           </thead>
           <tbody>
-            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000002</td><td>陈川汇</td><td>河口计委小区-1单元-1/1</td><td>260725036581</td><td>152.36</td><td>2026-09-22 08:10:05</td><td>148.18</td><td>2026-09-22 05:05:48</td><td>待审核</td><td></td><td></td><td></td><td>涌恒供水</td><td>2026-09-22 08:11:20</td><td><button class="op-btn" onclick="openReg(true)">纠正处理</button></td></tr>
-            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000004</td><td>张武洲</td><td>河口计委小区-1单元-1～2</td><td>260725036570</td><td>98.40</td><td>2026-09-21 17:02:44</td><td>97.90</td><td>2026-09-21 05:12:30</td><td>待审核</td><td></td><td></td><td></td><td>涌恒供水</td><td>2026-09-21 17:03:52</td><td><button class="op-btn" onclick="openReg(true)">纠正处理</button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000002</td><td>陈川汇</td><td>河口计委小区-1单元-1/1</td><td>260725036581</td><td>152.36</td><td>2026-09-22 08:10:05</td><td>148.18</td><td>2026-09-22 05:05:48</td><td>未审核</td><td></td><td></td><td></td><td>涌恒供水</td><td>2026-09-22 08:11:20</td><td><button class="op-btn" onclick="openReg(true)">纠正处理</button></td></tr>
+            <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000004</td><td>张武洲</td><td>河口计委小区-1单元-1～2</td><td>260725036570</td><td>98.40</td><td>2026-09-21 17:02:44</td><td>97.90</td><td>2026-09-21 05:12:30</td><td>未审核</td><td></td><td></td><td></td><td>涌恒供水</td><td>2026-09-21 17:03:52</td><td><button class="op-btn" onclick="openReg(true)">纠正处理</button></td></tr>
             <tr><td class="chk-cell"><input type="checkbox" class="chk row-chk"></td><td>063000210</td><td>田如燕</td><td>河口一中宏建小区-1栋-201</td><td>260626116287</td><td>35.12</td><td>2026-09-20 09:31:02</td><td>34.88</td><td>2026-09-20 05:02:11</td><td>审核通过</td><td>管理员</td><td>2026-09-20 10:01:33</td><td>读数核实无误</td><td>涌恒供水</td><td>2026-09-20 09:32:10</td><td><button class="op-btn" onclick="openReg(true)">纠正处理</button></td></tr>
           </tbody>
         </table>
@@ -303,6 +330,51 @@
   </div>
 </div>
 
+<!-- ============ 弹窗：审核异常登记（勾选单行时） ============ -->
+<div class="modal-mask" id="dlgAudit">
+  <div class="modal" style="width:1020px">
+    <div class="modal-head"><div class="modal-title">审核异常登记</div><span class="modal-close" onclick="closeModal('dlgAudit')">✕</span></div>
+    <div class="modal-body">
+      <div class="audit-grid">
+        <div class="audit-item" style="grid-row:1;grid-column:1"><span class="audit-label">用户编号：</span><div class="audit-input" id="auUserNo"></div></div>
+        <div class="audit-item" style="grid-row:1;grid-column:2"><span class="audit-label">用户名称：</span><div class="audit-input" id="auUserName"></div></div>
+        <div class="audit-item" style="grid-row:1;grid-column:3"><span class="audit-label">用户地址：</span><div class="audit-input" id="auUserAddr"></div></div>
+        <div class="audit-item" style="grid-row:2;grid-column:1"><span class="audit-label">表具编号：</span><div class="audit-input" id="auMeterNo"></div></div>
+        <div class="audit-item" style="grid-row:3;grid-column:1"><span class="audit-label">上次时间：</span><div class="audit-input" id="auPrevTime"></div></div>
+        <div class="audit-item" style="grid-row:3;grid-column:2"><span class="audit-label">上次读数：</span><div class="audit-input" id="auPrevRead"></div></div>
+        <div class="audit-item" style="grid-row:3;grid-column:3"><span class="audit-label">本次时间：</span><div class="audit-input" id="auCurTime"></div></div>
+        <div class="audit-item" style="grid-row:4;grid-column:1"><span class="audit-label">本次读数：</span><div class="audit-input" id="auCurRead"></div></div>
+        <div class="audit-item span3" style="grid-row:5;grid-column:1 / -1"><span class="audit-label">审核意见：</span><textarea class="audit-textarea" id="auOpinion" rows="2"></textarea></div>
+      </div>
+      <div class="audit-img-box">
+        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=close-up%20photo%20of%20a%20smart%20water%20meter%20with%20digital%20LCD%20display%20showing%20readings%2C%20mounted%20on%20a%20wall%2C%20realistic%20photography&image_size=landscape_4_3" alt="抄表图片">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-text" onclick="closeModal('dlgAudit')">✕&nbsp;取消</button>
+      <button class="btn btn-light" onclick="rejectAudit()">⟳&nbsp;驳回</button>
+      <button class="btn" onclick="passAudit()">✓&nbsp;通过</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 弹窗：批量审核确认（勾选多行时） ============ -->
+<div class="modal-mask" id="dlgBatchAudit">
+  <div class="modal" style="width:440px">
+    <div class="modal-head"><div class="modal-title">纠正数据审核确认</div><span class="modal-close" onclick="closeModal('dlgBatchAudit')">✕</span></div>
+    <div class="modal-body" style="padding:24px 28px">
+      <div class="confirm-body">
+        <span class="confirm-icon">!</span>
+        <div class="confirm-text">本次涉及到纠正审核的数据共 <b id="batchCount">0</b> 条，是否确认继续审核？</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgBatchAudit')">✕&nbsp;取消</button>
+      <button class="btn" onclick="confirmBatchAudit()">✓&nbsp;确定</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">
   <span id="toastIcon">⚠</span><span id="toastText"></span>
   <span class="t-close" onclick="hideToast()">✕</span>
@@ -334,12 +406,69 @@
     var on = chkAll.checked;
     document.querySelectorAll('#mainTable tbody tr').forEach(function (tr) { tr.querySelector('.row-chk').checked = on; });
   });
+  // 审核登记：勾选 1 条 -> 单条审核弹窗；勾选多条 -> 纠正数据确认框
+  var auditRow = null;    // 单条审核的目标行
+  var batchRows = [];     // 批量审核的目标行
+  function nowStr() {
+    var d = new Date();
+    var p = function (n) { return n < 10 ? '0' + n : '' + n; };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  function pendingRows(rows) {
+    return rows.filter(function (tr) { return tr.cells[9].textContent.trim() === '未审核'; });
+  }
   function batchAudit() {
     var rows = getCheckedRows();
     if (!rows.length) { showToast('请先勾选需要审核的登记记录'); return; }
-    var pending = rows.filter(function (tr) { return tr.cells[9].textContent.trim() === '待审核'; });
+    var pending = pendingRows(rows);
     if (!pending.length) { showToast('勾选的记录均已审核，无需重复审核'); return; }
-    showToast('已对 ' + pending.length + ' 条登记记录完成审核', 'success');
+    if (pending.length === 1) { fillAuditForm(pending[0]); openModal('dlgAudit'); return; }
+    batchRows = pending;
+    document.getElementById('batchCount').textContent = pending.length;
+    openModal('dlgBatchAudit');
+  }
+  function fillAuditForm(tr) {
+    auditRow = tr;
+    document.getElementById('auUserNo').textContent   = tr.cells[1].textContent.trim();
+    document.getElementById('auUserName').textContent = tr.cells[2].textContent.trim();
+    document.getElementById('auUserAddr').textContent = tr.cells[3].textContent.trim();
+    document.getElementById('auMeterNo').textContent  = tr.cells[4].textContent.trim();
+    document.getElementById('auPrevTime').textContent = tr.cells[8].textContent.trim();
+    document.getElementById('auPrevRead').textContent = tr.cells[7].textContent.trim();
+    document.getElementById('auCurTime').textContent  = tr.cells[6].textContent.trim();
+    document.getElementById('auCurRead').textContent  = tr.cells[5].textContent.trim();
+    document.getElementById('auOpinion').value = '';
+  }
+  function finishAudit(status) {
+    if (!auditRow) return;
+    var opinion = document.getElementById('auOpinion').value.trim();
+    if (status === '审核驳回' && !opinion) { showToast('驳回时请填写审核意见'); return; }
+    auditRow.cells[9].textContent  = status;
+    auditRow.cells[10].textContent = '管理员';
+    auditRow.cells[11].textContent = nowStr();
+    auditRow.cells[12].textContent = opinion;
+    auditRow.querySelector('.row-chk').checked = false;
+    syncAll();
+    auditRow = null;
+    closeModal('dlgAudit');
+    showToast(status === '审核通过' ? '审核通过' : '已驳回', 'success');
+  }
+  function passAudit() { finishAudit('审核通过'); }
+  function rejectAudit() { finishAudit('审核驳回'); }
+  function confirmBatchAudit() {
+    var ts = nowStr();
+    batchRows.forEach(function (tr) {
+      tr.cells[9].textContent  = '审核通过';
+      tr.cells[10].textContent = '管理员';
+      tr.cells[11].textContent = ts;
+      tr.cells[12].textContent = '批量审核通过';
+      tr.querySelector('.row-chk').checked = false;
+    });
+    var count = batchRows.length;
+    batchRows = [];
+    syncAll();
+    closeModal('dlgBatchAudit');
+    showToast('已对 ' + count + ' 条登记记录完成审核', 'success');
   }
 
   var toastTimer = null;
@@ -355,8 +484,55 @@
 
   function doReset() {
     document.querySelectorAll('.filter-card .filter-grid input').forEach(function (i) { i.value = ''; });
+    document.querySelectorAll('.filter-card .filter-grid [data-select]').forEach(function (el) {
+      el.classList.add('placeholder');
+      el.querySelector('span:first-child').textContent = el.getAttribute('data-default');
+    });
     showToast('筛选条件已重置', 'success');
   }
+
+  // ===== 查询条件下拉单选（审核状态：未审核 / 审核通过 / 审核驳回） =====
+  var SELECT_DATA = {
+    auditStatus: ['未审核', '审核通过', '审核驳回']
+  };
+  var selPopup = null;
+  function closeSelPopup() {
+    if (selPopup) { selPopup.remove(); selPopup = null; }
+  }
+  document.querySelectorAll('[data-select]').forEach(function (box) {
+    box.setAttribute('data-default', box.querySelector('span:first-child').textContent);
+    box.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (selPopup && selPopup._owner === box) { closeSelPopup(); return; }
+      closeSelPopup();
+      var key = box.getAttribute('data-select');
+      var current = box.classList.contains('placeholder') ? '' : box.querySelector('span:first-child').textContent;
+      var pop = document.createElement('div');
+      pop.className = 'sel-popup';
+      pop._owner = box;
+      SELECT_DATA[key].forEach(function (opt) {
+        var item = document.createElement('div');
+        item.className = 'sel-item' + (opt === current ? ' active' : '');
+        item.textContent = opt;
+        item.addEventListener('click', function (ev) {
+          ev.stopPropagation();
+          box.classList.remove('placeholder');
+          box.querySelector('span:first-child').textContent = opt;
+          closeSelPopup();
+        });
+        pop.appendChild(item);
+      });
+      document.body.appendChild(pop);
+      var r = box.getBoundingClientRect();
+      pop.style.left = (r.left + window.scrollX) + 'px';
+      pop.style.top = (r.bottom + window.scrollY + 4) + 'px';
+      pop.style.minWidth = r.width + 'px';
+      selPopup = pop;
+    });
+  });
+  document.addEventListener('click', closeSelPopup);
+  window.addEventListener('resize', closeSelPopup);
+  window.addEventListener('scroll', closeSelPopup, true);
 
   // 选中用户行 -> 下方出现登记表单（线上实测行为）
   document.querySelectorAll('#userTable tbody tr').forEach(function (tr) {
