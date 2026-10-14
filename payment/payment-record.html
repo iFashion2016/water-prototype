@@ -78,6 +78,10 @@
   .page-btn { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4b5563; }
   .page-btn.disabled { color: #c8cdd5; cursor: default; }
   .page-total { margin: 0 10px; }
+  .sel-popup { position: absolute; z-index: 9999; background: #fff; border: 1px solid #dcdfe6; border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.12); max-height: 260px; overflow-y: auto; }
+  .sel-item { padding: 8px 14px; font-size: 13px; color: #333; cursor: pointer; white-space: nowrap; }
+  .sel-item:hover { background: #f0f6ff; }
+  .sel-item.active { background: #e8f1ff; color: #1890ff; font-weight: 600; }
   .page-size { height: 30px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 10px; display: inline-flex; align-items: center; gap: 14px; color: #4b5563; cursor: pointer; background: #fff; }
 
   .toast { position: fixed; top: 76px; right: 24px; z-index: 300; min-width: 300px; background: #fdf6e3; border: 1px solid #f5dab1; color: #b88230; border-radius: 6px; padding: 12px 16px; display: none; align-items: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
@@ -100,6 +104,19 @@
   .btn-cancel:hover { color: #79bbff; }
   .btn-print { height: 34px; padding: 0 22px; border: none; border-radius: 4px; background: #409eff; color: #fff; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
   .btn-print:hover { background: #79bbff; }
+
+  /* ===== 缴费详情（冲正）弹窗 ===== */
+  #reversalModal .modal-box { width: 960px; }
+  .rev-form { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 40px; row-gap: 22px; padding: 26px 40px; }
+  .rev-item { display: flex; align-items: center; gap: 10px; }
+  .rev-item label { flex-shrink: 0; width: 82px; text-align: right; font-size: 14px; color: #374151; }
+  .rev-input { flex: 1; height: 36px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13px; color: #9ca3af; background: #f5f6f8; display: flex; align-items: center; justify-content: space-between; }
+  .rev-input .caret { color: #b6bdc9; font-size: 11px; }
+  .rev-footer { display: flex; align-items: center; justify-content: flex-end; gap: 16px; padding: 14px 24px; }
+  .btn-rev-cancel { height: 34px; padding: 0 20px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #374151; font-size: 14px; cursor: pointer; }
+  .btn-rev-cancel:hover { border-color: #409eff; color: #409eff; }
+  .btn-rev-confirm { height: 34px; padding: 0 22px; border: none; border-radius: 4px; background: #409eff; color: #fff; font-size: 14px; cursor: pointer; }
+  .btn-rev-confirm:hover { background: #79bbff; }
 
   /* 收据内容 */
   .receipt { width: 100%; }
@@ -185,10 +202,10 @@
         <div class="filter-item"><span class="filter-label">用户名称：</span><input class="filter-input q" placeholder="请输入用户名称"></div>
         <div class="filter-item"><span class="filter-label">手机号：</span><input class="filter-input q" placeholder="请输入手机号码"></div>
         <div class="filter-item"><span class="filter-label">表身码：</span><input class="filter-input q" placeholder="请输入表身码"></div>
-        <div class="filter-item"><span class="filter-label">缴费类型：</span><div class="filter-input placeholder"><span>请选择缴费类型</span><span class="caret">▾</span></div></div>
-        <div class="filter-item"><span class="filter-label">支付渠道：</span><div class="filter-input placeholder"><span>请选择支付渠道</span><span class="caret">▾</span></div></div>
-        <div class="filter-item"><span class="filter-label">入账方式：</span><div class="filter-input placeholder"><span>请选择入账方式</span><span class="caret">▾</span></div></div>
-        <div class="filter-item"><span class="filter-label">支付状态：</span><div class="filter-input placeholder"><span>请选择支付状态</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">缴费类型：</span><div class="filter-input placeholder" data-select="feeType"><span>请选择缴费类型</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">支付渠道：</span><div class="filter-input placeholder" data-select="payChannel"><span>请选择支付渠道</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">入账方式：</span><div class="filter-input placeholder" data-select="entryMethod"><span>请选择入账方式</span><span class="caret">▾</span></div></div>
+        <div class="filter-item"><span class="filter-label">支付状态：</span><div class="filter-input placeholder" data-select="payStatus"><span>请选择支付状态</span><span class="caret">▾</span></div></div>
         <div class="filter-item"><span class="filter-label">营业所：</span><div class="filter-input placeholder"><span>请选择营业所</span><span class="caret">▾</span></div></div>
         <div class="filter-item"><span class="filter-label">营业员：</span><input class="filter-input q" placeholder="请输入营业员"></div>
         <div class="filter-item"><span class="filter-label">开始时间：</span><div class="filter-input" style="justify-content:flex-start;gap:8px"><span class="clock">🕐</span><span>2026-09-22 00:00:00</span></div></div>
@@ -213,9 +230,9 @@
             <tr><th>流水号</th><th>用户编号</th><th>用户名称</th><th>表身码</th><th>用户地址</th><th>价格类型</th><th>缴费类型</th><th>支付渠道</th><th>入账方式</th><th>基础水费</th><th>污水处理费</th><th>水资源税</th><th>缴费金额</th><th>赠送金额</th><th>缴费时间</th><th>支付状态</th><th>操作</th></tr>
           </thead>
           <tbody>
-            <tr><td>LS20260917001</td><td>063000336</td><td>人民路建行对面意尔康楼上</td><td>00002624000053</td><td>河口县公共区域-人民路门市-1212</td><td>按月</td><td>柜台缴费</td><td>现金</td><td>预付费入账</td><td>10.00</td><td>0.00</td><td>0.00</td><td>10.00</td><td>0.00</td><td>2026-09-17 13:34:39</td><td>支付成功</td><td><button class="op-btn" onclick="opAction('冲正')">冲正</button><button class="op-btn" style="margin-left:6px" onclick="printReceipt(this)">补打</button></td></tr>
-            <tr><td>LS20260915002</td><td>063000338</td><td>未提供</td><td>260626116289</td><td>河口县公共区域-公共公共-未提供</td><td>按月</td><td>柜台缴费</td><td>微信</td><td>预付费入账</td><td>50.00</td><td>0.00</td><td>0.00</td><td>50.00</td><td>0.00</td><td>2026-09-15 10:02:11</td><td>支付成功</td><td><button class="op-btn" onclick="opAction('冲正')">冲正</button><button class="op-btn" style="margin-left:6px" onclick="printReceipt(this)">补打</button></td></tr>
-            <tr><td>LS20260912003</td><td>063000210</td><td>田如燕</td><td>260626116287</td><td>河口一中宏建小区-1栋-201</td><td>按月</td><td>柜台缴费</td><td>支付宝</td><td>预付费入账</td><td>20.63</td><td>0.00</td><td>0.00</td><td>20.63</td><td>0.00</td><td>2026-09-12 09:18:45</td><td>支付成功</td><td><button class="op-btn" onclick="opAction('冲正')">冲正</button><button class="op-btn" style="margin-left:6px" onclick="printReceipt(this)">补打</button></td></tr>
+            <tr><td>LS20260917001</td><td>063000336</td><td>人民路建行对面意尔康楼上</td><td>00002624000053</td><td>河口县公共区域-人民路门市-1212</td><td>按月</td><td>柜台缴费</td><td>现金</td><td>预付费入账</td><td>10.00</td><td>0.00</td><td>0.00</td><td>10.00</td><td>0.00</td><td>2026-09-17 13:34:39</td><td>支付成功</td><td><button class="op-btn" onclick="openReversal(this)">冲正</button><button class="op-btn" style="margin-left:6px" onclick="printReceipt(this)">补打</button></td></tr>
+            <tr><td>LS20260915002</td><td>063000338</td><td>未提供</td><td>260626116289</td><td>河口县公共区域-公共公共-未提供</td><td>按月</td><td>柜台缴费</td><td>微信</td><td>预付费入账</td><td>50.00</td><td>0.00</td><td>0.00</td><td>50.00</td><td>0.00</td><td>2026-09-15 10:02:11</td><td>支付成功</td><td><button class="op-btn" onclick="openReversal(this)">冲正</button><button class="op-btn" style="margin-left:6px" onclick="printReceipt(this)">补打</button></td></tr>
+            <tr><td>LS20260912003</td><td>063000210</td><td>田如燕</td><td>260626116287</td><td>河口一中宏建小区-1栋-201</td><td>按月</td><td>柜台缴费</td><td>支付宝</td><td>预付费入账</td><td>20.63</td><td>0.00</td><td>0.00</td><td>20.63</td><td>0.00</td><td>2026-09-12 09:18:45</td><td>支付成功</td><td><button class="op-btn" onclick="openReversal(this)">冲正</button><button class="op-btn" style="margin-left:6px" onclick="printReceipt(this)">补打</button></td></tr>
           </tbody>
         </table>
         <table class="data-table">
@@ -301,11 +318,69 @@
   </div>
 </div>
 
+<!-- ===== 缴费详情（冲正）弹窗 ===== -->
+<div class="modal-overlay" id="reversalModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">缴费详情</span>
+      <button class="modal-close" onclick="closeReversal()">×</button>
+    </div>
+    <div class="rev-form">
+      <div class="rev-item"><label>流水号：</label><div class="rev-input"><span id="rev-serial"></span></div></div>
+      <div class="rev-item"><label>用户编号：</label><div class="rev-input"><span id="rev-userCode"></span></div></div>
+      <div class="rev-item"><label>用户名称：</label><div class="rev-input"><span id="rev-userName"></span></div></div>
+      <div class="rev-item"><label>用户地址：</label><div class="rev-input"><span id="rev-address"></span></div></div>
+      <div class="rev-item"><label>表具编号：</label><div class="rev-input"><span id="rev-meterCode"></span></div></div>
+      <div class="rev-item"><label>价格名称：</label><div class="rev-input"><span id="rev-priceName"></span></div></div>
+      <div class="rev-item"><label>联系电话：</label><div class="rev-input"><span id="rev-phone">19990391753</span></div></div>
+      <div class="rev-item"><label>冲正金额：</label><div class="rev-input"><span id="rev-amount"></span></div></div>
+      <div class="rev-item"><label>缴费前余额：</label><div class="rev-input"><span id="rev-balanceBefore">-0.800000</span></div></div>
+      <div class="rev-item"><label>缴费后余额：</label><div class="rev-input"><span id="rev-balanceAfter">19.200000</span></div></div>
+      <div class="rev-item"><label>缴费时间：</label><div class="rev-input"><span id="rev-payTime"></span></div></div>
+      <div class="rev-item"><label>支付渠道：</label><div class="rev-input"><span id="rev-payChannel"></span><span class="caret">▾</span></div></div>
+      <div class="rev-item"><label>入账方式：</label><div class="rev-input"><span id="rev-entryMethod"></span><span class="caret">▾</span></div></div>
+      <div class="rev-item"><label>处理方式：</label><div class="rev-input"><span>充值</span><span class="caret">▾</span></div></div>
+    </div>
+    <div class="rev-footer">
+      <button class="btn-rev-cancel" onclick="closeReversal()">取消</button>
+      <button class="btn-rev-confirm" onclick="confirmReversal()">冲正</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // 行内操作：冲正 / 撤单（预开票发票将被红冲，二次确认提示）
-  function opAction(name) {
-    showToast('本次' + name + '涉及到预开票的发票，发票将被红冲');
+  // ===== 缴费详情（冲正）弹窗 =====
+  // 仅「已支付」状态的记录允许冲正；打开弹窗并回填当前行数据
+  function openReversal(btn) {
+    var tr = btn.closest('tr');
+    var cells = tr.querySelectorAll('td');
+    var status = cells[15].textContent.trim();
+    if (status !== '已支付' && status !== '支付成功') {
+      showToast('仅支付状态为「已支付」的记录可以冲正');
+      return;
+    }
+    document.getElementById('rev-serial').textContent = cells[0].textContent.trim();
+    document.getElementById('rev-userCode').textContent = cells[1].textContent.trim();
+    document.getElementById('rev-userName').textContent = cells[2].textContent.trim();
+    document.getElementById('rev-meterCode').textContent = cells[3].textContent.trim();
+    document.getElementById('rev-address').textContent = cells[4].textContent.trim();
+    document.getElementById('rev-priceName').textContent = cells[5].textContent.trim();
+    document.getElementById('rev-amount').textContent = cells[12].textContent.trim();
+    document.getElementById('rev-payTime').textContent = cells[14].textContent.trim();
+    document.getElementById('rev-payChannel').textContent = cells[7].textContent.trim();
+    document.getElementById('rev-entryMethod').textContent = cells[8].textContent.trim();
+    document.getElementById('reversalModal').classList.add('show');
   }
+  function closeReversal() {
+    document.getElementById('reversalModal').classList.remove('show');
+  }
+  function confirmReversal() {
+    closeReversal();
+    showToast('本次冲正涉及到预开票的发票，发票将被红冲');
+  }
+  document.getElementById('reversalModal').addEventListener('click', function (e) {
+    if (e.target === this) closeReversal();
+  });
 
   var toastTimer = null;
   function showToast(text, type) {
@@ -319,8 +394,58 @@
   function hideToast() { document.getElementById('toast').classList.remove('show'); }
   function doReset() {
     document.querySelectorAll('.filter-grid input').forEach(function (i) { i.value = ''; });
+    document.querySelectorAll('.filter-grid [data-select]').forEach(function (el) {
+      el.classList.add('placeholder');
+      el.querySelector('span:first-child').textContent = el.getAttribute('data-default');
+    });
     showToast('筛选条件已重置', 'success');
   }
+
+  // ===== 查询条件下拉单选 =====
+  var SELECT_DATA = {
+    feeType: ['取消收费', '调剂充值', '充值', '冲正', '退余额', '余额迁移', '余额纠正', '赠送'],
+    payChannel: ['柜台', '网厅'],
+    entryMethod: ['现金', '微信', '支付宝', '刷卡', '转账'],
+    payStatus: ['待支付', '已支付', '支付取消', '支付超时', '支付失败', '取消收费', '已退余额', '未支付']
+  };
+  var selPopup = null;
+  function closeSelPopup() {
+    if (selPopup) { selPopup.remove(); selPopup = null; }
+  }
+  document.querySelectorAll('[data-select]').forEach(function (box) {
+    box.setAttribute('data-default', box.querySelector('span:first-child').textContent);
+    box.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (selPopup && selPopup._owner === box) { closeSelPopup(); return; }
+      closeSelPopup();
+      var key = box.getAttribute('data-select');
+      var current = box.classList.contains('placeholder') ? '' : box.querySelector('span:first-child').textContent;
+      var pop = document.createElement('div');
+      pop.className = 'sel-popup';
+      pop._owner = box;
+      SELECT_DATA[key].forEach(function (opt) {
+        var item = document.createElement('div');
+        item.className = 'sel-item' + (opt === current ? ' active' : '');
+        item.textContent = opt;
+        item.addEventListener('click', function (ev) {
+          ev.stopPropagation();
+          box.classList.remove('placeholder');
+          box.querySelector('span:first-child').textContent = opt;
+          closeSelPopup();
+        });
+        pop.appendChild(item);
+      });
+      document.body.appendChild(pop);
+      var r = box.getBoundingClientRect();
+      pop.style.left = (r.left + window.scrollX) + 'px';
+      pop.style.top = (r.bottom + window.scrollY + 4) + 'px';
+      pop.style.minWidth = r.width + 'px';
+      selPopup = pop;
+    });
+  });
+  document.addEventListener('click', closeSelPopup);
+  window.addEventListener('resize', closeSelPopup);
+  window.addEventListener('scroll', closeSelPopup, true);
 
   // ===== 补打收据 =====
   function printReceipt(btn) {
