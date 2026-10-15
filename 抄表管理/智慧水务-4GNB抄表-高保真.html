@@ -133,11 +133,23 @@
   .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
   @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-  .chart-wrap { display: flex; align-items: flex-end; gap: 18px; height: 220px; padding: 10px 10px 0; border-bottom: 1px solid #e5e7eb; }
-  .chart-bar { flex: 1; background: linear-gradient(180deg, #5cb2ff, #2a7de1); border-radius: 4px 4px 0 0; position: relative; }
-  .chart-bar span { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #4b5563; }
-  .chart-x { display: flex; gap: 18px; padding: 8px 10px 0; font-size: 12px; color: #9aa3af; }
-  .chart-x div { flex: 1; text-align: center; }
+  /* 图表展示弹窗（用水记录：列表/图表双模式） */
+  .wfilter { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+  .wf-item { display: flex; align-items: center; gap: 10px; }
+  .wf-label { font-size: 14px; font-weight: 600; color: #1f2937; white-space: nowrap; }
+  .wf-input { width: 168px; height: 36px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 10px; font-size: 13.5px; color: #374151; background: #fff; outline: none; transition: border-color .2s; }
+  .wf-input:focus { border-color: #3b9dff; }
+  input[type="date"].wf-input { color: #4b5563; }
+  .view-toggle { display: flex; justify-content: flex-end; margin: 12px 0 12px; }
+  .vt-item { min-width: 58px; height: 30px; padding: 0 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; color: #4b5563; background: #fff; border: 1px solid #dcdfe6; cursor: pointer; user-select: none; }
+  .vt-item:first-child { border-radius: 4px 0 0 4px; }
+  .vt-item:last-child { border-radius: 0 4px 4px 0; margin-left: -1px; }
+  .vt-item:hover { color: #3b9dff; }
+  .vt-item.active { color: #3b9dff; border-color: #3b9dff; background: #ecf5ff; position: relative; z-index: 1; font-weight: 600; }
+  .line-chart-box { padding: 2px 4px 0; }
+  .lc-legend { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12.5px; color: #6b7280; margin-bottom: 8px; }
+  .lc-legend i { width: 14px; height: 14px; background: #f4a7c1; border-radius: 2px; display: inline-block; }
+  #lcSvg { width: 100%; height: auto; display: block; }
 </style>
 </head>
 <body>
@@ -342,10 +354,27 @@
     <div class="modal-body" style="padding:18px 22px">
       <div class="table-scroll">
         <table class="data-table">
-          <thead><tr><th>用户编号</th><th>用户名称</th><th>表身码</th><th>命令类型</th><th>命令状态</th><th>创建时间</th><th>执行时间</th><th>操作员</th></tr></thead>
+          <thead><tr><th>用户编号</th><th>用户名称</th><th>表具编号</th><th>命令类型</th><th>命令状态</th><th>创建时间</th><th>执行时间</th><th>操作员</th></tr></thead>
+          <tbody>
+            <tr><td>002003651</td><td>阿卜杜外力·艾麦提</td><td>270324202348</td><td>修改周期</td><td><span class="tag-ok">成功</span></td><td>2026-10-09 22:16:07</td><td>2026-10-10 00:05:14</td><td>系统自动</td></tr>
+            <tr><td>002003651</td><td>阿卜杜外力·艾麦提</td><td>270324202348</td><td>开阀</td><td><span class="tag-ok">成功</span></td><td>2026-10-09 22:16:07</td><td>2026-10-10 00:05:17</td><td>系统自动</td></tr>
+            <tr><td>002003651</td><td>阿卜杜外力·艾麦提</td><td>270324202348</td><td>修改周期</td><td><span class="tag-ok">成功</span></td><td>2026-10-08 16:10:00</td><td>2026-10-09 16:09:42</td><td>系统自动</td></tr>
+            <tr><td>002003651</td><td>阿卜杜外力·艾麦提</td><td>270324202348</td><td>关阀</td><td><span class="tag-ok">成功</span></td><td>2026-10-08 16:10:00</td><td>2026-10-09 16:09:46</td><td>系统自动</td></tr>
+            <tr><td>002003651</td><td>阿卜杜外力·艾麦提</td><td>270324202348</td><td>修改周期</td><td><span class="tag-ok">成功</span></td><td>2026-10-04 16:04:28</td><td>2026-10-04 16:07:03</td><td>系统自动</td></tr>
+            <tr><td>002003651</td><td>阿卜杜外力·艾麦提</td><td>270324202348</td><td>开阀</td><td><span class="tag-ok">成功</span></td><td>2026-10-04 16:04:28</td><td>2026-10-04 16:07:06</td><td>系统自动</td></tr>
+            <tr><td>002003651</td><td>阿卜杜外力·艾麦提</td><td>270324202348</td><td>修改周期</td><td><span class="tag-ok">成功</span></td><td>2026-10-03 22:16:00</td><td>2026-10-03 22:16:08</td><td>系统自动</td></tr>
+            <tr><td>002003651</td><td>阿卜杜外力·艾麦提</td><td>270324202348</td><td>关阀</td><td><span class="tag-ok">成功</span></td><td>2026-10-03 22:16:00</td><td>2026-10-03 22:16:13</td><td>系统自动</td></tr>
+            <tr><td>002003651</td><td>阿卜杜外力·艾麦提</td><td>270324202348</td><td>修改周期</td><td><span class="tag-ok">成功</span></td><td>2026-10-02 22:15:16</td><td>2026-10-03 22:15:54</td><td>系统自动</td></tr>
+          </tbody>
         </table>
       </div>
-      <div class="empty-tip">暂无数据</div>
+      <div class="pagination">
+        <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span>
+        <span class="page-btn active">1</span><span class="page-btn">2</span><span class="page-btn">3</span><span class="page-btn">4</span><span class="page-btn">5</span>
+        <span class="page-btn">›</span><span class="page-btn">»</span>
+        <span class="page-total">共 [ 15 ] 页，共 [ 146 ] 条</span>
+        <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+      </div>
     </div>
   </div>
 </div>
@@ -376,20 +405,56 @@
   </div>
 </div>
 
-<!-- ============ 弹窗：图表展示（近似还原：线上该功能未截取到界面） ============ -->
+<!-- ============ 弹窗：图表展示（用水记录：列表/图表双模式） ============ -->
 <div class="modal-mask" id="dlgChart">
-  <div class="modal modal-lg" style="width:860px">
-    <div class="modal-head"><div class="modal-title">用量图表</div><span class="modal-close" onclick="closeModal('dlgChart')">✕</span></div>
-    <div class="modal-body">
-      <div class="chart-wrap">
-        <div class="chart-bar" style="height:42%"><span>0.73</span></div>
-        <div class="chart-bar" style="height:60%"><span>1.04</span></div>
-        <div class="chart-bar" style="height:58%"><span>1.00</span></div>
-        <div class="chart-bar" style="height:47%"><span>0.81</span></div>
-        <div class="chart-bar" style="height:58%"><span>1.01</span></div>
-        <div class="chart-bar" style="height:46%"><span>0.80</span></div>
+  <div class="modal modal-lg">
+    <div class="modal-head"><div class="modal-title">用水记录</div><span class="modal-close" onclick="closeModal('dlgChart')">✕</span></div>
+    <div class="modal-body" style="padding:18px 26px 20px">
+      <!-- 查询区 -->
+      <div class="wfilter">
+        <div class="wf-item"><span class="wf-label">表具编号</span><input class="wf-input" placeholder="请输入表具编号"></div>
+        <div class="wf-item"><span class="wf-label">开始时间</span><input type="date" class="wf-input" value="2025-10-01"></div>
+        <div class="wf-item"><span class="wf-label">结束时间</span><input type="date" class="wf-input" value="2026-10-14"></div>
+        <button class="btn" style="height:36px" onclick="showToast('查询成功','success')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M21 21L16.5 16.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          查询
+        </button>
       </div>
-      <div class="chart-x"><div>09-21</div><div>09-20</div><div>09-19</div><div>09-18</div><div>09-17</div><div>09-16</div></div>
+      <!-- 显示模式切换：列表 / 图表 -->
+      <div class="view-toggle">
+        <span class="vt-item active" data-view="list">列表</span><span class="vt-item" data-view="chart">图表</span>
+      </div>
+      <!-- 列表模式 -->
+      <div id="viewList">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>用户编号</th><th>用户名称</th><th>用户地址</th><th>表具编号</th><th>抄表时间</th><th style="text-align:right">抄表读数</th><th style="text-align:right">用水量</th></tr></thead>
+            <tbody>
+              <tr><td>002000944</td><td>古丽巴旦·阿斯甫</td><td>振兴小区-1-3-503</td><td>260324311303</td><td>2026-10-13 23:58:56</td><td style="text-align:right">87.14</td><td style="text-align:right">0.04</td></tr>
+              <tr><td>002000069</td><td>阿不来提·赛麦提</td><td>团结小区-2-2-304</td><td>270324178289</td><td>2026-10-13 23:59:43</td><td style="text-align:right">152.05</td><td style="text-align:right">0.19</td></tr>
+              <tr><td>002002948</td><td>依迪力斯·买买提阿不拉</td><td>新华小区-11-2-402</td><td>260324232693</td><td>2026-10-13 23:59:58</td><td style="text-align:right">142.35</td><td style="text-align:right">0.23</td></tr>
+              <tr><td>002006641</td><td>阿依古丽·阿布都热合曼</td><td>金桥小区-3-2-203</td><td>260324216077</td><td>2026-10-13 23:59:32</td><td style="text-align:right">84.75</td><td style="text-align:right">0.19</td></tr>
+              <tr><td>002002088</td><td>再努然木·尼亚孜</td><td>金盾小区-8-2-201</td><td>260324310709</td><td>2026-10-13 23:59:14</td><td style="text-align:right">3.61</td><td style="text-align:right">0.00</td></tr>
+              <tr><td>002005014</td><td>张三</td><td>英买里四区-4-4-2-402</td><td>260324255908</td><td>2026-10-13 23:58:54</td><td style="text-align:right">0.14</td><td style="text-align:right">0.00</td></tr>
+              <tr><td>002002910</td><td>麦吾兰·巴拉提</td><td>英买里三区-5-201门面房</td><td>260324220180</td><td>2026-10-13 23:58:56</td><td style="text-align:right">732.04</td><td style="text-align:right">1.24</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span class="page-btn disabled">«</span><span class="page-btn disabled">‹</span>
+          <span class="page-btn active">1</span><span class="page-btn">2</span><span class="page-btn">3</span><span class="page-btn">4</span><span class="page-btn">5</span>
+          <span class="page-btn">›</span><span class="page-btn">»</span>
+          <span class="page-total">共 [ 71674 ] 页，共 [ 716731 ] 条</span>
+          <span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">▾</span></span>
+        </div>
+      </div>
+      <!-- 图表模式 -->
+      <div id="viewChart" style="display:none">
+        <div class="line-chart-box">
+          <div class="lc-legend"><i></i>用水量(m³)</div>
+          <svg id="lcSvg" role="img" aria-label="用水量折线图"></svg>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -501,6 +566,49 @@
   document.querySelectorAll('.modal-mask').forEach(function (m) {
     m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('show'); });
   });
+
+  // ===== 图表展示弹窗：列表 / 图表双模式切换 =====
+  var vtItems = document.querySelectorAll('#dlgChart .vt-item');
+  vtItems.forEach(function (it) {
+    it.addEventListener('click', function () {
+      vtItems.forEach(function (x) { x.classList.remove('active'); });
+      it.classList.add('active');
+      var v = it.getAttribute('data-view');
+      document.getElementById('viewList').style.display = v === 'list' ? '' : 'none';
+      document.getElementById('viewChart').style.display = v === 'chart' ? '' : 'none';
+    });
+  });
+
+  // ===== 图表模式：生成用水量折线图（SVG，模拟 2026-08-01 ~ 2026-10-12 日用水量） =====
+  (function renderLineChart() {
+    var svg = document.getElementById('lcSvg');
+    if (!svg) return;
+    var W = 1060, H = 360, L = 52, R = 16, T = 14, B = 58, YMAX = 1600;
+    var days = [], vals = [];
+    var seed = 7;
+    function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    for (var d = new Date(2026, 7, 1); d <= new Date(2026, 9, 12); d.setDate(d.getDate() + 1)) {
+      days.push(d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2));
+      vals.push(Math.round(980 + rnd() * 260));
+    }
+    vals[57] = 1460; vals[58] = 1130; // 9-27 峰值
+    var n = days.length;
+    function X(i) { return L + (W - L - R) * i / (n - 1); }
+    function Y(v) { return T + (H - T - B) * (1 - v / YMAX); }
+    var s = '';
+    for (var g = 0; g <= YMAX; g += 200) {
+      s += '<line x1="' + L + '" y1="' + Y(g) + '" x2="' + (W - R) + '" y2="' + Y(g) + '" stroke="#eceef2"/>' +
+           '<text x="' + (L - 8) + '" y="' + (Y(g) + 4) + '" text-anchor="end" font-size="11" fill="#9aa3af">' + (g ? g.toLocaleString() : '0') + '</text>';
+    }
+    for (var i = 0; i < n; i += 2) {
+      s += '<text transform="rotate(-55 ' + X(i).toFixed(1) + ' ' + (H - B + 16) + ')" x="' + X(i).toFixed(1) + '" y="' + (H - B + 16) + '" text-anchor="end" font-size="10" fill="#9aa3af">' + days[i] + '</text>';
+    }
+    var pts = vals.map(function (v, i) { return X(i).toFixed(1) + ',' + Y(v).toFixed(1); }).join(' ');
+    s += '<polyline points="' + pts + '" fill="none" stroke="#f4a7c1" stroke-width="2"/>';
+    vals.forEach(function (v, i) { s += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(v).toFixed(1) + '" r="3" fill="#f4a7c1"/>'; });
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.innerHTML = s;
+  })();
 </script>
 </body>
 </html>
