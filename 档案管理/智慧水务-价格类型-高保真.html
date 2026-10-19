@@ -173,6 +173,15 @@
   .ladder-type-dropdown.show { display: block; }
   .ladder-type-dropdown .dd-item { padding: 10px 14px; font-size: 14px; color: #606266; cursor: pointer; }
   .ladder-type-dropdown .dd-item:hover { background: #f5f7fa; color: #3b9dff; }
+  .fsel-wrap { position: relative; }
+  .fsel-select { height: 34px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 12px; font-size: 13.5px; color: #374151; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; flex: 1; }
+  .fsel-select:hover { border-color: #3b9dff; }
+  .fsel-select .caret { color: #b6bdc9; font-size: 11px; transition: transform .2s; }
+  .fsel-select.open .caret { transform: rotate(180deg); }
+  .fsel-dropdown { position: absolute; top: 100%; left: 90px; right: 0; z-index: 20; background: #fff; border: 1px solid #e4e7ed; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.12); margin-top: 4px; display: none; }
+  .fsel-dropdown.show { display: block; }
+  .fsel-dropdown .dd-item { padding: 10px 14px; font-size: 14px; color: #606266; cursor: pointer; }
+  .fsel-dropdown .dd-item:hover { background: #f5f7fa; color: #3b9dff; }
   .ladder-min-ext { padding-bottom: 0; }
   .form-ladder-amount { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 28px; padding: 12px 0; }
   .form-ladder-amount .form-item { display: flex; align-items: center; }
@@ -260,10 +269,9 @@
   <div class="content">
     <div class="filter-card">
       <div class="filter-grid">
-      <div class="filter-item"><span class="filter-label">组织机构：</span><div class="filter-input placeholder"><span>请选择组织机构</span><span class="caret">&#9662;</span></div></div>
       <div class="filter-item"><span class="filter-label">价格名称：</span><input class="filter-input q" placeholder="请输入价格名称"></div>
-      <div class="filter-item"><span class="filter-label">价格状态：</span><div class="filter-input placeholder"><span>请选择价格状态</span><span class="caret">&#9662;</span></div></div>
-      <div class="filter-item"><span class="filter-label">欠费关阀：</span><div class="filter-input placeholder"><span>请选择欠费关阀</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item fsel-wrap"><span class="filter-label">价格状态：</span><div class="fsel-select" id="priceStatusSelect" onclick="toggleFSel(event,'priceStatusSelect','priceStatusDropdown')"><span class="fsel-label" style="color:#b6bdc9">请选择价格状态</span><span class="caret">&#9662;</span></div><div class="fsel-dropdown" id="priceStatusDropdown"><div class="dd-item" onclick="pickFSel(event,'priceStatusSelect','priceStatusDropdown','待生效')">待生效</div><div class="dd-item" onclick="pickFSel(event,'priceStatusSelect','priceStatusDropdown','使用中')">使用中</div><div class="dd-item" onclick="pickFSel(event,'priceStatusSelect','priceStatusDropdown','停用')">停用</div></div></div>
+      <div class="filter-item fsel-wrap"><span class="filter-label">欠费关阀：</span><div class="fsel-select" id="feeValveFilterSelect" onclick="toggleFSel(event,'feeValveFilterSelect','feeValveFilterDropdown')"><span class="fsel-label" style="color:#b6bdc9">请选择欠费关阀</span><span class="caret">&#9662;</span></div><div class="fsel-dropdown" id="feeValveFilterDropdown"><div class="dd-item" onclick="pickFSel(event,'feeValveFilterSelect','feeValveFilterDropdown','是')">是</div><div class="dd-item" onclick="pickFSel(event,'feeValveFilterSelect','feeValveFilterDropdown','否')">否</div></div></div>
       </div>
       <div class="btn-bar">
         <button class="btn" onclick="showToast('查询成功','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>查询</button>
@@ -273,15 +281,15 @@
       </div>
     </div>
 
-    <div class="table-card"><div class="table-scroll"><table class="data-table"><thead><tr><th class="col-check"><input type="checkbox" onclick="toggleAll(this)"></th><th>价格编号</th><th>价格名称</th><th>价格类型</th><th>一阶价格</th><th>一阶用量</th><th>二阶价格</th><th>二阶用量</th><th>三阶价格</th><th>价格状态</th><th>欠费关阀</th><th>启用时间</th><th>结束时间</th><th>创建人</th><th>创建时间</th><th class="col-op">操作</th></tr></thead><tbody>
-<tr data-pidx="0"><td class="col-check"><input type="checkbox"></td><td>251</td><td>按月</td><td>固定单价</td><td>1.000000</td><td>100.00</td><td>1.000000</td><td>100.00</td><td>1.000000</td><td>使用中</td><td>是</td><td>2026-07-06 00:00:00</td><td>9999-07-06 09:07:31</td><td>涌恒供水</td><td>2026-07-06 09:07:31</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(0)">调价</span><span class="act-btn" onclick="openEditDlg(0)">编辑</span><span class="act-btn" onclick="openDetailDlg(0)">详情</span></td></tr>
-<tr data-pidx="1"><td class="col-check"><input type="checkbox"></td><td>241</td><td>阶梯水价</td><td>阶梯价格</td><td>2.500000</td><td>15.00</td><td>3.500000</td><td>25.00</td><td>5.000000</td><td>使用中</td><td>是</td><td>2026-01-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>管理员</td><td>2025-12-20 14:30:22</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(1)">调价</span><span class="act-btn" onclick="openEditDlg(1)">编辑</span><span class="act-btn" onclick="openDetailDlg(1)">详情</span></td></tr>
-<tr data-pidx="2"><td class="col-check"><input type="checkbox"></td><td>231</td><td>居民用水</td><td>固定单价</td><td>2.800000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>使用中</td><td>否</td><td>2026-03-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>管理员</td><td>2026-02-28 10:15:48</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(2)">调价</span><span class="act-btn" onclick="openEditDlg(2)">编辑</span><span class="act-btn" onclick="openDetailDlg(2)">详情</span></td></tr>
-<tr data-pidx="3"><td class="col-check"><input type="checkbox"></td><td>221</td><td>商业用水</td><td>固定单价</td><td>4.500000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>使用中</td><td>是</td><td>2026-02-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>涌恒供水</td><td>2026-01-25 16:05:33</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(3)">调价</span><span class="act-btn" onclick="openEditDlg(3)">编辑</span><span class="act-btn" onclick="openDetailDlg(3)">详情</span></td></tr>
-<tr data-pidx="4"><td class="col-check"><input type="checkbox"></td><td>211</td><td>工业用水</td><td>固定单价</td><td>3.800000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>停用</td><td>是</td><td>2025-06-01 00:00:00</td><td>2026-05-31 23:59:59</td><td>管理员</td><td>2025-05-20 11:20:10</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(4)">调价</span><span class="act-btn" onclick="openEditDlg(4)">编辑</span><span class="act-btn" onclick="openDetailDlg(4)">详情</span></td></tr>
-<tr data-pidx="5"><td class="col-check"><input type="checkbox"></td><td>201</td><td>特种行业</td><td>阶梯价格</td><td>6.000000</td><td>50.00</td><td>8.000000</td><td>100.00</td><td>10.000000</td><td>使用中</td><td>是</td><td>2026-04-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>涌恒供水</td><td>2026-03-15 09:45:56</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(5)">调价</span><span class="act-btn" onclick="openEditDlg(5)">编辑</span><span class="act-btn" onclick="openDetailDlg(5)">详情</span></td></tr>
-<tr data-pidx="6"><td class="col-check"><input type="checkbox"></td><td>191</td><td>行政事业</td><td>固定单价</td><td>3.200000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>使用中</td><td>否</td><td>2026-01-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>管理员</td><td>2025-12-10 14:22:15</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(6)">调价</span><span class="act-btn" onclick="openEditDlg(6)">编辑</span><span class="act-btn" onclick="openDetailDlg(6)">详情</span></td></tr>
-<tr data-pidx="7"><td class="col-check"><input type="checkbox"></td><td>181</td><td>经营服务</td><td>固定单价</td><td>5.000000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>停用</td><td>是</td><td>2025-01-01 00:00:00</td><td>2025-12-31 23:59:59</td><td>涌恒供水</td><td>2024-12-28 10:08:15</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(7)">调价</span><span class="act-btn" onclick="openEditDlg(7)">编辑</span><span class="act-btn" onclick="openDetailDlg(7)">详情</span></td></tr>
+    <div class="table-card"><div class="table-scroll"><table class="data-table"><thead><tr><th class="col-check"><input type="checkbox" onclick="toggleAll(this)"></th><th>价格编号</th><th>价格名称</th><th>价格类型</th><th>一阶价格</th><th>一阶用量</th><th>二阶价格</th><th>二阶用量</th><th>三阶价格</th><th>价格状态</th><th>欠费关阀</th><th>启用时间</th><th>结束时间</th><th>组织机构</th><th>创建人</th><th>创建时间</th><th class="col-op">操作</th></tr></thead><tbody>
+<tr data-pidx="0"><td class="col-check"><input type="checkbox"></td><td>251</td><td>按月</td><td>固定单价</td><td>1.000000</td><td>100.00</td><td>1.000000</td><td>100.00</td><td>1.000000</td><td>使用中</td><td>是</td><td>2026-07-06 00:00:00</td><td>9999-07-06 09:07:31</td><td>涌恒供水</td><td>涌恒供水</td><td>2026-07-06 09:07:31</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(0)">调价</span><span class="act-btn" onclick="openEditDlg(0)">编辑</span><span class="act-btn" onclick="openDetailDlg(0)">详情</span></td></tr>
+<tr data-pidx="1"><td class="col-check"><input type="checkbox"></td><td>241</td><td>阶梯水价</td><td>阶梯价格</td><td>2.500000</td><td>15.00</td><td>3.500000</td><td>25.00</td><td>5.000000</td><td>使用中</td><td>是</td><td>2026-01-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>涌恒供水</td><td>管理员</td><td>2025-12-20 14:30:22</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(1)">调价</span><span class="act-btn" onclick="openEditDlg(1)">编辑</span><span class="act-btn" onclick="openDetailDlg(1)">详情</span></td></tr>
+<tr data-pidx="2"><td class="col-check"><input type="checkbox"></td><td>231</td><td>居民用水</td><td>固定单价</td><td>2.800000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>使用中</td><td>否</td><td>2026-03-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>涌恒供水</td><td>管理员</td><td>2026-02-28 10:15:48</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(2)">调价</span><span class="act-btn" onclick="openEditDlg(2)">编辑</span><span class="act-btn" onclick="openDetailDlg(2)">详情</span></td></tr>
+<tr data-pidx="3"><td class="col-check"><input type="checkbox"></td><td>221</td><td>商业用水</td><td>固定单价</td><td>4.500000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>使用中</td><td>是</td><td>2026-02-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>涌恒供水</td><td>涌恒供水</td><td>2026-01-25 16:05:33</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(3)">调价</span><span class="act-btn" onclick="openEditDlg(3)">编辑</span><span class="act-btn" onclick="openDetailDlg(3)">详情</span></td></tr>
+<tr data-pidx="4"><td class="col-check"><input type="checkbox"></td><td>211</td><td>工业用水</td><td>固定单价</td><td>3.800000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>停用</td><td>是</td><td>2025-06-01 00:00:00</td><td>2026-05-31 23:59:59</td><td>涌恒供水</td><td>管理员</td><td>2025-05-20 11:20:10</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(4)">调价</span><span class="act-btn" onclick="openEditDlg(4)">编辑</span><span class="act-btn" onclick="openDetailDlg(4)">详情</span></td></tr>
+<tr data-pidx="5"><td class="col-check"><input type="checkbox"></td><td>201</td><td>特种行业</td><td>阶梯价格</td><td>6.000000</td><td>50.00</td><td>8.000000</td><td>100.00</td><td>10.000000</td><td>使用中</td><td>是</td><td>2026-04-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>涌恒供水</td><td>涌恒供水</td><td>2026-03-15 09:45:56</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(5)">调价</span><span class="act-btn" onclick="openEditDlg(5)">编辑</span><span class="act-btn" onclick="openDetailDlg(5)">详情</span></td></tr>
+<tr data-pidx="6"><td class="col-check"><input type="checkbox"></td><td>191</td><td>行政事业</td><td>固定单价</td><td>3.200000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>使用中</td><td>否</td><td>2026-01-01 00:00:00</td><td>9999-12-31 23:59:59</td><td>涌恒供水</td><td>管理员</td><td>2025-12-10 14:22:15</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(6)">调价</span><span class="act-btn" onclick="openEditDlg(6)">编辑</span><span class="act-btn" onclick="openDetailDlg(6)">详情</span></td></tr>
+<tr data-pidx="7"><td class="col-check"><input type="checkbox"></td><td>181</td><td>经营服务</td><td>固定单价</td><td>5.000000</td><td>0.00</td><td>0.000000</td><td>0.00</td><td>0.000000</td><td>停用</td><td>是</td><td>2025-01-01 00:00:00</td><td>2025-12-31 23:59:59</td><td>涌恒供水</td><td>涌恒供水</td><td>2024-12-28 10:08:15</td><td class="col-op"><span class="act-btn" onclick="openAdjustDlg(7)">调价</span><span class="act-btn" onclick="openEditDlg(7)">编辑</span><span class="act-btn" onclick="openDetailDlg(7)">详情</span></td></tr>
 </tbody></table></div><div class="pagination"><span class="page-btn disabled">&laquo;</span><span class="page-btn disabled">&lsaquo;</span><span class="page-btn cur">1</span><span class="page-btn disabled">&rsaquo;</span><span class="page-btn disabled">&raquo;</span><span class="page-total">共 [ 1 ] 页，共 [ 8 ] 条</span><span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">&#9662;</span></span></div></div>
   </div>
 
@@ -295,9 +303,8 @@
   <div class="dlg price-dlg">
     <div class="dlg-head">新增价格类型<span class="dlg-close" onclick="closeDlg()">&#10005;</span></div>
     <div class="dlg-body">
-      <!-- 顶部三列：组织机构 + 价格类型 + 欠费关阀 -->
+      <!-- 顶部：价格类型 + 欠费关阀 -->
       <div class="price-form" style="border-bottom:none;padding-bottom:0">
-        <div class="form-item"><label><span class="req">*</span>组织机构：</label><div class="form-ctl"><span>063 涌恒供水</span><span class="caret">&#9662;</span></div></div>
         <div class="form-item ptype-wrap">
           <label><span class="req">*</span>价格类型：</label>
           <div class="ptype-select" id="ptypeSelect" onclick="togglePtype(event)">
@@ -310,7 +317,16 @@
             <div class="dd-item" onclick="pickPtype(event,'含最低消费阶梯单价')">含最低消费阶梯单价</div>
           </div>
         </div>
-        <div class="form-item"><label><span class="req">*</span>欠费关阀：</label><div class="form-ctl"><span>是</span><span class="caret">&#9662;</span></div></div>
+        <div class="form-item fsel-wrap">
+          <label><span class="req">*</span>欠费关阀：</label>
+          <div class="fsel-select" id="feeValveSelect" onclick="toggleFSel(event,'feeValveSelect','feeValveDropdown')">
+            <span class="fsel-label">是</span><span class="caret">&#9662;</span>
+          </div>
+          <div class="fsel-dropdown" id="feeValveDropdown">
+            <div class="dd-item" onclick="pickFSel(event,'feeValveSelect','feeValveDropdown','是')">是</div>
+            <div class="dd-item" onclick="pickFSel(event,'feeValveSelect','feeValveDropdown','否')">否</div>
+          </div>
+        </div>
       </div>
 
       <!-- 固定单价模式 -->
@@ -345,10 +361,10 @@
               <span id="ladderCountLabel">3</span><span class="caret">&#9662;</span>
             </div>
             <div class="ladder-count-dropdown" id="ladderCountDropdown">
-              <div class="dd-item" onclick="pickLadderCount(event,1)">1</div>
               <div class="dd-item" onclick="pickLadderCount(event,2)">2</div>
               <div class="dd-item" onclick="pickLadderCount(event,3)">3</div>
               <div class="dd-item" onclick="pickLadderCount(event,4)">4</div>
+              <div class="dd-item" onclick="pickLadderCount(event,5)">5</div>
             </div>
           </div>
         </div>
@@ -358,9 +374,22 @@
           <div class="form-item ladder-amt-item" data-idx="2"><label><span class="req">*</span>阶梯二(量)：</label><input value="0"></div>
           <div class="form-item ladder-amt-item" data-idx="3"><label><span class="req">*</span>阶梯三(量)：</label><input value="0"></div>
           <div class="form-item ladder-amt-item" data-idx="4" style="display:none"><label><span class="req">*</span>阶梯四(量)：</label><input value="0"></div>
+          <div class="form-item ladder-amt-item" data-idx="5" style="display:none"><label><span class="req">*</span>阶梯五(量)：</label><input value="0"></div>
         </div>
         <div class="price-form" style="padding-top:0">
-          <div class="form-item"><label><span class="req">*</span>阶梯周期：</label><div class="form-ctl placeholder"><span style="color:#b6bdc9">请选择阶梯周期</span><span class="caret">&#9662;</span></div></div>
+          <div class="form-item fsel-wrap">
+            <label><span class="req">*</span>阶梯周期：</label>
+            <div class="fsel-select" id="ladderPeriodSelect" onclick="toggleFSel(event,'ladderPeriodSelect','ladderPeriodDropdown')">
+              <span class="fsel-label" style="color:#b6bdc9">请选择阶梯周期</span><span class="caret">&#9662;</span>
+            </div>
+            <div class="fsel-dropdown" id="ladderPeriodDropdown">
+              <div class="dd-item" onclick="pickFSel(event,'ladderPeriodSelect','ladderPeriodDropdown','1个月')">1个月</div>
+              <div class="dd-item" onclick="pickFSel(event,'ladderPeriodSelect','ladderPeriodDropdown','2个月')">2个月</div>
+              <div class="dd-item" onclick="pickFSel(event,'ladderPeriodSelect','ladderPeriodDropdown','3个月')">3个月</div>
+              <div class="dd-item" onclick="pickFSel(event,'ladderPeriodSelect','ladderPeriodDropdown','6个月')">6个月</div>
+              <div class="dd-item" onclick="pickFSel(event,'ladderPeriodSelect','ladderPeriodDropdown','一年')">一年</div>
+            </div>
+          </div>
           <div class="form-item"><label><span class="req">*</span>报警量：</label><input class="form-ctl" value="0"></div>
           <div class="form-item"><label><span class="req">*</span>启用日期：</label><input class="form-ctl" value="2026-09-28"></div>
         </div>
@@ -373,6 +402,7 @@
               <th class="ladder-col" data-lidx="2">二阶价格</th>
               <th class="ladder-col" data-lidx="3">三阶价格</th>
               <th class="ladder-col" data-lidx="4" style="display:none">四阶价格</th>
+              <th class="ladder-col" data-lidx="5" style="display:none">五阶价格</th>
               <th style="width:18%">操作</th>
             </tr>
           </thead>
@@ -383,6 +413,7 @@
               <td class="ladder-col" data-lidx="2"><input class="pdd-input" value="0"></td>
               <td class="ladder-col" data-lidx="3"><input class="pdd-input" value="0"></td>
               <td class="ladder-col" data-lidx="4" style="display:none"><input class="pdd-input" value="0"></td>
+              <td class="ladder-col" data-lidx="5" style="display:none"><input class="pdd-input" value="0"></td>
               <td><button class="btn-del-item" onclick="delRow(this,'ladderBody')">删除</button></td>
             </tr>
           </tbody>
@@ -473,7 +504,19 @@
             <div class="form-item ladder-amt-item" data-idx="4" style="display:none"><label><span class="req">*</span>阶梯四(量)：</label><input value="0"></div>
           </div>
           <div class="price-form" style="padding-top:0">
-            <div class="form-item"><label><span class="req">*</span>阶梯周期：</label><div class="form-ctl placeholder"><span style="color:#b6bdc9">请选择阶梯周期</span><span class="caret">&#9662;</span></div></div>
+            <div class="form-item fsel-wrap">
+              <label><span class="req">*</span>阶梯周期：</label>
+              <div class="fsel-select" id="ladderMinPeriodSelect" onclick="toggleFSel(event,'ladderMinPeriodSelect','ladderMinPeriodDropdown')">
+                <span class="fsel-label" style="color:#b6bdc9">请选择阶梯周期</span><span class="caret">&#9662;</span>
+              </div>
+              <div class="fsel-dropdown" id="ladderMinPeriodDropdown">
+                <div class="dd-item" onclick="pickFSel(event,'ladderMinPeriodSelect','ladderMinPeriodDropdown','1个月')">1个月</div>
+                <div class="dd-item" onclick="pickFSel(event,'ladderMinPeriodSelect','ladderMinPeriodDropdown','2个月')">2个月</div>
+                <div class="dd-item" onclick="pickFSel(event,'ladderMinPeriodSelect','ladderMinPeriodDropdown','3个月')">3个月</div>
+                <div class="dd-item" onclick="pickFSel(event,'ladderMinPeriodSelect','ladderMinPeriodDropdown','6个月')">6个月</div>
+                <div class="dd-item" onclick="pickFSel(event,'ladderMinPeriodSelect','ladderMinPeriodDropdown','一年')">一年</div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="price-form" style="padding-top:0">
@@ -521,14 +564,13 @@
     <div class="dlg-head">价格调整<span class="dlg-close" onclick="closeAdjustDlg()">&#10005;</span></div>
     <div class="dlg-body">
       <div class="price-form" style="border-bottom:none;padding-bottom:0">
-        <div class="form-item"><label><span class="req">*</span>组织机构：</label><div class="form-ctl"><span>063 涌恒供水</span><span class="caret">&#9662;</span></div></div>
-        <div class="form-item"><label><span class="req">*</span>价格类型：</label><div class="form-ctl" id="adjPtypeVal"><span>固定单价</span><span class="caret">&#9662;</span></div></div>
-        <div class="form-item"><label><span class="req">*</span>欠费关阀：</label><div class="form-ctl" id="adjFeeValve"><span>是</span><span class="caret">&#9662;</span></div></div>
+        <div class="form-item read-only"><label><span class="req">*</span>价格类型：</label><div class="form-ctl" id="adjPtypeVal"><span>固定单价</span><span class="caret">&#9662;</span></div></div>
+        <div class="form-item read-only"><label><span class="req">*</span>欠费关阀：</label><div class="form-ctl" id="adjFeeValve"><span>是</span><span class="caret">&#9662;</span></div></div>
       </div>
       <!-- 固定单价模式 -->
       <div class="form-section active" id="adjFixedSection">
         <div class="price-form" style="padding-top:16px">
-          <div class="form-item"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" id="adjFixedName"></div>
+          <div class="form-item read-only"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" id="adjFixedName" readonly></div>
           <div class="form-item"><label><span class="req">*</span>报警量：</label><input class="form-ctl" id="adjFixedAlarm"></div>
           <div class="form-item"><label><span class="req">*</span>启用日期：</label><input class="form-ctl" id="adjFixedDate"></div>
         </div>
@@ -542,8 +584,8 @@
       <!-- 阶梯单价模式 -->
       <div class="form-section" id="adjLadderSection">
         <div class="price-form" style="padding-top:16px">
-          <div class="form-item"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" id="adjLadderName"></div>
-          <div class="form-item"><label><span class="req">*</span>阶梯类型：</label><div class="form-ctl"><span>户阶梯</span><span class="caret">&#9662;</span></div></div>
+          <div class="form-item read-only"><label><span class="req">*</span>价格名称：</label><input class="form-ctl" id="adjLadderName" readonly></div>
+          <div class="form-item read-only"><label><span class="req">*</span>阶梯类型：</label><div class="form-ctl"><span>户阶梯</span><span class="caret">&#9662;</span></div></div>
           <div class="form-item"><label><span class="req">*</span>阶梯数量：</label><div class="form-ctl" id="adjLadderCount"><span>3</span><span class="caret">&#9662;</span></div></div>
         </div>
         <div class="form-ladder-amount" id="adjLadderAmountRow">
@@ -553,7 +595,19 @@
           <div class="form-item ladder-amt-item" data-idx="4" style="display:none"><label><span class="req">*</span>阶梯四(量)：</label><input id="adjLadAmt4"></div>
         </div>
         <div class="price-form" style="padding-top:0">
-          <div class="form-item"><label><span class="req">*</span>阶梯周期：</label><div class="form-ctl placeholder"><span style="color:#b6bdc9">请选择阶梯周期</span><span class="caret">&#9662;</span></div></div>
+          <div class="form-item fsel-wrap">
+            <label><span class="req">*</span>阶梯周期：</label>
+            <div class="fsel-select" id="adjLadderPeriodSelect" onclick="toggleFSel(event,'adjLadderPeriodSelect','adjLadderPeriodDropdown')">
+              <span class="fsel-label" style="color:#b6bdc9">请选择阶梯周期</span><span class="caret">&#9662;</span>
+            </div>
+            <div class="fsel-dropdown" id="adjLadderPeriodDropdown">
+              <div class="dd-item" onclick="pickFSel(event,'adjLadderPeriodSelect','adjLadderPeriodDropdown','1个月')">1个月</div>
+              <div class="dd-item" onclick="pickFSel(event,'adjLadderPeriodSelect','adjLadderPeriodDropdown','2个月')">2个月</div>
+              <div class="dd-item" onclick="pickFSel(event,'adjLadderPeriodSelect','adjLadderPeriodDropdown','3个月')">3个月</div>
+              <div class="dd-item" onclick="pickFSel(event,'adjLadderPeriodSelect','adjLadderPeriodDropdown','6个月')">6个月</div>
+              <div class="dd-item" onclick="pickFSel(event,'adjLadderPeriodSelect','adjLadderPeriodDropdown','一年')">一年</div>
+            </div>
+          </div>
           <div class="form-item"><label><span class="req">*</span>报警量：</label><input class="form-ctl" id="adjLadderAlarm"></div>
           <div class="form-item"><label><span class="req">*</span>启用日期：</label><input class="form-ctl" id="adjLadderDate"></div>
         </div>
@@ -587,7 +641,6 @@
     <div class="dlg-head">价格详情<span class="dlg-close" onclick="closeDetailDlg()">&#10005;</span></div>
     <div class="dlg-body">
       <div class="price-form" style="border-bottom:none;padding-bottom:0">
-        <div class="form-item"><label><span class="req">*</span>组织机构：</label><div class="form-ctl"><span>063 涌恒供水</span><span class="caret">&#9662;</span></div></div>
         <div class="form-item"><label><span class="req">*</span>价格类型：</label><div class="form-ctl" id="detPtypeVal"><span>固定单价</span><span class="caret">&#9662;</span></div></div>
         <div class="form-item"><label><span class="req">*</span>欠费关阀：</label><div class="form-ctl" id="detFeeValve"><span>是</span><span class="caret">&#9662;</span></div></div>
       </div>
@@ -668,10 +721,6 @@
             </div>
           </div>
         </div>
-        <div class="form-row">
-          <label>水价政策：</label>
-          <div class="edit-ctl"><textarea class="edit-textarea" id="editPolicy">0</textarea></div>
-        </div>
       </div>
     </div>
     <div class="dlg-foot dlg-foot-right">
@@ -714,7 +763,41 @@
   }
   function openDlg() { document.getElementById('dlgMask').classList.add('show'); }
   function closeDlg() { document.getElementById('dlgMask').classList.remove('show'); }
-  function confirmDlg() { closeDlg(); showToast('保存成功', 'success'); }
+  function confirmDlg() {
+    // 当前激活价格类型区块的价格明细
+    var section = document.querySelector('#dlgMask .form-section.active');
+    var tbody = section.querySelector('tbody');
+    var names = [];
+    tbody.querySelectorAll('.sp-label').forEach(function (el) {
+      var v = el.textContent.trim();
+      if (v && v !== '请选择子价格名称') names.push(v);
+    });
+    // 校验1：不允许有相同的子价格名称
+    var seen = {}, dup = '';
+    names.forEach(function (n) { if (seen[n] && !dup) dup = n; seen[n] = true; });
+    if (dup) { showToast('子价格名称【' + dup + '】重复，不允许有相同的子价格名称', 'warn'); return; }
+    // 校验2：必须包含基础水费
+    if (names.indexOf('基础水费') < 0) { showToast('价格明细中必须包含【基础水费】', 'warn'); return; }
+    closeDlg(); showToast('保存成功', 'success');
+  }
+  // 通用单选下拉
+  function toggleFSel(e, selId, ddId) {
+    var dd = document.getElementById(ddId);
+    var sel = document.getElementById(selId);
+    var isOpen = dd.classList.contains('show');
+    dd.classList.toggle('show', !isOpen);
+    sel.classList.toggle('open', !isOpen);
+    e.stopPropagation();
+  }
+  function pickFSel(e, selId, ddId, val) {
+    var sel = document.getElementById(selId);
+    var lbl = sel.querySelector('.fsel-label');
+    lbl.textContent = val;
+    lbl.style.color = '#374151';
+    sel.classList.remove('open');
+    document.getElementById(ddId).classList.remove('show');
+    e.stopPropagation();
+  }
   // 价格类型切换
   var currentPtype = '固定单价';
   var currentLadderCount = 3;
@@ -895,6 +978,8 @@
     if (lmcSel) lmcSel.classList.remove('open');
     document.querySelectorAll('.min-consume-dropdown.show').forEach(function (d) { d.classList.remove('show'); });
     document.querySelectorAll('.min-consume-select.open').forEach(function (s) { s.classList.remove('open'); });
+    document.querySelectorAll('.fsel-dropdown.show').forEach(function (d) { d.classList.remove('show'); });
+    document.querySelectorAll('.fsel-select.open').forEach(function (s) { s.classList.remove('open'); });
   });
   // 新增/删除收费项目 - 固定单价
   function addFixedRow() {
@@ -909,7 +994,7 @@
     var tr = document.createElement('tr');
     var n = currentLadderCount;
     var cols = '';
-    for (var i = 1; i <= 4; i++) {
+    for (var i = 1; i <= 5; i++) {
       var display = i <= n ? '' : 'display:none';
       cols += '<td class="ladder-col" data-lidx="' + i + '" style="' + display + '"><input class="pdd-input" value="0"></td>';
     }
@@ -1100,7 +1185,6 @@
     var d = priceData[idx];
     document.getElementById('editPriceName').value = d.name;
     document.getElementById('editFeeValveLabel').textContent = d.feeValve;
-    document.getElementById('editPolicy').value = d.policy || '0';
     document.getElementById('editDlgMask').classList.add('show');
   }
   function closeEditDlg() { document.getElementById('editDlgMask').classList.remove('show'); }
