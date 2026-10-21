@@ -8,7 +8,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
   body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f7f7f7; color: #212121; overflow: hidden; font-size: 14px; }
-  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 1; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
   .topbar-left { width: 204px; flex: 0 0 204px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
   .logo-drop { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; }
   .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
@@ -21,7 +21,7 @@
   .top-user { margin-left: auto; display: flex; align-items: center; gap: 12px; }
   .top-user .tenant { font-size: 14px; color: #fff; }
   .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,.65); background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; padding-bottom: 16px; }
+  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 1; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; padding-bottom: 16px; }
   .side-caption { padding: 14px 16px 6px; font-size: 12px; color: #9aa3af; }
   .menu-group-title { display: flex; align-items: center; gap: 8px; margin: 4px 10px; padding: 10px 12px; background: #eaf3fe; color: #2a7de1; border-radius: 6px; font-weight: 600; cursor: pointer; }
   .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
@@ -47,6 +47,7 @@
   .filter-input .clock { color: #b6bdc9; font-size: 12px; margin-right: 6px; }
   input.filter-input { cursor: text; }
   input.filter-input::placeholder { color: #b6bdc9; }
+  select.filter-input { display: block; cursor: pointer; appearance: auto; padding-right: 4px; }
   .btn-bar { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; justify-content: flex-end; }
   .btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 16px; border: none; border-radius: 4px; background: #3b9dff; color: #fff; font-size: 13.5px; cursor: pointer; box-shadow: 0 1px 3px rgba(59,157,255,.3); }
   .btn:hover { background: #2a8ef0; }
@@ -71,7 +72,7 @@
   .toast .t-close { margin-left: auto; cursor: pointer; color: #d3b17c; }
   .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
   @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-  .dlg-mask { position: fixed; inset: 0; z-index: 200; background: rgba(15,23,42,.42); display: none; align-items: flex-start; justify-content: center; }
+  .dlg-mask { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; z-index: 900; background: rgba(15,23,42,.42); display: none; align-items: flex-start; justify-content: center; }
   .dlg-mask.show { display: flex; }
   .dlg { margin-top: 90px; width: 820px; max-width: 92vw; background: #fff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.22); animation: slideIn .22s ease; }
   .dlg-head { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eef0f3; font-size: 16px; font-weight: 600; color: #212121; }
@@ -99,8 +100,27 @@
   .data-table thead th.col-check, .data-table thead th.col-op { z-index: 3; }
   .act-btn { color: #3b9dff; cursor: pointer; font-size: 13px; margin: 0 6px; }
   .act-btn:hover { text-decoration: underline; }
-  .confirm-mask { position: fixed; inset: 0; z-index: 300; background: rgba(15,23,42,.42); display: none; align-items: center; justify-content: center; }
+  .confirm-mask { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; z-index: 910; background: rgba(15,23,42,.42); display: none; align-items: center; justify-content: center; }
   .confirm-mask.show { display: flex; }
+  .dlg-head .template-link { margin-left: 28px; font-size: 13px; color: #3b9dff; cursor: pointer; font-weight: normal; text-decoration: none; }
+  .dlg-head .template-link:hover { text-decoration: underline; }
+  .import-dropzone {
+    display: block;
+    border: 2px dashed #c0c6cf; border-radius: 8px; padding: 72px 32px 64px;
+    text-align: center; background: #fafcff; cursor: pointer; transition: .18s; color: #4b5563;
+  }
+  .import-dropzone:hover { border-color: #3b9dff; background: #f2f7fd; }
+  .import-dropzone.dragover { border-color: #3b9dff; background: #eaf3fe; color: #2a7de1; }
+  .import-dropzone .upload-ico { margin-bottom: 18px; color: #9aa3af; }
+  .import-dropzone.dragover .upload-ico svg rect,
+  .import-dropzone.dragover .upload-ico svg path { stroke: #3b9dff; }
+  .import-dropzone .dz-main { font-size: 15px; }
+  .import-dropzone .dz-tip { font-size: 13px; color: #9aa3af; margin-top: 10px; }
+  .import-dropzone .dz-file { display: none; margin-top: 12px; font-size: 14px; color: #2a7de1; }
+  .import-dropzone.has-file .dz-main,
+  .import-dropzone.has-file .dz-tip { display: none; }
+  .import-dropzone.has-file .dz-file { display: block; }
+
   .confirm-box { width: 420px; background: #fff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.22); animation: slideIn .22s ease; }
   .confirm-head { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid #eef0f3; font-size: 16px; font-weight: 600; color: #212121; }
   .confirm-close { margin-left: auto; cursor: pointer; color: #9aa3af; font-size: 16px; }
@@ -205,8 +225,8 @@
       <div class="filter-item"><span class="filter-label">组织机构：</span><div class="filter-input placeholder"><span>请选择组织机构</span><span class="caret">&#9662;</span></div></div>
       <div class="filter-item"><span class="filter-label">表具类型：</span><div class="filter-input placeholder"><span>请选择表具类型</span><span class="caret">&#9662;</span></div></div>
       <div class="filter-item"><span class="filter-label">表身码：</span><input class="filter-input q" placeholder="请输入表身码"></div>
-      <div class="filter-item"><span class="filter-label">口径：</span><div class="filter-input placeholder"><span>请选择口径</span><span class="caret">&#9662;</span></div></div>
-      <div class="filter-item"><span class="filter-label">运营商：</span><div class="filter-input placeholder"><span>请选择运营商</span><span class="caret">&#9662;</span></div></div>
+      <div class="filter-item"><span class="filter-label">口径：</span><select class="filter-input"><option value="">请选择口径</option><option value="DN15">DN15</option><option value="DN20">DN20</option><option value="DN25">DN25</option><option value="DN32">DN32</option><option value="DN40">DN40</option><option value="DN50">DN50</option><option value="DN65">DN65</option><option value="DN80">DN80</option><option value="DN100">DN100</option><option value="DN150">DN150</option><option value="DN200">DN200</option><option value="DN250">DN250</option><option value="DN300">DN300</option><option value="DN400">DN400</option><option value="DN500">DN500</option><option value="DN600">DN600</option></select></div>
+      <div class="filter-item"><span class="filter-label">运营商：</span><select class="filter-input"><option value="">请选择运营商</option><option value="移动平台">移动平台</option><option value="电信平台">电信平台</option><option value="第三方平台">第三方平台</option><option value="虚拟平台">虚拟平台</option></select></div>
       <div class="filter-item"><span class="filter-label">imei卡号：</span><input class="filter-input q" placeholder="请输入imei卡号"></div>
       <div class="filter-item"><span class="filter-label">是否校验：</span><div class="filter-input placeholder"><span>请选择是否校验</span><span class="caret">&#9662;</span></div></div>
       <div class="filter-item"><span class="filter-label">开户状态：</span><div class="filter-input placeholder"><span>请选择开户状态</span><span class="caret">&#9662;</span></div></div>
@@ -218,12 +238,12 @@
         <button class="btn" onclick="doReset()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 12 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4V12H12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 16 8)"/></svg>重置</button>
         <button class="btn" onclick="openDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>新增</button>
         <button class="btn" onclick="confirmDelete()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 7H18M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7M8 7V19C8 20.1 8.9 21 10 21H14C15.1 21 16 20.1 16 19V7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>删除</button>
-        <button class="btn plain" onclick="showToast('导入功能演示','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>导入</button>
+        <button class="btn plain" onclick="openImportDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>导入</button>
         <button class="btn" onclick="showToast('导出任务已提交，请稍后下载','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 15V3M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>导出</button>
       </div>
     </div>
 
-    <div class="table-card"><div class="table-scroll"><table class="data-table"><thead><tr><th class="col-check"><input type="checkbox" onclick="toggleAll(this)"></th><th>表身码</th><th>表具类型</th><th>表具大类</th><th>口径</th><th>运营商</th><th>imei</th><th>sim</th><th>ispid</th><th>校验状态</th><th>开户状态</th><th>地址</th><th>安装类型</th><th>强检日期</th><th>对接标识</th><th>创建人</th><th>创建时间</th><th class="col-op">操作</th></tr></thead><tbody><tr><td class="col-check"><input type="checkbox"></td><td>260626116289</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td>移动ONENET</td><td>869944071800105</td><td>898608321123D0846376</td><td>2471024166</td><td>已校验</td><td>已开户</td><td>河口县公共区域-公共公共-未提供</td><td></td><td>2032-09-03 00:00:00</td><td></td><td>涌恒供水</td><td>2026-09-03 14:49:18</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>00002624000053</td><td>WPG远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>已校验</td><td>已开户</td><td>河口县公共区域-人民路门市-1212</td><td></td><td>2032-09-03 00:00:00</td><td></td><td>涌恒供水</td><td>2026-09-03 14:26:59</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>00002624000083</td><td>WPG远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>已校验</td><td>已开户</td><td>河口县公共区域-人民路门市-123</td><td></td><td>2032-09-03 00:00:00</td><td></td><td>涌恒供水</td><td>2026-09-03 14:18:46</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2624000058</td><td>WPG远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>已校验</td><td>未开户</td><td></td><td></td><td>2026-08-20 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-20 15:22:39</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2624000053</td><td>WPG远传阀控水表</td><td>水表</td><td>DN15</td><td></td><td></td><td></td><td></td><td>已校验</td><td>未开户</td><td></td><td></td><td>2026-08-20 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-20 15:21:30</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2617000041</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>未校验</td><td>未开户</td><td></td><td></td><td>2026-08-20 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-20 15:16:01</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>260626116356</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td>移动ONENET</td><td>869944071813959</td><td></td><td>2471021255</td><td>已校验</td><td>已开户</td><td>河口一中宏建小区-3栋-301</td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:33:57</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>260626116404</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td>移动ONENET</td><td>860726088485478</td><td></td><td>2471021857</td><td>已校验</td><td>已开户</td><td>河口一中宏建小区-1栋-260626116404</td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:33:22</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2606000182</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>未校验</td><td>未开户</td><td></td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:32:45</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2606000188</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td></td><td>未校验</td><td>未开户</td><td></td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:32:03</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr></tbody></table></div><div class="pagination"><span class="page-btn disabled">&laquo;</span><span class="page-btn disabled">&lsaquo;</span><span class="page-btn cur">1</span><span class="page-btn disabled">&rsaquo;</span><span class="page-btn disabled">&raquo;</span><span class="page-total">共 [ 23 ] 页，共 [ 222 ] 条</span><span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">&#9662;</span></span></div></div>
+    <div class="table-card"><div class="table-scroll"><table class="data-table"><thead><tr><th class="col-check"><input type="checkbox" onclick="toggleAll(this)"></th><th>表身码</th><th>表具类型</th><th>表具大类</th><th>口径</th><th>运营商</th><th>imei</th><th>sim</th><th>校验状态</th><th>开户状态</th><th>地址</th><th>安装类型</th><th>强检日期</th><th>对接标识</th><th>创建人</th><th>创建时间</th><th class="col-op">操作</th></tr></thead><tbody><tr><td class="col-check"><input type="checkbox"></td><td>260626116289</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td>移动ONENET</td><td>869944071800105</td><td>898608321123D0846376</td><td>已校验</td><td>已开户</td><td>河口县公共区域-公共公共-未提供</td><td></td><td>2032-09-03 00:00:00</td><td></td><td>涌恒供水</td><td>2026-09-03 14:49:18</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>00002624000053</td><td>WPG远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td>已校验</td><td>已开户</td><td>河口县公共区域-人民路门市-1212</td><td></td><td>2032-09-03 00:00:00</td><td></td><td>涌恒供水</td><td>2026-09-03 14:26:59</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>00002624000083</td><td>WPG远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td>已校验</td><td>已开户</td><td>河口县公共区域-人民路门市-123</td><td></td><td>2032-09-03 00:00:00</td><td></td><td>涌恒供水</td><td>2026-09-03 14:18:46</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2624000058</td><td>WPG远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td>已校验</td><td>未开户</td><td></td><td></td><td>2026-08-20 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-20 15:22:39</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2624000053</td><td>WPG远传阀控水表</td><td>水表</td><td>DN15</td><td></td><td></td><td></td><td>已校验</td><td>未开户</td><td></td><td></td><td>2026-08-20 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-20 15:21:30</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2617000041</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td>未校验</td><td>未开户</td><td></td><td></td><td>2026-08-20 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-20 15:16:01</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>260626116356</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td>移动ONENET</td><td>869944071813959</td><td></td><td>已校验</td><td>已开户</td><td>河口一中宏建小区-3栋-301</td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:33:57</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>260626116404</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td>移动ONENET</td><td>860726088485478</td><td></td><td>已校验</td><td>已开户</td><td>河口一中宏建小区-1栋-260626116404</td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:33:22</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2606000182</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td>未校验</td><td>未开户</td><td></td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:32:45</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr><tr><td class="col-check"><input type="checkbox"></td><td>2606000188</td><td>NB远传阀控水表</td><td>水表</td><td>DN20</td><td></td><td></td><td></td><td>未校验</td><td>未开户</td><td></td><td></td><td>2026-08-18 00:00:00</td><td></td><td>涌恒供水</td><td>2026-08-18 09:32:03</td><td class="col-op"><span class="act-btn" onclick="openEditDlg(this)">编辑</span></td></tr></tbody></table></div><div class="pagination"><span class="page-btn disabled">&laquo;</span><span class="page-btn disabled">&lsaquo;</span><span class="page-btn cur">1</span><span class="page-btn disabled">&rsaquo;</span><span class="page-btn disabled">&raquo;</span><span class="page-total">共 [ 23 ] 页，共 [ 222 ] 条</span><span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">&#9662;</span></span></div></div>
   </div>
 
   <footer class="footer">
@@ -256,8 +276,8 @@
         </div>
         <div class="dlg-item req-item" data-name="表身码"><label><span class="req">*</span>表身码：</label><input class="filter-input" id="fMeterNo" placeholder="请输入表身码"></div>
         <div class="dlg-item"><label>表底数：</label><input class="filter-input" id="fBaseNum" placeholder="请输入表底数"></div>
-        <div class="dlg-item req-item" data-name="口径"><label><span class="req">*</span>口径：</label><div class="filter-input placeholder" id="fCaliber"><span>请选择口径</span><span class="caret">&#9662;</span></div></div>
-        <div class="dlg-item req-item" data-name="运营商"><label><span class="req">*</span>运营商：</label><div class="filter-input placeholder" id="fOperator"><span>请选择运营商</span><span class="caret">&#9662;</span></div></div>
+        <div class="dlg-item req-item" data-name="口径"><label><span class="req">*</span>口径：</label><select class="filter-input" id="fCaliber"><option value="">请选择口径</option><option value="DN15">DN15</option><option value="DN20">DN20</option><option value="DN25">DN25</option><option value="DN32">DN32</option><option value="DN40">DN40</option><option value="DN50">DN50</option><option value="DN65">DN65</option><option value="DN80">DN80</option><option value="DN100">DN100</option><option value="DN150">DN150</option><option value="DN200">DN200</option><option value="DN250">DN250</option><option value="DN300">DN300</option><option value="DN400">DN400</option><option value="DN500">DN500</option><option value="DN600">DN600</option></select></div>
+        <div class="dlg-item req-item" data-name="运营商"><label><span class="req">*</span>运营商：</label><select class="filter-input" id="fOperator"><option value="">请选择运营商</option><option value="移动平台">移动平台</option><option value="电信平台">电信平台</option><option value="第三方平台">第三方平台</option><option value="虚拟平台">虚拟平台</option></select></div>
         <div class="dlg-item req-item" data-name="imei"><label><span class="req">*</span>imei：</label><input class="filter-input" id="fImei" placeholder="请输入imei"></div>
         <div class="dlg-item"><label>强检日期：</label><input class="filter-input" id="fCheckDate" placeholder="请输入强检日期"></div>
         <div class="dlg-item"><label>对接标识：</label><input class="filter-input" id="fLinkId" placeholder="请输入对接标识"></div>
@@ -307,6 +327,28 @@
   <span class="t-close" onclick="hideToast()">&#10005;</span>
 </div>
 
+<div class="dlg-mask" id="importMask" onclick="if(event.target===this)closeImportDlg()">
+  <div class="dlg" style="width:640px">
+    <div class="dlg-head"><span>导入文件</span><span class="template-link" onclick="showToast('模板下载演示','success')">下载模板</span><span class="dlg-close" onclick="closeImportDlg()">&#10005;</span></div>
+    <div class="dlg-body" style="padding:32px 28px 28px">
+      <label class="import-dropzone" id="importZone" for="importFile"
+        ondragover="event.preventDefault();this.classList.add('dragover')"
+        ondragleave="this.classList.remove('dragover')"
+        ondrop="handleDrop(event)">
+        <div class="upload-ico"><svg width="52" height="52" viewBox="0 0 48 48" fill="none"><rect x="6" y="6" width="36" height="36" rx="3" stroke="#b6bdc9" stroke-width="2"/><path d="M24 14V30" stroke="#b6bdc9" stroke-width="2.5" stroke-linecap="round"/><path d="M17 21L24 14L31 21" stroke="#b6bdc9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="dz-main">点击选择文件，或拖拽文件到此处</div>
+        <div class="dz-tip">支持 .xlsx / .xls 格式，单文件不超过 10MB</div>
+        <div class="dz-file" id="importFileName"></div>
+      </label>
+      <input type="file" id="importFile" accept=".xlsx,.xls" style="display:none" onchange="handleImportFile(this.files[0])">
+    </div>
+    <div class="dlg-foot">
+      <button class="btn plain" onclick="closeImportDlg()">取消</button>
+      <button class="btn" onclick="confirmImport()">确认导入</button>
+    </div>
+  </div>
+</div>
+
 <div class="confirm-mask" id="confirmMask" onclick="if(event.target===this)closeConfirm()">
   <div class="confirm-box">
     <div class="confirm-head">删除确认<span class="confirm-close" onclick="closeConfirm()">&#10005;</span></div>
@@ -329,6 +371,46 @@
     toastTimer = setTimeout(hideToast, 3200);
   }
   function hideToast() { document.getElementById('toast').classList.remove('show'); }
+
+  // ===== 导入功能 =====
+  var importPickedFile = null;
+  function openImportDlg() {
+    importPickedFile = null;
+    var zone = document.getElementById('importZone');
+    zone.classList.remove('has-file', 'dragover');
+    document.getElementById('importFileName').textContent = '';
+    document.getElementById('importFile').value = '';
+    document.getElementById('importMask').classList.add('show');
+  }
+  function closeImportDlg() { document.getElementById('importMask').classList.remove('show'); }
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('importZone').classList.remove('dragover');
+    var files = e.dataTransfer.files;
+    if (files && files[0]) handleImportFile(files[0]);
+  }
+  function handleImportFile(file) {
+    if (!file) return;
+    var name = file.name.toLowerCase();
+    if (!(name.endsWith('.xlsx') || name.endsWith('.xls'))) {
+      showToast('仅支持 .xlsx / .xls 格式的文件', 'warn');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('文件大小不能超过 10MB', 'warn');
+      return;
+    }
+    importPickedFile = file;
+    var zone = document.getElementById('importZone');
+    zone.classList.add('has-file');
+    document.getElementById('importFileName').textContent = '已选择：' + file.name + '（' + (file.size / 1024).toFixed(1) + ' KB）';
+  }
+  function confirmImport() {
+    if (!importPickedFile) { showToast('请先选择要导入的文件', 'warn'); return; }
+    closeImportDlg();
+    showToast('已提交导入任务：' + importPickedFile.name, 'success');
+  }
+
   function doReset() {
     document.querySelectorAll('.filter-grid input').forEach(function (i) { i.value = ''; });
     showToast('筛选条件已重置', 'success');
@@ -339,10 +421,12 @@
     // 清空所有输入框
     document.querySelectorAll('#dlgMask input.filter-input').forEach(function (i) { i.value = ''; });
     // 重置所有下拉样式
-    ['fOrg', 'fCaliber', 'fOperator'].forEach(function (id) {
+    ['fOrg', 'fCategory'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.classList.add('placeholder');
     });
+    document.getElementById('fCaliber').value = '';
+    document.getElementById('fOperator').value = '';
     // 表具大类默认：水表
     var catEl = document.getElementById('fCategory');
     if (catEl) {
@@ -424,15 +508,15 @@
     // 表具大类
     setSelectValue('fCategory', c[4].textContent.trim());
     // 口径
-    setSelectValue('fCaliber', c[5].textContent.trim());
+    document.getElementById('fCaliber').value = c[5].textContent.trim();
     // 运营商
-    setSelectValue('fOperator', c[6].textContent.trim());
+    document.getElementById('fOperator').value = c[6].textContent.trim();
     // imei
     document.getElementById('fImei').value = c[7].textContent.trim();
     // 强检日期
-    document.getElementById('fCheckDate').value = c[14].textContent.trim();
+    document.getElementById('fCheckDate').value = c[13].textContent.trim();
     // 对接标识
-    document.getElementById('fLinkId').value = c[15].textContent.trim();
+    document.getElementById('fLinkId').value = c[14].textContent.trim();
     // 表底数（表格没有，留空）
     document.getElementById('fBaseNum').value = '';
     // 组织机构（表格没有，留空）
@@ -448,9 +532,11 @@
       var name = reqItems[i].getAttribute('data-name');
       var input = reqItems[i].querySelector('input.filter-input');
       var div = reqItems[i].querySelector('div.filter-input');
+      var sel = reqItems[i].querySelector('select.filter-input');
       var ddInput = reqItems[i].querySelector('div.dropdown-input');
       var empty = false;
       if (input && !input.value.trim()) empty = true;
+      if (sel && !sel.value) empty = true;
       if (div && div.classList.contains('placeholder')) empty = true;
       if (ddInput && ddInput.classList.contains('placeholder')) empty = true;
       if (empty) {
