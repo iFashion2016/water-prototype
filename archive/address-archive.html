@@ -58,6 +58,9 @@
   .data-table th, .data-table td { padding: 11px 14px; font-size: 13px; white-space: nowrap; border-bottom: 1px solid #eef0f3; text-align: left; }
   .data-table thead th { background: #fff; font-weight: 600; color: #374151; font-size: 13.5px; }
   .data-table tbody td { color: #4b5563; }
+  .data-table th:last-child, .data-table td:last-child { position: sticky; right: 0; background: #fff; }
+  .data-table th:last-child { z-index: 3; box-shadow: -4px 0 8px rgba(15,60,130,.08); }
+  .data-table td:last-child { z-index: 2; box-shadow: -4px 0 8px rgba(15,60,130,.04); }
   .empty-tip { text-align: center; color: #9aa3af; padding: 80px 0; font-size: 14px; }
   .hint-tip { padding: 10px 14px; color: #3b9dff; font-size: 13px; border-bottom: 1px solid #eef0f3; }
   .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 16px 12px; font-size: 13px; color: #6b7280; }
@@ -95,6 +98,7 @@
   .tree-toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
   .tree-toolbar .tt-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 32px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #4b5563; font-size: 13px; cursor: pointer; transition: all .2s; }
   .tree-toolbar .tt-btn:hover { border-color: #3b9dff; color: #2a7de1; background: #f2f7fd; }
+  .tree-toolbar .tt-btn.danger:hover { border-color: #f56c6c; color: #f56c6c; background: #fef0f0; }
   .row-link { color: #3b9dff; cursor: pointer; margin-right: 10px; }
   .data-table th.col-check, .data-table td.col-check { width: 42px; text-align: center; }
   .data-table td.col-check input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #3b9dff; }
@@ -164,9 +168,10 @@
         <div class="tree-toolbar">
           <button class="tt-btn" onclick="openDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>地址新增</button>
           <button class="tt-btn" onclick="openEditDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 20L8 19L19 8C19.6 7.4 19.6 6.5 19 5.9C18.4 5.3 17.5 5.3 16.9 5.9L6 17L5 20.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>地址维护</button>
+          <button class="tt-btn danger" onclick="deleteTreeNode()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 7H18M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7M8 7V19C8 20.1 8.9 21 10 21H14C15.1 21 16 20.1 16 19V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>删除</button>
         </div>
         <div style="font-size:13px;color:#9aa3af;margin-bottom:8px">地址结构</div>
-        <div class="tree-node" data-code="0.9" data-level="1" onclick="pickTree(this)"><span class="arrow">▾</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg><span>涌恒供水</span></div><div class="tree-node child" data-code="0.9.1" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>海仑家园住楼车库</span></div><div class="tree-node child" data-code="0.9.2" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>地址</span></div><div class="tree-node child" data-code="0.9.3" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>河口计委小区</span></div><div class="tree-node child" data-code="0.9.4" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>河口一中宏建小区</span></div><div class="tree-node child" data-code="0.9.5" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>大围山管理所老楼</span></div><div class="tree-node child" data-code="0.9.6" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>大围山管理所新楼</span></div><div class="tree-node child" data-code="0.9.7" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>河口县公共区域</span></div><div class="tree-node child" data-code="0.9.8" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>未分配</span></div><div class="tree-node child" data-code="0.9.9" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>北山中段信合发电公司</span></div>
+        <div class="tree-node" data-code="0.9" data-level="1" onclick="pickTree(this)"><span class="arrow">▾</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3C12 3 6 9.5 6 13.5C6 16.8 8.7 19.5 12 19.5C15.3 19.5 18 16.8 18 13.5C18 9.5 12 3 12 3Z" stroke="#2a7de1" stroke-width="1.8"/></svg><span>涌恒供水</span></div><div class="tree-node child" data-code="0.9.1" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>海仑家园住楼车库</span></div><div class="tree-node child" data-code="0.9.2" data-level="2" data-nonaddr="1" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>地址</span></div><div class="tree-node child" data-code="0.9.3" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>河口计委小区</span></div><div class="tree-node child" data-code="0.9.4" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>河口一中宏建小区</span></div><div class="tree-node child" data-code="0.9.5" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>大围山管理所老楼</span></div><div class="tree-node child" data-code="0.9.6" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>大围山管理所新楼</span></div><div class="tree-node child" data-code="0.9.7" data-level="2" data-nonaddr="1" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>河口县公共区域</span></div><div class="tree-node child" data-code="0.9.8" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>未分配</span></div><div class="tree-node child" data-code="0.9.9" data-level="2" onclick="pickTree(this)"><span class="arrow"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#8a94a6" stroke-width="1.6"/></svg><span>北山中段信合发电公司</span></div>
       </div>
       <div class="grow-card">
         <div class="table-card">
@@ -174,13 +179,12 @@
             <input class="filter-input" style="max-width:220px" placeholder="请输入详细地址">
             <button class="btn" onclick="showToast('查询成功','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>查询</button>
             <button class="btn" onclick="doReset()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 12 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4V12H12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 16 8)"/></svg>重置</button>
-            <button class="btn" onclick="openRecordDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 20L8 19L19 8C19.6 7.4 19.6 6.5 19 5.9C18.4 5.3 17.5 5.3 16.9 5.9L6 17L5 20.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>档案修改</button>
             <button class="btn" onclick="needSelect('删除')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 7H18M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7M8 7V19C8 20.1 8.9 21 10 21H14C15.1 21 16 20.1 16 19V7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>删除</button>
           </div>
           <div class="hint-tip">请选择地址结构</div>
           <div class="table-scroll"><table class="data-table">
-            <thead><tr><th class="col-check"><input type="checkbox" onclick="toggleAll(this)"></th><th>用户地址</th><th>详细地址</th><th>户型</th><th>楼层</th><th>套内面积</th><th>排序</th><th>创建时间</th><th>创建人</th><th>修改时间</th><th>修改人</th></tr></thead>
-            <tbody><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-101</td><td>河口县人民路118号101室</td><td>一室一厅</td><td>1层</td><td>68.5</td><td>1</td><td>2026-09-03 14:49:18</td><td>涌恒供水</td><td>2026-09-05 10:22:31</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-102</td><td>河口县人民路120号102室</td><td>两室一厅</td><td>1层</td><td>85.2</td><td>2</td><td>2026-09-03 14:44:24</td><td>涌恒供水</td><td>2026-09-04 16:10:05</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-201</td><td>河口县人民路120号201室</td><td>两室两厅</td><td>2层</td><td>98.6</td><td>3</td><td>2026-09-03 14:26:58</td><td>涌恒供水</td><td>2026-09-06 09:15:42</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-123</td><td>河口县人民路120号123室</td><td>一室一厅</td><td>1层</td><td>62.0</td><td>4</td><td>2026-09-03 14:18:46</td><td>涌恒供水</td><td></td><td></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-1212</td><td>河口县人民路120号1212室</td><td>三室两厅</td><td>12层</td><td>125.8</td><td>5</td><td>2026-09-03 12:34:12</td><td>涌恒供水</td><td>2026-09-07 14:30:18</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-101</td><td>河口县人民路120号101室</td><td>一室一厅</td><td>1层</td><td>65.3</td><td>6</td><td>2026-09-03 12:31:19</td><td>涌恒供水</td><td></td><td></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-202</td><td>河口县人民路120号202室</td><td>两室一厅</td><td>2层</td><td>88.7</td><td>7</td><td>2026-09-03 12:30:03</td><td>涌恒供水</td><td>2026-09-05 11:08:27</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-2617000041</td><td>河口县公共区域26栋1单元1701室</td><td>三室两厅</td><td>17层</td><td>142.6</td><td>8</td><td>2026-09-01 09:58:32</td><td>涌恒供水</td><td></td><td></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-101</td><td>河口县公共区域1栋101室</td><td>一室一厅</td><td>1层</td><td>55.4</td><td>9</td><td>2026-08-31 09:26:39</td><td>涌恒供水</td><td>2026-09-02 15:45:10</td><td>涌恒供水</td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-2617000041</td><td>河口县公共区域26栋2单元1701室</td><td>三室两厅</td><td>17层</td><td>142.6</td><td>10</td><td>2026-08-20 15:25:30</td><td>涌恒供水</td><td></td><td></td></tr></tbody>
+            <thead><tr><th class="col-check"><input type="checkbox" onclick="toggleAll(this)"></th><th>用户地址</th><th>详细地址</th><th>户型</th><th>楼层</th><th>套内面积</th><th>排序</th><th>创建时间</th><th>创建人</th><th>修改时间</th><th>修改人</th><th>操作</th></tr></thead>
+            <tbody><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-101</td><td>河口县人民路118号101室</td><td>一室一厅</td><td>1层</td><td>68.5</td><td>1</td><td>2026-09-03 14:49:18</td><td>涌恒供水</td><td>2026-09-05 10:22:31</td><td>涌恒供水</td><td><span class="row-link" onclick="openRecordDlg(this)">档案修改</span></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-102</td><td>河口县人民路120号102室</td><td>两室一厅</td><td>1层</td><td>85.2</td><td>2</td><td>2026-09-03 14:44:24</td><td>涌恒供水</td><td>2026-09-04 16:10:05</td><td>涌恒供水</td><td><span class="row-link" onclick="openRecordDlg(this)">档案修改</span></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-201</td><td>河口县人民路120号201室</td><td>两室两厅</td><td>2层</td><td>98.6</td><td>3</td><td>2026-09-03 14:26:58</td><td>涌恒供水</td><td>2026-09-06 09:15:42</td><td>涌恒供水</td><td><span class="row-link" onclick="openRecordDlg(this)">档案修改</span></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-123</td><td>河口县人民路120号123室</td><td>一室一厅</td><td>1层</td><td>62.0</td><td>4</td><td>2026-09-03 14:18:46</td><td>涌恒供水</td><td></td><td></td><td><span class="row-link" onclick="openRecordDlg(this)">档案修改</span></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-1212</td><td>河口县人民路120号1212室</td><td>三室两厅</td><td>12层</td><td>125.8</td><td>5</td><td>2026-09-03 12:34:12</td><td>涌恒供水</td><td>2026-09-07 14:30:18</td><td>涌恒供水</td><td><span class="row-link" onclick="openRecordDlg(this)">档案修改</span></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-101</td><td>河口县人民路120号101室</td><td>一室一厅</td><td>1层</td><td>65.3</td><td>6</td><td>2026-09-03 12:31:19</td><td>涌恒供水</td><td></td><td></td><td><span class="row-link" onclick="openRecordDlg(this)">档案修改</span></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-人民路门市-202</td><td>河口县人民路120号202室</td><td>两室一厅</td><td>2层</td><td>88.7</td><td>7</td><td>2026-09-03 12:30:03</td><td>涌恒供水</td><td>2026-09-05 11:08:27</td><td>涌恒供水</td><td><span class="row-link" onclick="openRecordDlg(this)">档案修改</span></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-2617000041</td><td>河口县公共区域26栋1单元1701室</td><td>三室两厅</td><td>17层</td><td>142.6</td><td>8</td><td>2026-09-01 09:58:32</td><td>涌恒供水</td><td></td><td></td><td><span class="row-link" onclick="openRecordDlg(this)">档案修改</span></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-101</td><td>河口县公共区域1栋101室</td><td>一室一厅</td><td>1层</td><td>55.4</td><td>9</td><td>2026-08-31 09:26:39</td><td>涌恒供水</td><td>2026-09-02 15:45:10</td><td>涌恒供水</td><td><span class="row-link" onclick="openRecordDlg(this)">档案修改</span></td></tr><tr><td class="col-check"><input type="checkbox" onclick="singleSelect(this)"></td><td>河口县公共区域-公共公共-2617000041</td><td>河口县公共区域26栋2单元1701室</td><td>三室两厅</td><td>17层</td><td>142.6</td><td>10</td><td>2026-08-20 15:25:30</td><td>涌恒供水</td><td></td><td></td><td><span class="row-link" onclick="openRecordDlg(this)">档案修改</span></td></tr></tbody>
           </table>
           <div class="pagination"><span class="page-btn disabled">&laquo;</span><span class="page-btn disabled">&lsaquo;</span><span class="page-btn cur">1</span><span class="page-btn">2</span><span class="page-btn">3</span><span class="page-btn">&rsaquo;</span><span class="page-btn">&raquo;</span><span class="page-total">共 [ 3 ] 页，共 [ 28 ] 条</span><span class="page-size">10 <span style="color:#b6bdc9;font-size:11px;">&#9662;</span></span></div>
         </div>
@@ -205,10 +209,10 @@
         <div class="dlg-item readonly"><label>本级编码：</label><input class="filter-input" id="curCode" readonly></div>
         <div class="dlg-item"><label><span class="req">*</span>地址类型：</label>
           <div class="select-dropdown">
-            <div class="filter-input placeholder" id="addrTypeInput" onclick="toggleAddrType('add')"><span id="addrTypeText">请选择地址类型</span><span class="caret">&#9662;</span></div>
+            <div class="filter-input placeholder" id="addrTypeInput" onclick="toggleAddrType()"><span id="addrTypeText">请选择地址类型</span><span class="caret">&#9662;</span></div>
             <div class="options" id="addrTypeOptions">
-              <div class="option" data-val="地址结构" onclick="selectAddrType(this, 'add')">地址结构</div>
-              <div class="option" data-val="非地址结构" onclick="selectAddrType(this, 'add')">非地址结构</div>
+              <div class="option" data-val="地址结构" onclick="selectAddrType(this)">地址结构</div>
+              <div class="option" data-val="非地址结构" onclick="selectAddrType(this)">非地址结构</div>
             </div>
           </div>
         </div>
@@ -234,15 +238,7 @@
         <div class="dlg-item readonly"><label>上级编码：</label><input class="filter-input" id="editParentCode" readonly></div>
         <div class="dlg-item readonly"><label>本级级别：</label><input class="filter-input" id="editCurLevel" readonly></div>
         <div class="dlg-item"><label>本级编码：</label><input class="filter-input" id="editCurCode"></div>
-        <div class="dlg-item"><label><span class="req">*</span>地址类型：</label>
-          <div class="select-dropdown">
-            <div class="filter-input placeholder" id="editAddrTypeInput" onclick="toggleAddrType('edit')"><span id="editAddrTypeText">请选择地址类型</span><span class="caret">&#9662;</span></div>
-            <div class="options" id="editAddrTypeOptions">
-              <div class="option" data-val="地址结构" onclick="selectAddrType(this, 'edit')">地址结构</div>
-              <div class="option" data-val="非地址结构" onclick="selectAddrType(this, 'edit')">非地址结构</div>
-            </div>
-          </div>
-        </div>
+        <div class="dlg-item readonly"><label>地址类型：</label><input class="filter-input" id="editAddrTypeInput" value="地址结构" readonly></div>
         <div class="dlg-item"><label><span class="req">*</span>地址名称：</label><input class="filter-input" id="editAddrName" placeholder="请输入地址名称"></div>
         <div class="dlg-item hidden" id="editAreaField"><label>套内面积：</label><input class="filter-input" id="editArea" placeholder="请输入套内面积"></div>
         <div class="dlg-item hidden" id="editHouseTypeField"><label>户型：</label><input class="filter-input" id="editHouseType" placeholder="请输入户型"></div>
@@ -252,6 +248,19 @@
     <div class="dlg-foot">
       <button class="btn plain" onclick="closeEditDlg()">取消</button>
       <button class="btn" onclick="confirmEditDlg()">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="dlg-mask" id="delDlgMask" onclick="if(event.target===this)closeDelDlg()">
+  <div class="dlg" style="width:420px">
+    <div class="dlg-head">删除确认<span class="dlg-close" onclick="closeDelDlg()">&#10005;</span></div>
+    <div class="dlg-body">
+      <div style="font-size:14px;color:#4b5563;line-height:1.8;padding:6px 0 18px">确定要删除地址「<span id="delAddrName" style="color:#f56c6c;font-weight:600"></span>」吗？删除后不可恢复。</div>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn plain" onclick="closeDelDlg()">取消</button>
+      <button class="btn" onclick="confirmDelDlg()">确认</button>
     </div>
   </div>
 </div>
@@ -330,7 +339,7 @@
   }
   function closeDlg() {
     document.getElementById('dlgMask').classList.remove('show');
-    hideAddrTypeOptions('add');
+    hideAddrTypeOptions();
   }
   function confirmDlg() {
     if (!selectedAddrType) {
@@ -371,15 +380,9 @@
     document.getElementById('editParentCode').value = parentCode || '—';
     document.getElementById('editCurLevel').value = level;
     document.getElementById('editCurCode').value = code;
-    // 默认地址结构（根据树节点类型模拟）
-    var defaultType = '地址结构';
-    editAddrType = defaultType;
-    document.getElementById('editAddrTypeText').textContent = defaultType;
-    document.getElementById('editAddrTypeInput').classList.remove('placeholder');
-    document.querySelectorAll('#editAddrTypeOptions .option').forEach(function (o) {
-      o.classList.remove('selected');
-      if (o.getAttribute('data-val') === defaultType) o.classList.add('selected');
-    });
+    // 地址维护不允许修改地址类型，固定为地址结构
+    editAddrType = '地址结构';
+    document.getElementById('editAddrTypeInput').value = '地址结构';
     document.getElementById('editAddrName').value = getParentName();
     document.getElementById('editArea').value = '';
     document.getElementById('editHouseType').value = '';
@@ -389,7 +392,6 @@
   }
   function closeEditDlg() {
     document.getElementById('editDlgMask').classList.remove('show');
-    hideAddrTypeOptions('edit');
   }
   function confirmEditDlg() {
     if (!editAddrType) {
@@ -403,13 +405,16 @@
     closeEditDlg();
     showToast('保存成功', 'success');
   }
-  function openRecordDlg() {
-    var checked = document.querySelector('.data-table tbody input[type="checkbox"]:checked');
-    if (!checked) {
-      showToast('请先勾选要档案修改的记录', 'warn');
-      return;
+  function openRecordDlg(el) {
+    var tr = el && el.closest ? el.closest('tr') : null;
+    if (!tr) {
+      var checked = document.querySelector('.data-table tbody input[type="checkbox"]:checked');
+      if (!checked) {
+        showToast('请先勾选要档案修改的记录', 'warn');
+        return;
+      }
+      tr = checked.closest('tr');
     }
-    var tr = checked.closest('tr');
     var tds = tr.querySelectorAll('td');
     document.getElementById('recUserAddr').value = tds[1] ? tds[1].textContent : '';
     document.getElementById('recDetailAddr').value = tds[2] ? tds[2].textContent : '';
@@ -431,6 +436,46 @@
     showToast('保存成功', 'success');
   }
   function needSelect(name) { showToast('请先勾选要' + name + '的记录', 'warn'); }
+  // 树节点删除：先校验下级地址与非地址结构档案
+  function hasChildAddress(node) {
+    var level = parseInt(node.getAttribute('data-level') || '1', 10);
+    var next = node.nextElementSibling;
+    while (next && next.classList.contains('tree-node')) {
+      var lv = parseInt(next.getAttribute('data-level') || '1', 10);
+      if (lv > level) return true;
+      if (lv <= level) return false;
+      next = next.nextElementSibling;
+    }
+    return false;
+  }
+  function deleteTreeNode() {
+    if (!selectedTreeNode) {
+      showToast('请先选择要删除的地址', 'warn');
+      return;
+    }
+    var name = getParentName();
+    if (hasChildAddress(selectedTreeNode)) {
+      showToast('地址「' + name + '」存在下级地址，不允许删除', 'warn');
+      return;
+    }
+    if (selectedTreeNode.getAttribute('data-nonaddr') === '1') {
+      showToast('地址「' + name + '」下存在非地址结构档案，不允许删除', 'warn');
+      return;
+    }
+    document.getElementById('delAddrName').textContent = name;
+    document.getElementById('delDlgMask').classList.add('show');
+  }
+  function closeDelDlg() { document.getElementById('delDlgMask').classList.remove('show'); }
+  function confirmDelDlg() {
+    if (selectedTreeNode) {
+      selectedTreeNode.remove();
+      selectedTreeNode = null;
+      var tip = document.querySelector('.hint-tip');
+      if (tip) tip.textContent = '请选择地址结构';
+    }
+    closeDelDlg();
+    showToast('删除成功', 'success');
+  }
   function singleSelect(el) {
     document.querySelectorAll('.data-table tbody input[type="checkbox"]').forEach(function (c) {
       if (c !== el) c.checked = false;
@@ -454,38 +499,22 @@
     var tip = document.querySelector('.hint-tip');
     if (tip) tip.textContent = '上级地址：' + name + '（编码：' + code + '）';
   }
-  function toggleAddrType(mode) {
-    var optsId = mode === 'edit' ? 'editAddrTypeOptions' : 'addrTypeOptions';
-    document.getElementById(optsId).classList.toggle('show');
+  function toggleAddrType() {
+    document.getElementById('addrTypeOptions').classList.toggle('show');
   }
-  function hideAddrTypeOptions(mode) {
-    if (mode === 'edit') {
-      document.getElementById('editAddrTypeOptions').classList.remove('show');
-    } else if (mode === 'add') {
-      document.getElementById('addrTypeOptions').classList.remove('show');
-    } else {
-      document.getElementById('addrTypeOptions').classList.remove('show');
-      document.getElementById('editAddrTypeOptions').classList.remove('show');
-    }
+  function hideAddrTypeOptions() {
+    document.getElementById('addrTypeOptions').classList.remove('show');
   }
-  function selectAddrType(el, mode) {
+  function selectAddrType(el) {
     var val = el.getAttribute('data-val');
-    if (mode === 'edit') {
-      editAddrType = val;
-      document.getElementById('editAddrTypeText').textContent = val;
-      document.getElementById('editAddrTypeInput').classList.remove('placeholder');
-      document.querySelectorAll('#editAddrTypeOptions .option').forEach(function (o) { o.classList.remove('selected'); });
-      el.classList.add('selected');
-    } else {
-      selectedAddrType = val;
-      document.getElementById('addrTypeText').textContent = val;
-      document.getElementById('addrTypeInput').classList.remove('placeholder');
-      document.querySelectorAll('#addrTypeOptions .option').forEach(function (o) { o.classList.remove('selected'); });
-      el.classList.add('selected');
-    }
-    hideAddrTypeOptions(mode);
+    selectedAddrType = val;
+    document.getElementById('addrTypeText').textContent = val;
+    document.getElementById('addrTypeInput').classList.remove('placeholder');
+    document.querySelectorAll('#addrTypeOptions .option').forEach(function (o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    hideAddrTypeOptions();
     var showExtra = val === '非地址结构';
-    toggleExtraFields(showExtra, mode);
+    toggleExtraFields(showExtra, 'add');
   }
   function toggleExtraFields(show, mode) {
     var prefix = mode === 'edit' ? 'edit' : '';
@@ -506,7 +535,7 @@
       if (dds[i].contains(e.target)) { clickedInside = true; break; }
     }
     if (!clickedInside) {
-      hideAddrTypeOptions('all');
+      hideAddrTypeOptions();
     }
   });
 </script>
