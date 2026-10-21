@@ -102,8 +102,11 @@
   .act-btn:hover { text-decoration: underline; }
   .confirm-mask { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; z-index: 910; background: rgba(15,23,42,.42); display: none; align-items: center; justify-content: center; }
   .confirm-mask.show { display: flex; }
-  .dlg-head .template-link { margin-left: 28px; font-size: 13px; color: #3b9dff; cursor: pointer; font-weight: normal; text-decoration: none; }
+  .dlg-head .template-link { font-size: 13px; color: #3b9dff; cursor: pointer; font-weight: normal; text-decoration: none; }
   .dlg-head .template-link:hover { text-decoration: underline; }
+  .import-template-row { text-align: right; margin-bottom: 10px; }
+  .import-template-row .template-link { font-size: 13px; color: #3b9dff; cursor: pointer; text-decoration: none; }
+  .import-template-row .template-link:hover { text-decoration: underline; }
   .import-dropzone {
     display: block;
     border: 2px dashed #c0c6cf; border-radius: 8px; padding: 72px 32px 64px;
@@ -329,8 +332,9 @@
 
 <div class="dlg-mask" id="importMask" onclick="if(event.target===this)closeImportDlg()">
   <div class="dlg" style="width:640px">
-    <div class="dlg-head"><span>导入文件</span><span class="template-link" onclick="showToast('模板下载演示','success')">下载模板</span><span class="dlg-close" onclick="closeImportDlg()">&#10005;</span></div>
-    <div class="dlg-body" style="padding:32px 28px 28px">
+    <div class="dlg-head"><span>导入文件</span><span class="dlg-close" onclick="closeImportDlg()">&#10005;</span></div>
+    <div class="dlg-body" style="padding:18px 28px 28px">
+      <div class="import-template-row"><span class="template-link" onclick="showToast('模板下载演示','success')">下载模板</span></div>
       <label class="import-dropzone" id="importZone" for="importFile"
         ondragover="event.preventDefault();this.classList.add('dragover')"
         ondragleave="this.classList.remove('dragover')"

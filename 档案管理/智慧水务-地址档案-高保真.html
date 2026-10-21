@@ -8,7 +8,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
   body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f7f7f7; color: #212121; overflow: hidden; font-size: 14px; }
-  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 100; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 53px; z-index: 1; background: linear-gradient(100deg, rgb(15,74,162), rgb(18,103,197) 48%, rgb(22,134,217)); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.18); color: #fff; }
   .topbar-left { width: 204px; flex: 0 0 204px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
   .logo-drop { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; }
   .brand { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
@@ -21,7 +21,7 @@
   .top-user { margin-left: auto; display: flex; align-items: center; gap: 12px; }
   .top-user .tenant { font-size: 14px; color: #fff; }
   .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,.65); background: radial-gradient(circle at 35% 30%, #ffe0c7, #e8a17a 70%, #c97b4e); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 90; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; padding-bottom: 16px; }
+  .sidebar { position: fixed; top: 53px; left: 0; bottom: 0; width: 204px; z-index: 1; background: #fff; box-shadow: 2px 0 8px rgba(0,0,0,.06); overflow-y: auto; padding-bottom: 16px; }
   .side-caption { padding: 14px 16px 6px; font-size: 12px; color: #9aa3af; }
   .menu-group-title { display: flex; align-items: center; gap: 8px; margin: 4px 10px; padding: 10px 12px; background: #eaf3fe; color: #2a7de1; border-radius: 6px; font-weight: 600; cursor: pointer; }
   .menu-group-title .chev { margin-left: auto; font-size: 12px; color: #2a7de1; }
@@ -74,12 +74,33 @@
   .toast .t-close { margin-left: auto; cursor: pointer; color: #d3b17c; }
   .toast.success { background: #ecf8f0; border-color: #b7e6c8; color: #3d9a63; }
   @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-  .dlg-mask { position: fixed; inset: 0; z-index: 200; background: rgba(15,23,42,.42); display: none; align-items: flex-start; justify-content: center; }
+  .dlg-mask { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; z-index: 900; background: rgba(15,23,42,.42); display: none; align-items: flex-start; justify-content: center; }
   .dlg-mask.show { display: flex; }
   .dlg { margin-top: 90px; width: 720px; max-width: 92vw; background: #fff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.22); animation: slideIn .22s ease; }
   .dlg-head { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eef0f3; font-size: 16px; font-weight: 600; color: #212121; }
   .dlg-close { margin-left: auto; cursor: pointer; color: #9aa3af; font-size: 16px; }
   .dlg-body { padding: 22px 24px 8px; }
+  .dlg-head .template-link { font-size: 13px; color: #3b9dff; cursor: pointer; font-weight: normal; text-decoration: none; }
+  .dlg-head .template-link:hover { text-decoration: underline; }
+  .import-template-row { text-align: right; margin-bottom: 10px; }
+  .import-template-row .template-link { font-size: 13px; color: #3b9dff; cursor: pointer; text-decoration: none; }
+  .import-template-row .template-link:hover { text-decoration: underline; }
+  .import-dropzone {
+    display: block;
+    border: 2px dashed #c0c6cf; border-radius: 8px; padding: 72px 32px 64px;
+    text-align: center; background: #fafcff; cursor: pointer; transition: .18s; color: #4b5563;
+  }
+  .import-dropzone:hover { border-color: #3b9dff; background: #f2f7fd; }
+  .import-dropzone.dragover { border-color: #3b9dff; background: #eaf3fe; color: #2a7de1; }
+  .import-dropzone .upload-ico { margin-bottom: 18px; color: #9aa3af; }
+  .import-dropzone.dragover .upload-ico svg rect,
+  .import-dropzone.dragover .upload-ico svg path { stroke: #3b9dff; }
+  .import-dropzone .dz-main { font-size: 15px; }
+  .import-dropzone .dz-tip { font-size: 13px; color: #9aa3af; margin-top: 10px; }
+  .import-dropzone .dz-file { display: none; margin-top: 12px; font-size: 14px; color: #2a7de1; }
+  .import-dropzone.has-file .dz-main,
+  .import-dropzone.has-file .dz-tip { display: none; }
+  .import-dropzone.has-file .dz-file { display: block; }
   .dlg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 28px; }
   .dlg-item { display: flex; align-items: center; min-width: 0; }
   .dlg-item label { flex: 0 0 80px; text-align: right; font-size: 13.5px; color: #4b5563; margin-right: 8px; flex-shrink: 0; }
@@ -154,12 +175,9 @@
 
   <div class="content">
     <div class="filter-card">
-      <div class="filter-grid" style="grid-template-columns:repeat(3,1fr)">
-      <div class="filter-item" style="grid-column:span 2"><span class="filter-label">组织机构：</span><div class="filter-input placeholder"><span>请选择组织机构</span><span class="caret">&#9662;</span></div></div>
-      </div>
-      <div class="btn-bar">
+      <div class="btn-bar" style="margin-left:auto">
         <button class="btn plain" onclick="showToast('下载模板功能演示','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>下载模板</button>
-        <button class="btn plain" onclick="showToast('导入功能演示','success')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>导入</button>
+        <button class="btn plain" onclick="openImportDlg()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 15L7 10M12 15L17 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V15" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>导入</button>
       </div>
     </div>
     <div class="split">
@@ -285,6 +303,29 @@
   </div>
 </div>
 
+<div class="dlg-mask" id="importMask" onclick="if(event.target===this)closeImportDlg()">
+  <div class="dlg" style="width:640px">
+    <div class="dlg-head"><span>导入文件</span><span class="dlg-close" onclick="closeImportDlg()">&#10005;</span></div>
+    <div class="dlg-body" style="padding:18px 28px 28px">
+      <div class="import-template-row"><span class="template-link" onclick="showToast('模板下载演示','success')">下载模板</span></div>
+      <label class="import-dropzone" id="importZone" for="importFile"
+        ondragover="event.preventDefault();this.classList.add('dragover')"
+        ondragleave="this.classList.remove('dragover')"
+        ondrop="handleDrop(event)">
+        <div class="upload-ico"><svg width="52" height="52" viewBox="0 0 48 48" fill="none"><rect x="6" y="6" width="36" height="36" rx="3" stroke="#b6bdc9" stroke-width="2"/><path d="M24 14V30" stroke="#b6bdc9" stroke-width="2.5" stroke-linecap="round"/><path d="M17 21L24 14L31 21" stroke="#b6bdc9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="dz-main">点击选择文件，或拖拽文件到此处</div>
+        <div class="dz-tip">支持 .xlsx / .xls 格式，单文件不超过 10MB</div>
+        <div class="dz-file" id="importFileName"></div>
+      </label>
+      <input type="file" id="importFile" accept=".xlsx,.xls" style="display:none" onchange="handleImportFile(this.files[0])">
+    </div>
+    <div class="dlg-foot">
+      <button class="btn plain" onclick="closeImportDlg()">取消</button>
+      <button class="btn" onclick="confirmImport()">确认导入</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">
   <span id="toastIcon">&#9888;</span><span id="toastText"></span>
   <span class="t-close" onclick="hideToast()">&#10005;</span>
@@ -292,6 +333,7 @@
 
 <script>
   var toastTimer = null;
+  var importPickedFile = null;
   var selectedTreeNode = null;
   var selectedAddrType = '';
   var editAddrType = '';
@@ -304,6 +346,42 @@
     toastTimer = setTimeout(hideToast, 3200);
   }
   function hideToast() { document.getElementById('toast').classList.remove('show'); }
+  function openImportDlg() {
+    importPickedFile = null;
+    var zone = document.getElementById('importZone');
+    zone.classList.remove('has-file', 'dragover');
+    document.getElementById('importFileName').textContent = '';
+    document.getElementById('importFile').value = '';
+    document.getElementById('importMask').classList.add('show');
+  }
+  function closeImportDlg() { document.getElementById('importMask').classList.remove('show'); }
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('importZone').classList.remove('dragover');
+    var files = e.dataTransfer.files;
+    if (files && files[0]) handleImportFile(files[0]);
+  }
+  function handleImportFile(file) {
+    if (!file) return;
+    var name = file.name.toLowerCase();
+    if (!(name.endsWith('.xlsx') || name.endsWith('.xls'))) {
+      showToast('仅支持 .xlsx / .xls 格式的文件', 'warn');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('文件大小不能超过 10MB', 'warn');
+      return;
+    }
+    importPickedFile = file;
+    var zone = document.getElementById('importZone');
+    zone.classList.add('has-file');
+    document.getElementById('importFileName').textContent = '已选择：' + file.name + '（' + (file.size / 1024).toFixed(1) + ' KB）';
+  }
+  function confirmImport() {
+    if (!importPickedFile) { showToast('请先选择要导入的文件', 'warn'); return; }
+    closeImportDlg();
+    showToast('已提交导入任务：' + importPickedFile.name, 'success');
+  }
   function doReset() {
     document.querySelectorAll('.filter-grid input').forEach(function (i) { i.value = ''; });
     showToast('筛选条件已重置', 'success');
