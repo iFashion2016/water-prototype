@@ -67,7 +67,12 @@
   .btn:active { background: #337ecc; border-color: #337ecc; }
   .btn-plain { background: #fff; color: #606266; border: 1px solid #dcdfe6; }
   .btn-plain:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; }
+  .btn-danger { background: #fff; color: #f56c6c; border: 1px solid #fbc4c4; }
+  .btn-danger:hover { background: #fef0f0; border-color: #f56c6c; color: #f56c6c; }
   .btn-sm { height: 24px; padding: 0 9px; font-size: 12px; }
+  .audit-pass { color: #3d9a63; }
+  .audit-none { color: #b88230; }
+  .audit-fail { color: #f56c6c; }
 
   .table-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(15,60,130,.08); overflow: hidden; }
   .table-scroll { overflow-x: auto; }
@@ -87,6 +92,8 @@
   .op-link { color: #409eff; cursor: pointer; font-size: 13px; }
   .op-link:hover { color: #79bbff; text-decoration: underline; }
   .op-link + .op-link { margin-left: 12px; }
+  .op-link.disabled { color: #c0c4cc; cursor: not-allowed; }
+  .op-link.disabled:hover { color: #c0c4cc; text-decoration: none; }
 
   .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 16px 12px; font-size: 13px; color: #6b7280; }
   .page-btn { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4b5563; }
@@ -284,14 +291,14 @@
       <div class="table-scroll">
         <table class="data-table" id="mainTable">
           <thead>
-            <tr><th>用户编号</th><th>用户名称</th><th>用户地址</th><th>手机号</th><th>表身码</th><th>表具类型</th><th>账户余额</th><th>最近缴费金额</th><th>最近缴费时间</th><th class="op-col">操作</th></tr>
+            <tr><th>用户编号</th><th>用户名称</th><th>用户地址</th><th>手机号</th><th>表身码</th><th>表具类型</th><th>账户余额</th><th>最近缴费金额</th><th>最近缴费时间</th><th>审核状态</th><th class="op-col">操作</th></tr>
           </thead>
           <tbody>
-            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>*</td><td>260626116289</td><td>NB远传阀控水表</td><td class="negative">-22.47</td><td>0</td><td></td><td class="op-col"><span class="op-link" onclick="event.stopPropagation();openChange(this)">换表</span><span class="op-link" onclick="event.stopPropagation();cancelChange(this)">取消换表</span><span class="op-link" onclick="event.stopPropagation();auditRow(this)">审核</span></td></tr>
-            <tr><td>063000336</td><td>人民路建行对面意尔康楼上</td><td>河口县公共区域-人民路门市-1212</td><td>*</td><td>00002624000053</td><td>WPG远传阀控水表</td><td class="negative">-2.47</td><td>10</td><td>2026-09-17 13:34:39</td><td class="op-col"><span class="op-link" onclick="event.stopPropagation();openChange(this)">换表</span><span class="op-link" onclick="event.stopPropagation();cancelChange(this)">取消换表</span><span class="op-link" onclick="event.stopPropagation();auditRow(this)">审核</span></td></tr>
-            <tr><td>063000335</td><td>000053</td><td>河口县公共区域-人民路门市-123</td><td>*</td><td>00002624000083</td><td>WPG远传阀控水表</td><td class="negative">-0.58</td><td>0</td><td></td><td class="op-col"><span class="op-link" onclick="event.stopPropagation();openChange(this)">换表</span><span class="op-link" onclick="event.stopPropagation();cancelChange(this)">取消换表</span><span class="op-link" onclick="event.stopPropagation();auditRow(this)">审核</span></td></tr>
-            <tr><td>063000322</td><td>260626116356</td><td>河口一中宏建小区-3栋-301</td><td>1</td><td>260626116356</td><td>NB远传阀控水表</td><td class="negative">-0.41</td><td>0</td><td></td><td class="op-col"><span class="op-link" onclick="event.stopPropagation();openChange(this)">换表</span><span class="op-link" onclick="event.stopPropagation();cancelChange(this)">取消换表</span><span class="op-link" onclick="event.stopPropagation();auditRow(this)">审核</span></td></tr>
-            <tr><td>063000321</td><td>260626116404</td><td>河口一中宏建小区-1栋-260626116404</td><td>1</td><td>260626116404</td><td>NB远传阀控水表</td><td class="negative">-10.55</td><td>0</td><td></td><td class="op-col"><span class="op-link" onclick="event.stopPropagation();openChange(this)">换表</span><span class="op-link" onclick="event.stopPropagation();cancelChange(this)">取消换表</span><span class="op-link" onclick="event.stopPropagation();auditRow(this)">审核</span></td></tr>
+            <tr><td>063000338</td><td>未提供</td><td>河口县公共区域-公共公共-未提供</td><td>*</td><td>260626116289</td><td>NB远传阀控水表</td><td class="negative">-22.47</td><td>0</td><td></td><td><span class="audit-none">未审核</span></td><td class="op-col"><span class="op-link" onclick="event.stopPropagation();openChange(this)">换表</span><span class="op-link" onclick="event.stopPropagation();cancelChange(this)">取消换表</span><span class="op-link" onclick="event.stopPropagation();auditRow(this)">审核</span></td></tr>
+            <tr><td>063000336</td><td>人民路建行对面意尔康楼上</td><td>河口县公共区域-人民路门市-1212</td><td>*</td><td>00002624000053</td><td>WPG远传阀控水表</td><td class="negative">-2.47</td><td>10</td><td>2026-09-17 13:34:39</td><td><span class="audit-pass">通过</span></td><td class="op-col"><span class="op-link" onclick="event.stopPropagation();openChange(this)">换表</span><span class="op-link" onclick="event.stopPropagation();cancelChange(this)">取消换表</span><span class="op-link disabled" onclick="event.stopPropagation()" title="已通过审核，不可重复审核">审核</span></td></tr>
+            <tr><td>063000335</td><td>000053</td><td>河口县公共区域-人民路门市-123</td><td>*</td><td>00002624000083</td><td>WPG远传阀控水表</td><td class="negative">-0.58</td><td>0</td><td></td><td><span class="audit-fail">未通过</span></td><td class="op-col"><span class="op-link" onclick="event.stopPropagation();openChange(this)">换表</span><span class="op-link" onclick="event.stopPropagation();cancelChange(this)">取消换表</span><span class="op-link" onclick="event.stopPropagation();auditRow(this)">审核</span></td></tr>
+            <tr><td>063000322</td><td>260626116356</td><td>河口一中宏建小区-3栋-301</td><td>1</td><td>260626116356</td><td>NB远传阀控水表</td><td class="negative">-0.41</td><td>0</td><td></td><td><span class="audit-none">未审核</span></td><td class="op-col"><span class="op-link" onclick="event.stopPropagation();openChange(this)">换表</span><span class="op-link" onclick="event.stopPropagation();cancelChange(this)">取消换表</span><span class="op-link" onclick="event.stopPropagation();auditRow(this)">审核</span></td></tr>
+            <tr><td>063000321</td><td>260626116404</td><td>河口一中宏建小区-1栋-260626116404</td><td>1</td><td>260626116404</td><td>NB远传阀控水表</td><td class="negative">-10.55</td><td>0</td><td></td><td><span class="audit-pass">通过</span></td><td class="op-col"><span class="op-link" onclick="event.stopPropagation();openChange(this)">换表</span><span class="op-link" onclick="event.stopPropagation();cancelChange(this)">取消换表</span><span class="op-link disabled" onclick="event.stopPropagation()" title="已通过审核，不可重复审核">审核</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -315,7 +322,7 @@
 <div class="modal-mask" id="dlgChange">
   <div class="modal">
     <div class="modal-head">
-      <div class="modal-title">户表信息</div>
+      <div class="modal-title" id="chTitle">户表信息</div>
       <span class="modal-close" onclick="closeModal('dlgChange')">✕</span>
     </div>
     <div class="modal-body">
@@ -333,7 +340,7 @@
         <div class="dlg-item"><span class="dlg-label">最近抄表读数：</span><input class="dlg-input disabled" id="chLastRead" value="0" readonly></div>
         <div class="dlg-item"><span class="dlg-label">表内余额：</span><input class="dlg-input readonly" id="chBalance" value="0" readonly></div>
         <!-- 第四行 -->
-        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>旧表止码：</span><input class="dlg-input" placeholder="请输入数字(最多两位)"></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>旧表止码：</span><input class="dlg-input" id="chOldStop" placeholder="请输入数字(最多两位)"></div>
         <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>新表表号：</span>
           <div class="ch-dropdown" id="newMeterNoDropdown" onclick="event.stopPropagation()">
             <div class="ch-dropdown-input placeholder" id="newMeterNoInput" onclick="toggleNewMeterNoDropdown()">
@@ -366,13 +373,13 @@
           </div>
         </div>
         <!-- 第五行 -->
-        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>新表起码：</span><input class="dlg-input" placeholder="请输入数字(最多两位)"></div>
-        <div class="dlg-item"><span class="dlg-label">维修工：</span><input class="dlg-input" placeholder=""></div>
-        <div class="dlg-item"><span class="dlg-label">换表费(另收)：</span><input class="dlg-input" placeholder="请输入数字(最多两位)"></div>
+        <div class="dlg-item"><span class="dlg-label"><span class="req">*</span>新表起码：</span><input class="dlg-input" id="chNewStart" placeholder="请输入数字(最多两位)"></div>
+        <div class="dlg-item"><span class="dlg-label">维修工：</span><input class="dlg-input" id="chRepairMan" placeholder=""></div>
+        <div class="dlg-item"><span class="dlg-label">换表费(另收)：</span><input class="dlg-input" id="chFee" placeholder="请输入数字(最多两位)"></div>
         <!-- 第六行：换表原因 -->
-        <div class="dlg-item full"><span class="dlg-label"><span class="req">*</span>换表原因：</span><input class="dlg-input" placeholder="请输入换表原因"></div>
+        <div class="dlg-item full"><span class="dlg-label"><span class="req">*</span>换表原因：</span><input class="dlg-input" id="chReason" placeholder="请输入换表原因"></div>
         <!-- 第七行：图片地址 -->
-        <div class="dlg-item full"><span class="dlg-label"><span class="req">*</span>图片地址：</span><input class="dlg-input readonly" value="" readonly></div>
+        <div class="dlg-item full"><span class="dlg-label"><span class="req">*</span>图片地址：</span><input class="dlg-input readonly" id="chImgAddr" value="" readonly></div>
 
         <!-- 新表类型照片 -->
         <div class="dlg-item full" style="align-items: flex-start;">
@@ -412,8 +419,28 @@
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-plain" onclick="closeModal('dlgChange')">✕ 取消</button>
-      <button class="btn" onclick="closeModal('dlgChange');showToast('换表申请已提交，待审核','success')">✓ 换表</button>
+      <button class="btn btn-plain" id="chBtnCancel" onclick="closeModal('dlgChange')">✕ 取消</button>
+      <button class="btn btn-danger" id="chBtnReject" onclick="showRejectDlg()" style="display:none">✕ 审核驳回</button>
+      <button class="btn" id="chBtnSubmit" onclick="submitChange()">✓ 换表</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="dlgReject" style="z-index:210" onclick="if(event.target===this)closeModal('dlgReject')">
+  <div class="modal" style="width:480px">
+    <div class="modal-head">
+      <div class="modal-title">审核驳回</div>
+      <span class="modal-close" onclick="closeModal('dlgReject')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="dlg-item" style="align-items:flex-start">
+        <span class="dlg-label" style="line-height:36px"><span class="req">*</span>驳回原因：</span>
+        <textarea class="dlg-textarea" id="rejectReason" rows="4" placeholder="请输入驳回原因" style="min-height:88px"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-plain" onclick="closeModal('dlgReject')">✕ 取消</button>
+      <button class="btn btn-danger" onclick="submitReject()">✓ 确认驳回</button>
     </div>
   </div>
 </div>
@@ -469,20 +496,53 @@
     if (!selectedRow) { showToast('请选中一行数据进行' + action); return; }
     showToast(action + '操作已提交', 'success');
   }
-  function cancelChange(el) {
-    var tr = el.closest('tr');
-    document.querySelectorAll('#mainTable tbody tr').forEach(function (r) { r.classList.remove('selected'); });
-    tr.classList.add('selected'); selectedRow = tr;
-    showToast('取消换表操作已提交', 'success');
-  }
+  function cancelChange(el) { openChangeDlg(el, 'cancel'); }
   function auditRow(el) {
     var tr = el.closest('tr');
+    var st = tr.cells[9].querySelector('span');
+    if (st && st.textContent.trim() === '通过') {
+      showToast('该记录已审核通过，不可重复审核');
+      return;
+    }
+    openChangeDlg(el, 'audit');
+  }
+
+  // ===== 已提交的换表申请数据（按用户编号）=====
+  var changeRequests = {
+    '063000338': { oldStop: '258.00', newMeterNo: '2624000053', typeKey: 'wmi', typeName: 'WMI/WMI-V', newStart: '0.00', repairMan: '张建国', fee: '80.00', reason: '表具计量偏差过大，现场校验不合格', imgAddr: 'https://ifashion2016.github.io/water-prototype/assets/change/063000338_1.jpg' },
+    '063000336': { oldStop: '102.50', newMeterNo: '2624000058', typeKey: 'wmg', typeName: 'WMG/WMS', newStart: '0.00', repairMan: '李海涛', fee: '60.00', reason: '表壳渗漏，阀门无法关断', imgAddr: 'https://ifashion2016.github.io/water-prototype/assets/change/063000336_1.jpg' },
+    '063000335': { oldStop: '36.80', newMeterNo: '260626116356', typeKey: 'wmg', typeName: 'WMG/WMS', newStart: '0.00', repairMan: '王立新', fee: '60.00', reason: '表盘模糊无法抄读', imgAddr: 'https://ifashion2016.github.io/water-prototype/assets/change/063000335_1.jpg' },
+    '063000322': { oldStop: '412.00', newMeterNo: '260626116404', typeKey: 'wmi', typeName: 'WMI/WMI-V', newStart: '0.00', repairMan: '张建国', fee: '80.00', reason: '远传模块故障，数据不上传', imgAddr: 'https://ifashion2016.github.io/water-prototype/assets/change/063000322_1.jpg' },
+    '063000321': { oldStop: '88.30', newMeterNo: '00002624000083', typeKey: 'wmi', typeName: 'WMI/WMI-V', newStart: '0.00', repairMan: '李海涛', fee: '80.00', reason: '用户申请更换为新表', imgAddr: 'https://ifashion2016.github.io/water-prototype/assets/change/063000321_1.jpg' }
+  };
+
+  var changeMode = 'new'; // new | audit | cancel
+
+  function setChangeFormReadonly(flag) {
+    ['chOldStop', 'chNewStart', 'chRepairMan', 'chFee', 'chReason'].forEach(function (id) {
+      var el = document.getElementById(id);
+      el.readOnly = flag;
+      el.classList.toggle('readonly', flag);
+    });
+    ['newMeterNoInput', 'newTypeInput'].forEach(function (id) {
+      var el = document.getElementById(id);
+      el.classList.toggle('readonly', flag);
+      el.style.cursor = flag ? 'default' : '';
+      el.style.background = flag ? '#f5f7fa' : '';
+      el.style.borderColor = flag ? '#e4e7ed' : '';
+      el.style.color = flag ? '#606266' : '';
+    });
+    document.querySelectorAll('#dlgChange .upload-btn').forEach(function (b) {
+      b.style.display = flag ? 'none' : '';
+    });
+  }
+
+  function openChangeDlg(btn, mode) {
+    var tr = btn.closest('tr');
     document.querySelectorAll('#mainTable tbody tr').forEach(function (r) { r.classList.remove('selected'); });
     tr.classList.add('selected'); selectedRow = tr;
-    showToast('用户 ' + tr.cells[0].textContent + ' 审核操作已提交', 'success');
-  }
-  function openChange(btn) {
-    var tr = btn.closest('tr');
+
+    // 户表基础信息
     document.getElementById('chUserNo').value = tr.cells[0].textContent;
     document.getElementById('chUserName').value = tr.cells[1].textContent;
     document.getElementById('chUserAddr').value = tr.cells[2].textContent;
@@ -492,11 +552,102 @@
     document.getElementById('chLastTime').value = tr.cells[8].textContent || '';
     document.getElementById('chLastRead').value = '0';
     document.getElementById('chBalance').value = tr.cells[6].textContent;
-    // 重置新表类型和照片
+
+    // 清空换表填写项
     resetNewMeterType();
     resetNewMeterNo();
+    ['chOldStop', 'chNewStart', 'chRepairMan', 'chFee', 'chReason'].forEach(function (id) {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('chImgAddr').value = '';
+
+    changeMode = mode || 'new';
+
+    if (changeMode === 'new') {
+      document.getElementById('chTitle').textContent = '户表信息';
+      document.getElementById('chBtnCancel').textContent = '✕ 取消';
+      document.getElementById('chBtnSubmit').textContent = '✓ 换表';
+      document.getElementById('chBtnReject').style.display = 'none';
+      setChangeFormReadonly(false);
+    } else {
+      // 审核 / 取消换表：回填已提交的换表数据
+      var rec = changeRequests[tr.cells[0].textContent];
+      if (rec) {
+        document.getElementById('chOldStop').value = rec.oldStop;
+        document.getElementById('chNewStart').value = rec.newStart;
+        document.getElementById('chRepairMan').value = rec.repairMan;
+        document.getElementById('chFee').value = rec.fee;
+        document.getElementById('chReason').value = rec.reason;
+        document.getElementById('chImgAddr').value = rec.imgAddr;
+        selectNewMeterNo(rec.newMeterNo);
+        selectNewMeterType(rec.typeKey, rec.typeName);
+      }
+      document.getElementById('chTitle').textContent = changeMode === 'audit' ? '换表审核' : '取消换表';
+      document.getElementById('chBtnCancel').textContent = '✕ 关闭';
+      document.getElementById('chBtnSubmit').textContent = changeMode === 'audit' ? '✓ 审核通过' : '✓ 确认取消换表';
+      document.getElementById('chBtnReject').style.display = changeMode === 'audit' ? 'inline-flex' : 'none';
+      document.getElementById('rejectReason').value = '';
+      setChangeFormReadonly(true);
+    }
+
     openModal('dlgChange');
   }
+
+  function setAuditStatus(row, text) {
+    if (!row) return;
+    var td = row.cells[9];
+    var cls = text === '通过' ? 'audit-pass' : (text === '未通过' ? 'audit-fail' : 'audit-none');
+    td.innerHTML = '<span class="' + cls + '">' + text + '</span>';
+    // 已通过审核的记录，禁用「审核」操作
+    var links = row.querySelectorAll('.op-col .op-link');
+    var auditEl = links[links.length - 1];
+    if (!auditEl) return;
+    if (text === '通过') {
+      auditEl.classList.add('disabled');
+      auditEl.setAttribute('title', '已通过审核，不可重复审核');
+      auditEl.setAttribute('onclick', 'event.stopPropagation()');
+    } else {
+      auditEl.classList.remove('disabled');
+      auditEl.removeAttribute('title');
+      auditEl.setAttribute('onclick', 'event.stopPropagation();auditRow(this)');
+    }
+  }
+
+  function showRejectDlg() {
+    document.getElementById('rejectReason').value = '';
+    openModal('dlgReject');
+  }
+
+  function submitReject() {
+    var reason = document.getElementById('rejectReason').value.trim();
+    if (!reason) {
+      showToast('请填写驳回原因');
+      document.getElementById('rejectReason').focus();
+      return;
+    }
+    closeModal('dlgReject');
+    closeModal('dlgChange');
+    setAuditStatus(selectedRow, '未通过');
+    showToast('审核已驳回，驳回原因已通知提报人', 'success');
+  }
+
+  function submitChange() {
+    if (changeMode === 'audit') {
+      closeModal('dlgChange');
+      setAuditStatus(selectedRow, '通过');
+      showToast('审核通过，换表记录已生效', 'success');
+      return;
+    }
+    if (changeMode === 'cancel') {
+      closeModal('dlgChange');
+      showToast('换表申请已取消', 'success');
+      return;
+    }
+    closeModal('dlgChange');
+    showToast('换表申请已提交，待审核', 'success');
+  }
+
+  function openChange(btn) { openChangeDlg(btn, 'new'); }
   document.querySelectorAll('.modal-mask').forEach(function (m) {
     m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('show'); });
   });
@@ -531,6 +682,7 @@
 
   // 新表类型下拉
   function toggleNewTypeDropdown() {
+    if (changeMode !== 'new') return;
     document.getElementById('newTypeDropdown').classList.toggle('open');
   }
   document.addEventListener('click', function () {
@@ -540,6 +692,7 @@
 
   // 新表表号下拉（数据来源于表具档案中已校验的水表）
   function toggleNewMeterNoDropdown() {
+    if (changeMode !== 'new') return;
     document.getElementById('newMeterNoDropdown').classList.toggle('open');
   }
   function selectNewMeterNo(meterNo) {
